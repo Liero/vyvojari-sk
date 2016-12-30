@@ -14,6 +14,7 @@ namespace DevPortal.Web
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -25,6 +26,7 @@ namespace DevPortal.Web
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMvcWithDefaultRoute();
             app.UseStaticFiles();
         }
     }
