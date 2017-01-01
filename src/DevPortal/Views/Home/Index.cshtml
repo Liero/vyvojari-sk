@@ -1,3 +1,10 @@
-﻿@{
-    <h1>Home</h1>
+﻿<h1>Home</h1>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <p>You are logged in as @User.Identity.Name</p>
+}
+else
+{
+    <p>@await Component.InvokeAsync(typeof(LoginFormViewComponent))</p>
 }
