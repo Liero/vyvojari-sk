@@ -3,12 +3,40 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title</title>
+
+    @if (ViewBag.Title != null) {<title>@ViewBag.Title - Vyvojari.sk</title>}
+    else {<title>Vyvojari.sk - Portál pre vývojárov</title>}
+
     <link id="favicon" href="~/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="~/">
+                    <img alt="Brand" src="~/media/logo-80h.png" height="20px">
+                </a>
+            </div>
+
+            <form class="navbar-form navbar-right" role="search">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                </div>
+            </form>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <p class="navbar-text navbar-right">You are logged in as <a href="#" class="navbar-link">@User.Identity.Name</a></p>
+            }
+        </div> 
+    </nav>
     <div>
         @RenderBody()
+
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
     </div>
 </body>
 </html>
