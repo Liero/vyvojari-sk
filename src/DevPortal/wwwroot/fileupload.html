@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <h1>Test upload to imgur</h1>
+
+    <form id="uploadform">
+        <input id="fileinput" type="file" accept="image/*" />
+    </form>
+
+
+    <img id="img" />
+
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <script>
+        var clientId = localStorage.getItem("Authentication:Imgur:ClientId")
+        if (!clientId) {
+            clientId = prompt('Authentication:Imgur:ClientId');
+            localStorage.setItem("Authentication:Imgur:ClientId", clientId);
+        }
+
+        var fileinput = document.getElementById('fileinput');
+        var img = document.getElementById('img');
+
+        fileinput.onchange = function (e) {
+            for (var i = 0; i < e.target.files.length; i++) {
+                uploadToImgur(e.target.files[i], function (response) {
+                    img.src = response.data.link
+                });
+            }
+        }
+
+        function uploadToImgur(file, callback) {
+            if (!file || !file.type.match(/image.*/)) return;
+            var fd = new FormData();
+            fd.append("image", file);
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "https://api.imgur.com/3/image");
+            xhr.setRequestHeader('Authorization', 'Client-ID ' + clientId);
+            xhr.onload = function () {
+               callback(JSON.parse(xhr.responseText))
+            }
+            xhr.send(fd);
+            return xhr;
+        }
+    </script>
+</body>
+</html>
