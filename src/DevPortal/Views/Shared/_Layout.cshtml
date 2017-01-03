@@ -30,7 +30,8 @@
                 </div>
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <text>You are logged in as <a href="#" class="navbar-link">@User.Identity.Name</a></text>
+                    <a href="#" class="navbar-link">@User.Identity.Name</a>
+                    <button asp-controller="Account" asp-action="LogOff" class="btn btn-link navbar-btn navbar-link">Log off</button>
                 }
             </form>
         </div>

@@ -2,20 +2,27 @@
 @model HomePageViewModel
 
 <div class="container">
-    @if (!User.Identity.IsAuthenticated)
-    {
-        <p>@await Component.InvokeAsync(typeof(LoginFormViewComponent))</p>
-    }
-
     <div class="row">
         <a class="btn btn-warning pull-right" href="@Url.Action(nameof(ForumController.NewPost), "Forum")">Ask question</a>
     </div>
 
     <div class="row">
         <div class="col-md-8">
-            <div class="panel">
+            @if (!User.Identity.IsAuthenticated)
+            {
+                @await Component.InvokeAsync(typeof(LoginFormViewComponent))
+            }
+            else
+            {
+              Html.RenderPartial("_UserInfo");
+            }
 
+            <div class="btn-group btn-group-justified m-b" role="group" aria-label="...">
+                <button type="button" class="btn btn-warning">Vytvor spravičku</button>
+                <button type="button" class="btn btn-info">Napíš článok</button>
+                <button type="button" class="btn btn-success">Začni diskusiu</button>
             </div>
+
 
             @foreach (var newsItem in Model.LatestNews)
             {
@@ -39,14 +46,14 @@
             }
         </div>
         <div class="col-md-4 panel panel-default">
-            <h3>Diskusia, <small>posledné príspevky</small></h3>
+            <h3>Diskusia <small>posledné príspevky</small></h3>
             <ul class="media-list">
                 @foreach (var forumPost in Model.LatestPosts)
-                {
+            {
                     <li class="media">
                         <div class="media-left">
                             <a href="#">
-                                <img class="media-object" src="@Url.Content(forumPost.Avatar)" forumPost.Avatar" alt="...">
+                                <img class="media-object" src="@Url.Content(forumPost.Avatar)" alt="...">
                             </a>
                         </div>
                         <div class="media-body">

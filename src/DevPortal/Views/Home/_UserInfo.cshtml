@@ -1,0 +1,28 @@
+﻿<div class="panel panel-default">
+    <div class="row">
+        <div class="col-md-6 col-md-border">
+            <div class="panel-body">
+                <div class="media">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object" src="~/media/userpicture.jpg" />
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">@User.Identity.Name</h4>
+                        .NET developer, technical architect
+                        <p class="m-t"><a>Improve your profile</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-md-border">
+            <div class="panel-body">
+                @foreach (var item in DevPortal.Web.Data.SampleData.Titles.Take(4))
+                {
+                    <a>@item</a><br />
+                }
+            </div>
+        </div>
+    </div>
+</div>
