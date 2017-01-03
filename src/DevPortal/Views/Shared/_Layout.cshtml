@@ -4,8 +4,12 @@
 <head>
     <meta name="viewport" content="width=device-width" />
 
-    @if (ViewBag.Title != null) {<title>@ViewBag.Title - Vyvojari.sk</title>}
-    else {<title>Vyvojari.sk - Portál pre vývojárov</title>}
+    @if (ViewBag.Title != null)
+    {
+    <title>@ViewBag.Title - Vyvojari.sk</title>}
+    else
+    {
+    <title>Vyvojari.sk - Portál pre vývojárov</title>}
 
     <link id="favicon" href="~/favicon.ico" rel="shortcut icon">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -16,7 +20,7 @@
         <div class="container">
             <div class="navbar-header">
                 <a class="navbar-brand" href="~/">
-                    <img alt="Brand" src="~/media/logo-80h.png" height="20px">
+                    <img alt="Brand" src="~/media/logo-80h.png" style="height: 50px; margin-top:-15px;">
                 </a>
             </div>
 
@@ -24,13 +28,12 @@
                 <div class="form-group">
                     <input type="text" class="form-control" placeholder="Search">
                 </div>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <text>You are logged in as <a href="#" class="navbar-link">@User.Identity.Name</a></text>
+                }
             </form>
-
-            @if (User.Identity.IsAuthenticated)
-            {
-                <p class="navbar-text navbar-right">You are logged in as <a href="#" class="navbar-link">@User.Identity.Name</a></p>
-            }
-        </div> 
+        </div>
     </nav>
     <div>
         @RenderBody()

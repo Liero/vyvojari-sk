@@ -1,10 +1,63 @@
-﻿<h1>Home</h1>
+﻿@using DevPortal.Web.Models.HomeViewModels
+@model HomePageViewModel
 
-@if (User.Identity.IsAuthenticated)
-{
-    <p>You are logged in as @User.Identity.Name</p>
-}
-else
-{
-    <p>@await Component.InvokeAsync(typeof(LoginFormViewComponent))</p>
-}
+<div class="container">
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <p>@await Component.InvokeAsync(typeof(LoginFormViewComponent))</p>
+    }
+
+    <div class="row">
+        <a class="btn btn-warning pull-right" href="@Url.Action(nameof(ForumController.NewPost), "Forum")">Ask question</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel">
+
+            </div>
+
+            @foreach (var newsItem in Model.LatestNews)
+            {
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <h3>@newsItem.Title</h3>
+                        <p>@newsItem.Content</p>
+                        <ul class="actions list-inline">
+                            <li><button class="btn btn-default">Upvote</button></li>
+                            <li>
+                                <button class="btn btn-link">Comment</button>
+                                @if (newsItem.Comments.Count > 0)
+                                {
+                                    <span class="label label-default">@newsItem.Comments.Count</span>
+                                }
+                            </li>
+                            <li><button class="btn btn-link">Share</button></li>
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-md-4 panel panel-default">
+            <h3>Diskusia, <small>posledné príspevky</small></h3>
+            <ul class="media-list">
+                @foreach (var forumPost in Model.LatestPosts)
+                {
+                    <li class="media">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object" src="@Url.Content(forumPost.Avatar)" forumPost.Avatar" alt="...">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">@forumPost.Title</h4>
+                            @forumPost.Created od <strong>@forumPost.UserName</strong>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <a href="~/fileupload.html">Test file upload</a>
+</div>

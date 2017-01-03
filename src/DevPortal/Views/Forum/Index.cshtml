@@ -1,0 +1,15 @@
+﻿
+
+<div class="container">
+    <h2 class="text-center">Do you have question?</h2>
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="What's your question? Be specific">
+        <div class="input-group-btn">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ask question <span class="caret"></span></button>
+            <ul class="dropdown-menu dropdown-menu-right">
+                <li>@Html.ActionLink("Ask question", nameof(ForumController.NewPost))</li>
+                <li><a href="#">Start discussion</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
