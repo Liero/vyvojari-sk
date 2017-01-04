@@ -76,7 +76,16 @@ namespace DevPortal.Web
 
         private void ConfigureIdentity(IdentityOptions options)
         {
+            options.Password.RequireUppercase = false;
+            options.SignIn.RequireConfirmedPhoneNumber = false;
+            options.SignIn.RequireConfirmedEmail = false; //todo
 
+            if (_env.IsDevelopment())
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 1;
+            }
         }
     }
 

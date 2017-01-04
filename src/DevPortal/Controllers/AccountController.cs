@@ -174,6 +174,10 @@ namespace DevPortal.Web.Controllers
                 ModelState.AddModelError("", "User account locked out.");
                 _logger.LogWarning(2, "User account locked out. '{0}'", userName);
             }
+            else if (result.IsNotAllowed)
+            {
+                ModelState.AddModelError("", "Sign in to this account is not allowed");
+            }
             else
             {
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
