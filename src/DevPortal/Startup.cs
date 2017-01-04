@@ -13,24 +13,33 @@ using DevPortal.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using DevPortal.Web.Data;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using DevPortal.Web.Services;
 
 namespace DevPortal.Web
 {
     public class Startup
     {
+        private IHostingEnvironment _env;
+
         public static IConfigurationRoot Configuration { get; private set; }
+
+        public Startup(IHostingEnvironment env)
+        {
+            this._env = env;
+        }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase());
-                //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(ConfigureIdentity)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();        
+            services.AddMvc();
+            services.AddTransient<IEmailSender, EmailSender>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -59,10 +68,15 @@ namespace DevPortal.Web
                 AppSecret = Configuration["Authentication:Facebook:AppSecret"],
             };
             app.UseFacebookAuthentication(facebookOptions);
-            
+
 
             app.UseMvcWithDefaultRoute();
             app.UseStaticFiles();
+        }
+
+        private void ConfigureIdentity(IdentityOptions options)
+        {
+
         }
     }
 

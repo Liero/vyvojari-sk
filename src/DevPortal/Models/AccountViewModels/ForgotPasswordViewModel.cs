@@ -6,13 +6,10 @@ using System.Threading.Tasks;
 
 namespace DevPortal.Web.Models.AccountViewModels
 {
-    public class ExternalLoginConfirmationViewModel
+    public class ForgotPasswordViewModel
     {
         [Required]
         [EmailAddress]
         public string Email { get; set; }
-
-        [Required]
-        public string Username { get; set; }
     }
 }

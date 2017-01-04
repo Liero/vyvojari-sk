@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DevPortal.Web.Models.AccountViewModels;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace DevPortal.Web.ViewComponents
 {
+    [ViewComponent(Name ="LoginForm")]
     public class LoginFormViewComponent: ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync()
-        {         
-            return View(new Models.AccountViewModels.LoginFormViewModel());
+        public IViewComponentResult Invoke(LoginFormViewModel model = null)
+        {
+            if (model == null) model = new LoginFormViewModel();
+            return View(model);
         }
     }
 }

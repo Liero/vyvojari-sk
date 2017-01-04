@@ -6,10 +6,10 @@
 
     @if (ViewBag.Title != null)
     {
-    <title>@ViewBag.Title - Vyvojari.sk</title>}
+        <title>@ViewBag.Title - Vyvojari.sk</title>}
     else
     {
-    <title>Vyvojari.sk - Portál pre vývojárov</title>}
+        <title>Vyvojari.sk - Portál pre vývojárov</title>}
 
     <link id="favicon" href="~/favicon.ico" rel="shortcut icon">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -24,23 +24,50 @@
                 </a>
             </div>
 
-            <form class="navbar-form navbar-right" role="search">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search">
-                </div>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <form class="navbar-form navbar-right" role="search">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search">
+                        </div>
+                    </form>
+                </li>
+
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <a href="#" class="navbar-link">@User.Identity.Name</a>
-                    <button asp-controller="Account" asp-action="LogOff" class="btn btn-link navbar-btn navbar-link">Log off</button>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            @User.Identity.Name <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-controller="Manage">Manage</a></li>
+                            <li>
+                                <form asp-controller="Account" asp-action="LogOff" method="post">
+                                    <button class="btn btn-link navbar-link">Log off</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
                 }
-            </form>
+                else
+                {
+                     <li>
+                         <a asp-controller="Account" asp-action="@nameof(AccountController.Login)">Log In</a>
+                     </li>
+                }
+            </ul>
         </div>
     </nav>
-    <div>
+    <div class="container body-content">
         @RenderBody()
 
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
     </div>
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    @RenderSection("scripts", required: false)
+
+
 </body>
 </html>

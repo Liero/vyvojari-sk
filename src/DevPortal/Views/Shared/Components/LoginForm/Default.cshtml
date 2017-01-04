@@ -7,17 +7,28 @@
     var loginProviders = SignInManager.GetExternalAuthenticationSchemes().ToList();
 }
 
-<div class="panel panel-default">
+
+<div id="loginPanel" class="panel panel-default">
     <div class="panel-body">
         <h4>Log in using</h4>
         <div class="row">
             <div class="col-md-6 col-md-border">
-                <div class="form-group">
-                    <input class="form-control" placeholder="Username" />
-                </div>
-                <div>
-                    <input class="form-control" placeholder="Password" type="password" />
-                </div>
+                <section>
+                    <form id="loginform" asp-controller="Account" asp-action="Login" method="post">
+                        <div class="form-group">
+                            <input asp-for="@Model.UsernameOrEmail" class="form-control" placeholder="@Html.DisplayName(nameof(Model.UsernameOrEmail))" />
+                        </div>
+                        <div class="form-group">
+                            <input asp-for="@Model.Password" class="form-control" placeholder="@Html.DisplayName(nameof(Model.Password))" />
+                        </div>
+                        <div asp-validation-summary="All" class="text-danger"></div>
+
+                        <p>
+                            <a asp-action="@nameof(AccountController.Register)" asp-controller="Account" asp-route-returnurl="@ViewData["ReturnUrl"]">Register as a new user?</a><br/>
+                            <a asp-action="@nameof(AccountController.ResetPassword)" asp-controller="Account">Forgot your password?</a>
+                        </p>
+                    </form>
+                </section>
             </div>
             <div class="col-md-6 col-md-border">
                 <form asp-controller="Account" asp-action="ExternalLogin" method="post" class="form-horizontal">
@@ -37,4 +48,30 @@
             </div>
         </div>
     </div>
+
+    <script>
+        (function () {
+
+            function init() {
+                var $loginform = $('#loginform');
+                $loginform.keypress(function (event) {
+                    if (event.which == 13 && !event.shiftKey) {
+                        event.preventDefault();
+
+                        $.post('Account/LoginAjax', $loginform.serialize())
+                            .done(function (reponse) {
+                                window.location.reload();
+                            })
+                            .fail(function (response) {
+                                $('#loginPanel').replaceWith(response.responseText);
+                             });
+                    }
+                });
+            }
+
+            if (typeof($) !== 'undefined') init();
+            else window.addEventListener('load', init);
+        })();
+        
+    </script>
 </div>

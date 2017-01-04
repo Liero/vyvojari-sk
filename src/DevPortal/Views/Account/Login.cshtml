@@ -1,3 +1,9 @@
-﻿<p>
-    @await Component.InvokeAsync(typeof(LoginFormViewComponent))
-</p>
+﻿@{ 
+    ViewBag.Title = "Login";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        @await Component.InvokeAsync(typeof(LoginFormViewComponent))
+    </div>
+</div>
