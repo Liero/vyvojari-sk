@@ -6,10 +6,12 @@
 
     @if (ViewBag.Title != null)
     {
-        <title>@ViewBag.Title - Vyvojari.sk</title>}
+        <title>@ViewBag.Title - Vývojári.sk</title>
+    }
     else
     {
-        <title>Vyvojari.sk - Portál pre vývojárov</title>}
+        <title>Vývojari.sk - Portál pre vývojárov</title>
+    }
 
     <link id="favicon" href="~/favicon.ico" rel="shortcut icon">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -19,44 +21,64 @@
     <nav class="navbar navbar-default">
         <div class="container">
             <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
                 <a class="navbar-brand" href="~/">
                     <img alt="Brand" src="~/media/logo-80h.png" style="height: 50px; margin-top:-15px;">
                 </a>
             </div>
 
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class='@this.Url.IsCurrentRoute("News") ? "active" : ""'><a asp-controller="News">Správičky</a></li>
+                    <li class='@this.Url.IsCurrentRoute("Forum") ? "active" : ""'><a asp-controller="Forum">Diskusia</a></li>
+                    <li><a href="#">Blogy</a></li>
+                </ul>
 
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <form class="navbar-form navbar-right" role="search">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Search">
-                        </div>
-                    </form>
-                </li>
-
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            @User.Identity.Name <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a asp-controller="Manage">Manage</a></li>
-                            <li>
-                                <form asp-controller="Account" asp-action="LogOff" method="post">
-                                    <button class="btn btn-link navbar-link">Log off</button>
-                                </form>
-                            </li>
-                        </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <form class="navbar-form navbar-right" role="search">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search">
+                            </div>
+                        </form>
                     </li>
-                }
-                else
-                {
-                     <li>
-                         <a asp-controller="Account" asp-action="@nameof(AccountController.Login)">Log In</a>
-                     </li>
-                }
-            </ul>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li>
+                            @await Component.InvokeAsync(typeof(InboxBarViewComponent))
+                        </li>
+                        <li>
+                            @await Component.InvokeAsync(typeof(NotificationBarViewComponent))
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                @User.Identity.Name <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-controller="Manage">Manage</a></li>
+                                <li>
+                                    <form asp-controller="Account" asp-action="LogOff" method="post">
+                                        <button class="btn btn-link navbar-link">Log off</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            <a asp-controller="Account" asp-action="@nameof(AccountController.Login)">Log In</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+
         </div>
     </nav>
     <div class="container body-content">
@@ -64,8 +86,9 @@
 
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/scripts/site.js"></script>
     @RenderSection("scripts", required: false)
 
 

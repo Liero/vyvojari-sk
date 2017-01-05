@@ -20,5 +20,12 @@
 }
 
 .media-object-small{
-    max-height:75px;
+    max-height:64px;
 }
+
+.badge-notify{
+   background:red;
+   position:absolute;
+   top:0px;
+   zoom:0.8;
+  }
