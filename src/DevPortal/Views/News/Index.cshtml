@@ -1,0 +1,71 @@
+﻿@model DevPortal.Web.Models.NewsViewModels.IndexPageViewModel
+@{
+    ViewBag.Title = "Správičky";
+    int maxComments = 3;
+    Guid guid = Guid.NewGuid();
+}
+
+<p class="row">
+    <a class="btn btn-warning pull-right" asp-action="Create">Vytvor správičku</a>
+</p>
+
+
+@foreach (var newsItem in Model.Items)
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <h3>@newsItem.Title</h3>
+            <p>@newsItem.Content</p>
+            <ul class="actions list-inline">
+                <li><button class="btn btn-default">Upvote</button></li>
+                <li>
+                    <button class="btn btn-link" data-action="show-comments">
+                        Comment
+                        @if (newsItem.Comments.Count > 0)
+                        {
+                            <span class="label label-default">@newsItem.Comments.Count</span>
+                        }
+                    </button>
+         
+                </li>
+                <li><button class="btn btn-link">Share</button></li>
+            </ul>
+        </div>
+
+        <div class="panel-footer @(newsItem.Comments.Count == 0 ? "collapse" : "")">
+            @if (newsItem.Comments.Count > maxComments)
+            {
+                <a href="javascript:void()">view previous comments</a>
+            }
+            <ul class="media-list">
+                @foreach (var comment in newsItem.Comments.TakeLast(maxComments))
+                {
+                    <li class="media">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object media-object-small" src="~/media/userpicture.jpg" alt="...">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <div class="text-justify"><strong><a href="#">@comment.UserName</a></strong> @comment.Message</div>
+                            <ul class="actions list-inline">
+                                <li><a href="#">like</a></li>
+                                <li><a href="#">reply</a></li>
+                                <li><a href="#">share</a></li>
+                            </ul>
+                        </div>
+                        <div class="media-right">
+                            2h
+                        </div>
+                    </li>
+                }
+            </ul>
+
+
+
+            <div class="form-group">
+                <input class="form-control" placeholder="Add comment" />
+            </div>
+        </div>
+    </div>
+}

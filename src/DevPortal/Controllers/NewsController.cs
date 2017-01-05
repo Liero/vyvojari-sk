@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-
+using DevPortal.Web.Models.NewsViewModels;
+using DevPortal.Web.Data;
 
 namespace DevPortal.Web.Controllers
 {
     public class NewsController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index(int skip = 1, int take = 20)
         {
-            return View();
+            var pageItems = SampleData.Instance.News
+                .Skip(skip)
+                .Take(take);
+
+            return View(new IndexPageViewModel { Items = pageItems.ToList() });
         }
             
-        public IActionResult Index(Guid id)
+        public IActionResult View(Guid id)
         {
             return View("Detail");
         }
@@ -24,12 +29,12 @@ namespace DevPortal.Web.Controllers
             return View();
         }
 
-        public IActionResult Edit()
+        public IActionResult Edit(Guid id)
         {
             return View();
         }
 
-        public IActionResult Publish()
+        public IActionResult Publish(Guid id)
         {
             return View();
         }
