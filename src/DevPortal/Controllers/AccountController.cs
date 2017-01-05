@@ -41,32 +41,13 @@ namespace DevPortal.Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginFormViewModel model, string returnUrl = null)
+        public async Task<IActionResult> LoginAjax(LoginFormViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var result = await SignInUsingPasswordAsync(model);
-                if (result.Succeeded)
-                {
-                    return RedirectToLocal(returnUrl);
-                }
-                if (result.IsLockedOut)
-                {
-                    return View("Lockout");
-                }
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
-
-        public async Task<IActionResult> LoginAjax(LoginFormViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
                 var singIn = await SignInUsingPasswordAsync(model);
-                if (singIn.Succeeded) return Ok();
+                if (singIn.Succeeded) return Json(new { returnUrl = returnUrl ?? "/" });
             }
             var actionResult = ViewComponent(typeof(ViewComponents.LoginFormViewComponent), new { model = model });
             actionResult.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -93,6 +74,9 @@ namespace DevPortal.Web.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    //todo: Add email confirmation
+                    await _signInManager.SignInAsync(user, isPersistent: true);
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                     return RedirectToLocal(returnUrl);
                 }
@@ -152,39 +136,7 @@ namespace DevPortal.Web.Controllers
             return View();
         }
 
-
-        private async Task<SignInResult> SignInUsingPasswordAsync(LoginFormViewModel model)
-        {
-            string userName = model.UsernameOrEmail;
-            //get username from email
-            if (Regex.Match(model.UsernameOrEmail, @"^\w + ([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$").Success)
-            {
-                var user = await _userManager.FindByEmailAsync(model.UsernameOrEmail);
-                if (user != null) userName = user.UserName;
-            }
-
-
-            var result = await _signInManager.PasswordSignInAsync(userName, model.Password, isPersistent: true, lockoutOnFailure: false);
-            if (result.Succeeded)
-            {
-                _logger.LogInformation(1, "User logged in. '{0}'", userName);
-            }
-            else if (result.IsLockedOut)
-            {
-                ModelState.AddModelError("", "User account locked out.");
-                _logger.LogWarning(2, "User account locked out. '{0}'", userName);
-            }
-            else if (result.IsNotAllowed)
-            {
-                ModelState.AddModelError("", "Sign in to this account is not allowed");
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            }
-            return result;
-        }
-
+   
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogOff()
@@ -257,7 +209,7 @@ namespace DevPortal.Web.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -292,6 +244,40 @@ namespace DevPortal.Web.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, code);
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
+
+
+        private async Task<SignInResult> SignInUsingPasswordAsync(LoginFormViewModel model)
+        {
+            string userName = model.UsernameOrEmail;
+            //get username from email
+            if (Regex.Match(model.UsernameOrEmail, @"^\w + ([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$").Success)
+            {
+                var user = await _userManager.FindByEmailAsync(model.UsernameOrEmail);
+                if (user != null) userName = user.UserName;
+            }
+
+
+            var result = await _signInManager.PasswordSignInAsync(userName, model.Password, isPersistent: true, lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation(1, "User logged in. '{Name}'", userName);
+            }
+            else if (result.IsLockedOut)
+            {
+                ModelState.AddModelError("", "User account locked out.");
+                _logger.LogWarning(2, "User account locked out. '{Name}'", userName);
+            }
+            else if (result.IsNotAllowed)
+            {
+                ModelState.AddModelError("", "Sign in to this account is not allowed");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            }
+            return result;
+        }
+
 
         #region Helpers
 

@@ -18,3 +18,7 @@
 .m-b{
     margin-bottom:20px;
 }
+
+.media-object-small{
+    max-height:75px;
+}

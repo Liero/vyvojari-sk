@@ -10,7 +10,7 @@ using DevPortal.Web.Models.ManageViewModels;
 using DevPortal.Web.Models;
 using DevPortal.Web.Services;
 
-namespace WebApplication1.Controllers
+namespace DevPortal.Web.Controllers
 {
     [Authorize]
     public class ManageController : Controller
@@ -161,7 +161,7 @@ namespace WebApplication1.Controllers
             var user = await GetCurrentUserAsync();
             if (user == null)
             {
-                return View("Error");
+                return RedirectToAction(nameof(AccountController.Login), "Account", new { returnUrl = $"{Request.Path}"});
             }
             var userLogins = await _userManager.GetLoginsAsync(user);
             var otherLogins = _signInManager.GetExternalAuthenticationSchemes().Where(auth => userLogins.All(ul => auth.AuthenticationScheme != ul.LoginProvider)).ToList();

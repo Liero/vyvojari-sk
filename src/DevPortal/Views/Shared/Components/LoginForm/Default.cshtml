@@ -5,6 +5,7 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @{
     var loginProviders = SignInManager.GetExternalAuthenticationSchemes().ToList();
+    Func<object,string> UrlEncode = obj => System.Text.Encodings.Web.UrlEncoder.Default.Encode((string)obj);
 }
 
 
@@ -54,24 +55,31 @@
 
             function init() {
                 var $loginform = $('#loginform');
+
+                //submit form using ajax on enter key pressed
                 $loginform.keypress(function (event) {
                     if (event.which == 13 && !event.shiftKey) {
                         event.preventDefault();
-
-                        $.post('Account/LoginAjax', $loginform.serialize())
+                        var url = "/Account/LoginAjax";
+                        @if (ViewData["ReturnUrl"] is String) {<text>url += '?returnUrl=@UrlEncode(ViewData["ReturnUrl"])'</text>};
+                        $.post(url, $loginform.serialize())
                             .done(function (reponse) {
-                                window.location.reload();
+                                window.location.href = response.returnUrl;
                             })
                             .fail(function (response) {
-                                $('#loginPanel').replaceWith(response.responseText);
-                             });
+                                if (response.status === 401) { //unauthorized, see AccountController
+                                    $('#loginPanel').replaceWith(response.responseText);
+                                    init();
+                                }
+                                
+                            });
                     }
                 });
             }
 
-            if (typeof($) !== 'undefined') init();
+            if (typeof ($) !== 'undefined') init();
             else window.addEventListener('load', init);
         })();
-        
+
     </script>
 </div>
