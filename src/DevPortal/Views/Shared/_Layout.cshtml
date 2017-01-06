@@ -34,9 +34,15 @@
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class='@this.Url.IsCurrentRoute("News") ? "active" : ""'><a asp-controller="News">Správičky</a></li>
-                    <li class='@this.Url.IsCurrentRoute("Forum") ? "active" : ""'><a asp-controller="Forum">Diskusia</a></li>
-                    <li><a href="#">Blogy</a></li>
+                    <li class='@(this.Url.IsCurrentRoute("News") ? "active" : "")'>
+                        <a asp-controller="News" asp-action="@nameof(NewsController.Index)">Správičky</a>
+                    </li>
+                    <li class='@(this.Url.IsCurrentRoute("Forum") ? "active" : "")'>
+                        <a asp-controller="Forum" asp-action="@nameof(ForumController.Index)">Diskusia</a>
+                    </li>
+                    <li class='@(this.Url.IsCurrentRoute("Blogs") ? "active" : "")'>
+                        <a href="#">Blogy</a>
+                    </li>
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">

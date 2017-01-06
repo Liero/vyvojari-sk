@@ -5,27 +5,36 @@
     .col-md-border:not(:last-child) {
         border-right: 1px solid #d7d7d7;
     }
+
     .col-md-border + .col-md-border {
         border-left: 1px solid #d7d7d7;
         margin-left: -1px;
     }
 }
 
-.m-t{
+.m-t {
     margin-top: 20px;
 }
 
-.m-b{
-    margin-bottom:20px;
+.m-b {
+    margin-bottom: 20px;
 }
 
-.media-object-small{
-    max-height:64px;
+.m-b-sm {
+    margin-bottom: 5px;
 }
 
-.badge-notify{
-   background:red;
-   position:absolute;
-   top:0px;
-   zoom:0.8;
-  }
+.p-l-0 {
+    padding-left: 0;
+}
+
+.media-object-small {
+    max-height: 64px;
+}
+
+.badge-notify {
+    background: red;
+    position: absolute;
+    top: 0px;
+    zoom: 0.8;
+}

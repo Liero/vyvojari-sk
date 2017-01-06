@@ -2,7 +2,7 @@
 @model HomePageViewModel
 
 <div class="container">
-    <div class="row">
+    <div class="clearfix m-b-sm">
         <a class="btn btn-warning pull-right" href="@Url.Action(nameof(ForumController.NewPost), "Forum")">Ask question</a>
     </div>
 
@@ -46,8 +46,17 @@
                 }
             </section>
         </div>
-        <div class="col-md-4 panel panel-default">
-            @await Component.InvokeAsync(typeof(ForumOverviewViewComponent));
+        <div class="col-md-4 p-l-0">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    @await Component.InvokeAsync(typeof(ForumOverviewViewComponent))
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    @await Component.InvokeAsync(typeof(BlogsOverviewViewComponent))
+                </div>
+            </div>
         </div>
     </div>
 
