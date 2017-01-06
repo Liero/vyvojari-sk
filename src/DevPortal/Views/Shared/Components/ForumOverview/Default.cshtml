@@ -1,0 +1,19 @@
+﻿<section>
+    <h3>Diskusia <small>posledné príspevky</small></h3>
+    <ul class="media-list">
+        @foreach (var forumPost in DevPortal.Web.Data.SampleData.Instance.ForumPosts.Take(10))
+        {
+            <li class="media">
+                <div class="media-left">
+                    <a href="#">
+                        <img class="media-object media-object-small" src="@Url.Content(forumPost.Avatar)" alt="...">
+                    </a>
+                </div>
+                <div class="media-body">
+                    <h4 class="media-heading">@forumPost.Title</h4>
+                    @forumPost.Created od <strong>@forumPost.UserName</strong>
+                </div>
+            </li>
+        }
+    </ul>
+</section>

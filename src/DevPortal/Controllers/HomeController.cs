@@ -22,7 +22,6 @@ namespace DevPortal.Web.Controllers
             var viewModel = new HomePageViewModel
             {
                 LatestNews = sampleData.News.Take(10).ToList(),
-                LatestPosts = sampleData.ForumPosts.Take(10).ToList()
             };
             return View(viewModel);
         }
