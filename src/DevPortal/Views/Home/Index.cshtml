@@ -10,7 +10,7 @@
         <div class="col-md-8">
             @if (!User.Identity.IsAuthenticated)
             {
-                await Component.InvokeAsync(typeof(LoginFormViewComponent));
+                @await Component.InvokeAsync(typeof(LoginFormViewComponent));
             }
             else
             {
