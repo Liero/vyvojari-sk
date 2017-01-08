@@ -1,16 +1,27 @@
-﻿<div class="container">
-    <div class="form-group">
-        <label>Title</label>
-        <input type="text" class="form-control" aria-label="What's your programming question? Be specific'">
-    </div>
+﻿<h1>Diskusia</h1>
+<div class="container">
+    <form asp-action="@nameof(ForumController.NewPost)" asp-controller="ForumController" method="post">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Nový príspevok
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label>Názov</label>
+                    <input type="text" class="form-control" aria-label="What's your programming question? Be specific'">
+                </div>
+                <div class="form-group">
+                    @await Component.InvokeAsync(typeof(EditorViewComponent))
+                </div>
 
-    <textarea class="form-control">
-
-    </textarea>
-
-    <div class="form-group">
-        <label>Tags</label>
-        <input type="text" class="form-control" aria-label="...">
-    </div>
-    
+                <div class="form-group">
+                    <label for="tags">Tagy</label>
+                    @await Component.InvokeAsync(typeof(TagsSelectorViewComponent))
+                </div>
+            </div>
+            <div class="panel-footer">
+                <button class="btn btn-success">Odoslať</button>
+            </div>
+        </div>
+    </form>
 </div>
