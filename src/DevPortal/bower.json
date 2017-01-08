@@ -1,7 +1,16 @@
 {
-	"name": "asp.net",
-	"private": true,
+  "name": "asp.net",
+  "private": true,
   "dependencies": {
-    "bootstrap": "3.3.7"
+    "bootstrap": "3.3.6",
+    "bootstrap-markdown": "2.10.0",
+    "marked": "0.3.5",
+    "typeahead.js": "0.11.1",
+    "bootstrap-tagsinput": "0.8.0",
+    "jquery": "2.2.3"
+  },
+  "resolutions": {
+    "bootstrap": "3.3.7",
+    "jquery": ">=1.7"
   }
 }
