@@ -136,7 +136,7 @@ namespace DevPortal.Web.Controllers
             return View();
         }
 
-   
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogOff()
@@ -191,8 +191,12 @@ namespace DevPortal.Web.Controllers
             // If the user does not have an account, then ask the user to create an account.
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["LoginProvider"] = info.LoginProvider;
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
+            var viewModel = new ExternalLoginConfirmationViewModel
+            {
+                Username = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+                Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+            };
+            return View("ExternalLoginConfirmation", viewModel);
         }
 
 
