@@ -1,0 +1,49 @@
+﻿@model DevPortal.Web.Models.BlogViewModels.IndexPageViewModel
+@{
+    ViewBag.Title = "Blogy";
+    Guid guid = Guid.NewGuid();
+}
+
+<div class="clearfix m-b-sm">
+    <div class="btn-group pull-right">
+        <a class="btn btn-warning " asp-action="Create">Vytvor blog post</a>
+        <a class="btn btn-warning " asp-action="Create">Vytvor odkaz na blog</a>
+    </div>
+</div>
+
+
+@foreach (var newsItem in Model.Items)
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @* TODO: linky ciernou*@
+            <h3>
+                <a href="@newsItem.ExternalLink" target="_blank">
+                    @newsItem.Title
+                    @if (newsItem.IsExternalLink)
+                    {
+                        <i class="glyphicon glyphicon-new-window"></i>
+                    }
+                </a>
+            </h3>
+            <span>@newsItem.Created of <strong>@newsItem.UserName</strong></span>
+            <p>@newsItem.Description</p>
+
+            <ul class="actions list-inline">
+                <li><button class="btn btn-default">Upvote</button></li>
+                <li><button class="btn btn-link">Show details</button></li>
+                <li>
+                    <button class="btn btn-link" data-action="show-comments">
+                        Comment
+                        @if (newsItem.CommentsCount > 0)
+                        {
+                            <span class="label label-default">@newsItem.CommentsCount</span>
+                        }
+                    </button>
+
+                </li>
+                <li><button class="btn btn-link">Share</button></li>
+            </ul>
+        </div>
+    </div>
+}
