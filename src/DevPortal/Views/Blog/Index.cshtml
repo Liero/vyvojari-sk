@@ -11,14 +11,12 @@
     </div>
 </div>
 
-
 @foreach (var newsItem in Model.Items)
 {
     <div class="panel panel-default">
         <div class="panel-body">
-            @* TODO: linky ciernou*@
             <h3>
-                <a href="@newsItem.ExternalLink" target="_blank">
+                <a class="h3" href="@newsItem.ExternalLink" target="_blank">
                     @newsItem.Title
                     @if (newsItem.IsExternalLink)
                     {
@@ -47,3 +45,20 @@
         </div>
     </div>
 }
+
+<div class="text-center">
+    <nav aria-label="pagination">
+        <ul class="pagination">
+            <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+            <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+            <li><a href="#">2 <span class="sr-only">2</span></a></li>
+            <li><a href="#">3 <span class="sr-only">3</span></a></li>
+            <li><a href="#">4 <span class="sr-only">4</span></a></li>
+            <li><a href="#">5 <span class="sr-only">5</span></a></li>
+            <li><a href="#">6 <span class="sr-only">6</span></a></li>
+            <li class="disabled"><a href="#">... <span class="sr-only">...</span></a></li>
+            <li><a href="#">58 <span class="sr-only">(current)</span></a></li>
+            <li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+        </ul>
+    </nav>
+</div>

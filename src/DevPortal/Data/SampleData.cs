@@ -42,6 +42,15 @@ namespace DevPortal.Web.Data
             "http://vyvojari.sk/Avatar.ashx?UserName=Liero"
         };
 
+        public static string[] BlogTitles =
+        {
+            "ExJS TypeScript emitter",
+            "Video straming v ASP.NET Core",
+            "Sencha ExtJS - Čo je nové",
+            "Monády",
+            "Generovanie PDF pomocou iTextSharp a XmlWorker v MVC"
+        };
+
         public static string[] BlogExternalLinks =
         {
             "http://blog.vyvojari.sk/tomas/archive/2016/12/17/exjs-typescript-emitter.aspx",
@@ -73,9 +82,9 @@ namespace DevPortal.Web.Data
                 Avatar = from(UserPictures, i)
             }).ToArray();
 
-            BlogPosts = Enumerable.Range(10, 25).Select(i => new BlogInfoViewModel
+            BlogPosts = Enumerable.Range(15, 10).Select(i => new BlogInfoViewModel
             {
-                Title = from(Titles, i),
+                Title = from(BlogTitles, i),
                 UserName = from(UserNames, i),
                 Description = from(LoremIpsum, i),
                 ExternalLink = from(BlogExternalLinks,i),

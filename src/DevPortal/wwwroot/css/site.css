@@ -1,20 +1,19 @@
 ﻿body {
     /*background: #e9e9e9 url('http://linkedin.com/scds/common/u/images/themes/katy/textures/texture_grain_200x200_v2.png');*/
-    
     background: url(../media/background.jpg) repeat 50% 0;
     background-color: #E0E0E0;
 }
 
-.shadow{
+.shadow {
     box-shadow: 0px 0px 20px silver;
 }
 
-.panel{
+.panel {
     box-shadow: 0px 0px 20px silver;
 }
 
 
-.navbar{
+.navbar {
     box-shadow: 0px 0px 20px silver;
 }
 
@@ -58,20 +57,51 @@
     zoom: 0.8;
 }
 
-.bootstrap-tagsinput{
-    display:block;
+.bootstrap-tagsinput {
+    display: block;
 }
 
-.md-editor{
+.md-editor {
     border-radius: 5px;
 }
-.md-editor > .md-header{
-    border-radius: 5px 5px 0 0;
-}
-.md-editor > textarea{
-     background: inherit;
-     border-radius: 0 0 5px 5px;
-     border-bottom: none;
-     border-top-style: solid;
+
+    .md-editor > .md-header {
+        border-radius: 5px 5px 0 0;
+    }
+
+    .md-editor > textarea {
+        background: inherit;
+        border-radius: 0 0 5px 5px;
+        border-bottom: none;
+        border-top-style: solid;
+    }
+
+/* Custom pagination style*/
+.pagination li a {
+    background-color: #fcbb5d;
+    border-color: #ec971f;
+    color: #FFFFFF;
 }
 
+.pagination > li > a:hover,
+.pagination > li > a :focus {
+    background-color: #ec971f;
+    border-color: #d58512;
+    color: #FFFFFF;
+}
+
+.pagination li.active a,
+.pagination > li.active > a:hover,
+.pagination > li.active > a :focus {
+    background-color: #ec971f;
+    border-color: #d58512;
+    color: #FFFFFF;
+}
+
+.pagination li.disabled a,
+.pagination > .disabled > a:focus,
+.pagination > .disabled > a:hover {
+    background-color: #f0ad4e;
+    border-color: #eea236;
+    color: #FFFFFF;
+}
