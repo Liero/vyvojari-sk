@@ -9,5 +9,7 @@ or check latest (unstable) version: https://vyvojari-sk-test.azurewebsites.net/
 
 ## Build Status:
 
-dev branch: https://liero.visualstudio.com/_apis/public/build/definitions/74a5ef1e-20a5-4685-b777-a493748a0680/4/badge
-master branch: https://liero.visualstudio.com/_apis/public/build/definitions/74a5ef1e-20a5-4685-b777-a493748a0680/3/badge
+ dev: ![dev branch build badge](https://liero.visualstudio.com/_apis/public/build/definitions/74a5ef1e-20a5-4685-b777-a493748a0680/4/badge)
+ 
+ master: ![master branch](https://liero.visualstudio.com/_apis/public/build/definitions/74a5ef1e-20a5-4685-b777-a493748a0680/3/badge)
+
