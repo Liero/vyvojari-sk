@@ -1,4 +1,5 @@
-﻿using DevPortal.Web.Models.ForumViewModels;
+﻿using DevPortal.Web.Models.BlogViewModels;
+using DevPortal.Web.Models.ForumViewModels;
 using DevPortal.Web.Models.NewsViewModels;
 using DevPortal.Web.Models.SharedViewModels;
 using System;
@@ -41,6 +42,24 @@ namespace DevPortal.Web.Data
             "http://vyvojari.sk/Avatar.ashx?UserName=Liero"
         };
 
+        public static string[] BlogTitles =
+        {
+            "ExJS TypeScript emitter",
+            "Video straming v ASP.NET Core",
+            "Sencha ExtJS - Čo je nové",
+            "Monády",
+            "Generovanie PDF pomocou iTextSharp a XmlWorker v MVC"
+        };
+
+        public static string[] BlogExternalLinks =
+        {
+            "http://blog.vyvojari.sk/tomas/archive/2016/12/17/exjs-typescript-emitter.aspx",
+            "http://harrison314.github.io/CoreStreaming.html",
+            "http://blog.vyvojari.sk/tomas/archive/2016/12/17/sencha-extjs-o-je-nov-233.aspx",
+            "http://harrison314.github.io/Monads.html",
+            "http://blog.vyvojari.sk/xxxmatko/archive/2016/12/06/generovanie-pdf-pomocou-itextsharp-a-xmlworker-v-mvc.aspx"
+        };
+
         public SampleData()
         {
             var rnd = new Random();
@@ -62,10 +81,24 @@ namespace DevPortal.Web.Data
                 Created = DateTime.Now.AddHours(-i * 1.9),
                 Avatar = from(UserPictures, i)
             }).ToArray();
+
+            BlogPosts = Enumerable.Range(15, 10).Select(i => new BlogInfoViewModel
+            {
+                Title = from(BlogTitles, i),
+                UserName = from(UserNames, i),
+                Description = from(LoremIpsum, i),
+                ExternalLink = from(BlogExternalLinks,i),
+                Created = DateTime.Now.AddHours(-i * 1.9),
+                Avatar = from(UserPictures, i),
+                CommentsCount = (i*3+1) % 11
+            }).ToArray();
         }
 
         public NewsItemViewModel[] News { get; private set; }
+
         public ForumPostViewModel[] ForumPosts { get; private set; }
+
+        public BlogInfoViewModel[] BlogPosts { get; private set; }
 
         public static IEnumerable<CommentViewModel> GenerateComments()
         {
