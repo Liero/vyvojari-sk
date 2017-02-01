@@ -1,0 +1,47 @@
+﻿@model DevPortal.Web.Models.BlogViewModels.CrateViewModel
+@{
+    ViewBag.Title = "Pridať blog post";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <form action="Create" method="post">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Vytvoriť blog post</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="title">Titulka</label>
+                        <input asp-for="Title" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Content">Obsah</label>
+                        @await Component.InvokeAsync(typeof(EditorViewComponent))
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Tags">Tagy</label>
+                        @await Component.InvokeAsync(typeof(TagsSelectorViewComponent))
+                    </div>
+
+
+                </div>
+                <div class="panel-footer">
+                    <div>
+                        <button class="btn btn-default" type="button">Zrušiť</button>
+                        <div class="btn-group pull-right">
+
+                            <button class="btn btn-default" type="button">Uložiť</button>
+                            <button class="btn btn-success" type="button">Publikovať</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4  p-l-0">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @await Component.InvokeAsync(typeof(BlogsOverviewViewComponent))
+            </div>
+        </div>
+    </div>
+</div>

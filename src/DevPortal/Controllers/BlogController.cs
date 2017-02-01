@@ -26,5 +26,31 @@ namespace DevPortal.Web.Controllers
 
             return View(model);
         }
+
+        public IActionResult Create()
+        {
+            CrateViewModel model = new CrateViewModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Create(CrateViewModel model)
+        {
+
+            return this.RedirectToAction(nameof(this.Index));
+        }
+
+        public IActionResult CreateLink()
+        {
+            CrateLinkViewModel model = new CrateLinkViewModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult CreateLink(CrateLinkViewModel model)
+        {
+
+            return this.RedirectToAction(nameof(this.Index));
+        }
     }
 }

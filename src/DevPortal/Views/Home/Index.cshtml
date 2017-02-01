@@ -19,7 +19,7 @@
 
             <div class="btn-group btn-group-justified m-b" role="group" aria-label="...">
                 <a asp-controller="News" asp-action="Create" class="btn btn-warning">Vytvor správičku</a>
-                <a class="btn btn-info">Napíš článok</a>
+                <a class="btn btn-info"asp-action="Create" asp-controller="Blog">Napíš článok</a>
                 <a asp-controller="Forum" asp-action="NewPost" class="btn btn-success">Začni diskusiu</a>
             </div>
 
