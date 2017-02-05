@@ -4,17 +4,37 @@
     background-color: #E0E0E0;
 }
 
+
+
+
+.jumbotron-forum {
+    background-image: linear-gradient(to right, rgb(0, 140, 201), rgb(140, 104, 203));
+    color: white;
+    padding: 10px 0 10px 0;
+    margin-bottom: 20px;
+}
+
+.jumbotron-icon {
+    height: 64px;
+    margin-top: 15px;
+}
+
+.navbar-jumbotron {
+    margin-bottom: 0;
+    box-shadow: 0px 0px 0px !important;
+}
+
 .shadow {
-    box-shadow: 0px 0px 20px silver;
+    box-shadow: 0 0 20px silver;
 }
 
 .panel {
-    box-shadow: 0px 0px 20px silver;
+    box-shadow: 0 0 20px silver;
 }
 
 
 .navbar {
-    box-shadow: 0px 0px 20px silver;
+    box-shadow: 0 0 20px silver;
 }
 
 
@@ -30,6 +50,9 @@
     }
 }
 
+.m-a{
+    margin: 20px 20px 20px 20px;
+}
 .m-t {
     margin-top: 20px;
 }
@@ -48,6 +71,22 @@
 
 .media-object-small {
     max-height: 64px;
+}
+
+.text-primary{
+    color: #bbb
+}
+.b-l {
+    border-left: 1px solid #ddd;
+}
+.b-t {
+    border-top: 1px solid #ddd;
+}
+.b-b {
+    border-bottom: 1px solid #ddd;
+}
+.b-r {
+    border-right: 1px solid #ddd;
 }
 
 .badge-notify {
@@ -75,6 +114,51 @@
         border-bottom: none;
         border-top-style: solid;
     }
+
+
+.badge-comments {
+    width: 60px;
+    height: 40px;
+    background: #BEC3C6;
+    position: relative;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    padding-top: 7px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+    .badge-comments:before {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 22.5px;
+        width: 0;
+        height: 0;
+        border-right: 7.5px solid transparent;
+        border-top: 7.5px solid #BEC3C6;
+        border-left: 7.5px solid transparent;
+    }
+
+.post-author{
+    display:table-cell;
+    width:100px;
+    padding:20px;
+    vertical-align:top;
+}
+.post-stats{
+    display:table-cell;
+    width:100px;
+    text-align:center;
+    vertical-align:top
+}
+.post-body{
+    display:table-cell;
+    vertical-align:top''
+}
 
 /* Custom pagination style*/
 .pagination li a {

@@ -1,15 +1,88 @@
-﻿
+﻿@model DevPortal.Web.Models.ForumViewModels.IndexPageViewModel
 
-<div class="container">
-    <h2 class="text-center">Do you have question?</h2>
-    <div class="input-group">
-        <input type="text" class="form-control" placeholder="What's your question? Be specific">
-        <div class="input-group-btn">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ask question <span class="caret"></span></button>
-            <ul class="dropdown-menu dropdown-menu-right">
-                <li>@Html.ActionLink("Ask question", nameof(ForumController.NewPost))</li>
-                <li><a href="#">Start discussion</a></li>
-            </ul>
+@{
+    ViewBag.Title = "Diskusné fórum";
+}
+@section top{
+<div class="jumbotron-forum shadow">
+    <div class="container">
+        <div class="pull-left">         
+            <h1>Diskusné Fórum</h1>
+            <p>Miesto pre vaše otázky, návrhy a postrehy.</p>
+            <div class="m-t">
+                <a class="btn btn-primary" 
+                   asp-controller="Forum" 
+                   asp-action="@nameof(ForumController.NewPost)">
+                    Nová Diskusia
+                </a>
+            </div>
+        </div>
+
+        <div class="pull-right">
+            <img src="~/media/forum-icon.png" class="jumbotron-icon" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <section>
+            @foreach (var forumItem in Model.Posts)
+            {
+                <div class="panel panel-default">
+                        <div class="post-author">
+                            <a href="#">
+                                <img src="@Url.Content(forumItem.Avatar)" alt="...">
+                            </a>
+                            <a href="#">
+                                @forumItem.UserName
+                            </a>
+                        </div>
+                        <div class="post-body">
+                            <h3>@forumItem.Title</h3>
+                            <p>@forumItem.Content</p>
+
+                            <div class="m-b">
+                                @foreach (var tag in forumItem.Tags)
+                                {
+                                    <span class="label label-default">@tag</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="post-stats text-muted b-l">
+                            <div class="badge-comments m-a" title="Počet odpovedí">
+                                @forumItem.Answers
+                            </div>
+                            <div class="b-t" style="margin-top:20px; padding:5px">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                                @forumItem.Views
+                            </div>
+                            <div class="b-t" style="padding:5px">
+                                <span class="glyphicon glyphicon-time"></span>
+                                @Html.DisplayAge(forumItem.LastPost)
+                            </div>
+                        </div>
+                </div>
+            }
+        </section>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <section>
+                    <h2>Najpoužívanejšie tagy</h2>
+                    @foreach (var tag in Model.MostUsedTags)
+                    {
+                        <div><a class="label label-default lg">@tag</a></div>
+                    }
+                </section>
+            </div>
         </div>
     </div>
 </div>

@@ -1,4 +1,5 @@
-﻿using DevPortal.Web.Models.BlogViewModels;
+﻿using DevPortal.Web.AppCode.Extensions;
+using DevPortal.Web.Models.BlogViewModels;
 using DevPortal.Web.Models.ForumViewModels;
 using DevPortal.Web.Models.NewsViewModels;
 using DevPortal.Web.Models.SharedViewModels;
@@ -42,6 +43,8 @@ namespace DevPortal.Web.Data
             "http://vyvojari.sk/Avatar.ashx?UserName=Liero"
         };
 
+        public static string[] Tags = { "C#", ".NET Core", "ASP.NET", "vyvojari.sk", "JavaScript", "NodeJS", "TypeScript", "Php", "CSS", "HTML5" };
+
         public static string[] BlogTitles =
         {
             "ExJS TypeScript emitter",
@@ -79,7 +82,11 @@ namespace DevPortal.Web.Data
                 UserName = from(UserNames, i),
                 Content = from(LoremIpsum, i),
                 Created = DateTime.Now.AddHours(-i * 1.9),
-                Avatar = from(UserPictures, i)
+                LastPost = DateTime.Now.AddHours(-i * 1.5).AddMinutes(58),
+                Views = 123,
+                Answers = i * i % 50,
+                Avatar = from(UserPictures, i),
+                Tags = Tags.Repeat().Skip(i * 2).Take((int)(i * 1.5 % 3) + 1).ToArray()
             }).ToArray();
 
             BlogPosts = Enumerable.Range(15, 10).Select(i => new BlogInfoViewModel
