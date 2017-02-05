@@ -1,64 +1,62 @@
 ﻿@using DevPortal.Web.Models.HomeViewModels
 @model HomePageViewModel
 
-<div class="container">
-    <div class="clearfix m-b-sm">
-        <a class="btn btn-warning pull-right" href="@Url.Action(nameof(ForumController.NewPost), "Forum")">Ask question</a>
-    </div>
+<div class="clearfix m-b-sm">
+    <a class="btn btn-warning pull-right" href="@Url.Action(nameof(ForumController.NewPost), "Forum")">Ask question</a>
+</div>
 
-    <div class="row">
-        <div class="col-md-8">
-            @if (!User.Identity.IsAuthenticated)
+<div class="row">
+    <div class="col-md-8">
+        @if (!User.Identity.IsAuthenticated)
             {
-                @await Component.InvokeAsync(typeof(LoginFormViewComponent));
+            @await Component.InvokeAsync(typeof(LoginFormViewComponent));
             }
             else
             {
                 Html.RenderPartial("_UserInfo");
             }
 
-            <div class="btn-group btn-group-justified m-b" role="group" aria-label="...">
-                <a asp-controller="News" asp-action="Create" class="btn btn-warning">Vytvor správičku</a>
-                <a class="btn btn-info"asp-action="Create" asp-controller="Blog">Napíš článok</a>
-                <a asp-controller="Forum" asp-action="NewPost" class="btn btn-success">Začni diskusiu</a>
-            </div>
-
-            <section>
-                @foreach (var newsItem in Model.LatestNews)
-                {
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <h3>@newsItem.Title</h3>
-                            <p>@newsItem.Content</p>
-                            <ul class="actions list-inline">
-                                <li><button class="btn btn-default">Upvote</button></li>
-                                <li>
-                                    <button class="btn btn-link">Comment</button>
-                                    @if (newsItem.Comments.Count > 0)
-                                    {
-                                        <span class="label label-default">@newsItem.Comments.Count</span>
-                                    }
-                                </li>
-                                <li><button class="btn btn-link">Share</button></li>
-                            </ul>
-                        </div>
-                    </div>
-                }
-            </section>
+        <div class="btn-group btn-group-justified m-b" role="group" aria-label="...">
+            <a asp-controller="News" asp-action="Create" class="btn btn-warning">Vytvor správičku</a>
+            <a class="btn btn-info" asp-action="Create" asp-controller="Blog">Napíš článok</a>
+            <a asp-controller="Forum" asp-action="NewPost" class="btn btn-success">Začni diskusiu</a>
         </div>
-        <div class="col-md-4 p-l-0">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    @await Component.InvokeAsync(typeof(ForumOverviewViewComponent))
+
+        <section>
+            @foreach (var newsItem in Model.LatestNews)
+            {
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <h3>@newsItem.Title</h3>
+                        <p>@newsItem.Content</p>
+                        <ul class="actions list-inline">
+                            <li><button class="btn btn-default">Upvote</button></li>
+                            <li>
+                                <button class="btn btn-link">Comment</button>
+                                @if (newsItem.Comments.Count > 0)
+                                {
+                                    <span class="label label-default">@newsItem.Comments.Count</span>
+                                }
+                            </li>
+                            <li><button class="btn btn-link">Share</button></li>
+                        </ul>
+                    </div>
                 </div>
+            }
+        </section>
+    </div>
+    <div class="col-md-4 p-l-0">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @await Component.InvokeAsync(typeof(ForumOverviewViewComponent))
             </div>
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    @await Component.InvokeAsync(typeof(BlogsOverviewViewComponent))
-                </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @await Component.InvokeAsync(typeof(BlogsOverviewViewComponent))
             </div>
         </div>
     </div>
-
-    <a href="~/fileupload.html">Test file upload</a>
 </div>
+
+<a href="~/fileupload.html">Test file upload</a>

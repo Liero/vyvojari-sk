@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DevPortal.Web.Models.ForumViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,8 @@ namespace DevPortal.Web.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            return View();
+            var viewModel = new IndexPageViewModel();
+            return View(viewModel);
         }
 
         [HttpGet]
