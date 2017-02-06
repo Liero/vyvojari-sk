@@ -14,6 +14,14 @@
     margin-bottom: 20px;
 }
 
+.jumbotron-news {
+    background-image: url(../media/background-header-news2.jpg);
+    background-size:cover;
+    color: white;
+    padding: 10px 0 10px 0;
+    margin-bottom: 20px;
+}
+
 .jumbotron-icon {
     height: 64px;
     margin-top: 15px;
