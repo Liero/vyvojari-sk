@@ -5,6 +5,22 @@
     Guid guid = Guid.NewGuid();
 }
 
+@section top{
+    <div class="jumbotron-news shadow">
+        <div class="container">
+            <div class="pull-left">
+                <h1>Správičky</h1>
+                <p>Novinky, udalosti, oznámenia...<br/>Majte prehľad o tom, čo je nové vo svete vývojárov!</p>
+
+            </div>
+
+            <div class="pull-right">
+                <img src="~/media/news-icon.png" class="jumbotron-icon" />
+            </div>
+        </div>
+    </div>
+}
+
 <div class="clearfix m-b-sm">
     <a class="btn btn-warning pull-right" asp-action="Create">Vytvor správičku</a>
 </div>
