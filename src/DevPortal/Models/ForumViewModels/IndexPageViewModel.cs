@@ -8,7 +8,7 @@ namespace DevPortal.Web.Models.ForumViewModels
 {
     public class IndexPageViewModel
     {
-        public ForumPostViewModel[] Posts { get; }
+        public ForumQuestionPostViewModel[] Posts { get; }
 
         public string[] MostUsedTags { get; }
 

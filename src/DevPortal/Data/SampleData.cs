@@ -76,8 +76,9 @@ namespace DevPortal.Web.Data
                    GenerateComments().Skip(i).Take(rnd.Next(10)).ToList()
             }).ToArray();
 
-            ForumPosts = Enumerable.Range(3, 20).Select(i => new ForumPostViewModel
+            ForumPosts = Enumerable.Range(3, 20).Select(i => new ForumQuestionPostViewModel
             {
+                Id = i.ToString(),
                 Title = from(Titles, i),
                 UserName = from(UserNames, i),
                 Content = from(LoremIpsum, i),
@@ -103,7 +104,7 @@ namespace DevPortal.Web.Data
 
         public NewsItemViewModel[] News { get; private set; }
 
-        public ForumPostViewModel[] ForumPosts { get; private set; }
+        public ForumQuestionPostViewModel[] ForumPosts { get; private set; }
 
         public BlogInfoViewModel[] BlogPosts { get; private set; }
 
