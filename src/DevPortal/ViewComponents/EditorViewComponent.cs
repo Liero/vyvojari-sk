@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +9,9 @@ namespace DevPortal.Web.ViewComponents
 {
     public class EditorViewComponent : ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync()
+        public IViewComponentResult Invoke(ModelExpression aspFor)
         {
-            await Task.FromResult(0);
-            return View();
+            return View(aspFor);
         }
     }
 }
