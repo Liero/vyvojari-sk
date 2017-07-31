@@ -21,22 +21,42 @@ namespace DevPortal.Web.Controllers
             
         public IActionResult View(Guid id)
         {
-            return View("Detail");
+            NewsItemViewModel viewModel = SampleData.Instance.News.First();
+            return View(viewModel);
         }
 
         public IActionResult Create()
         {
-            return View();
+            return View(new NewsItemViewModel());
+        }
+
+        [HttpPost]
+        public IActionResult Create(NewsItemViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            Guid id = /* Save*/ Guid.NewGuid();
+            return RedirectToAction(nameof(View), new { id = id });
         }
 
         public IActionResult Edit(Guid id)
+        {
+            NewsItemViewModel viewModel = SampleData.Instance.News.First();
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Guid id, NewsItemViewModel viewModel)
         {
             return View();
         }
 
         public IActionResult Publish(Guid id)
         {
-            return View();
+            return RedirectToAction(nameof(View), new { id = id });
         }
     }
 }

@@ -8,6 +8,7 @@
             <div class="pull-left">
                 <h1>Správičky</h1>
                 <p>Novinky, udalosti, oznámenia...<br />Zdielajte s vývojármi, čo je nové!</p>
+
             </div>
 
             <div class="pull-right">
@@ -19,16 +20,16 @@
 
 <div class="row">
     <div class="col-md-8">
-        <form asp-action="@nameof(NewsController.Create)" method="post">
+        <form action="@nameof(NewsController.Edit)" method="post">
             <div class="panel panel-primary">
-                <div class="panel-heading">Vytvoriť správičku</div>
+                <div class="panel-heading">Upraviť správičku</div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <label for="title">Názov správičky</label>
+                        <label asp-for="@Model.Title">Názov</label>
                         <input asp-for="@Model.Title" class="form-control" />
                     </div>
                     <div class="form-group">
-                        <label for="message">Správička</label>
+                        <label asp-for="@Model.Content">Správička</label>
                         <content-editor asp-for="@Model.Content" />
                     </div>
                     <div class="form-group">
@@ -38,25 +39,19 @@
                 </div>
                 <div class="panel-footer">
                     <div>
-                        <button class="btn btn-default" type="button">Zrušiť</button>
-                        <div class="pull-right">
-                            <button asp-action="Create" class="btn btn-success" type="submit">Uložiť</button>
+                        <a asp-action="index" class="btn btn-default">Zrušiť</a>
+                        <div class="btn-group pull-right">
+                            <button asp-action="Edit" class="btn btn-success" type="submit">Uložiť</button>
                         </div>
                     </div>
                 </div>
-            </div> 
-        </form>  
+            </div>
+        </form>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4  p-l-0">
         <div class="panel panel-default">
             <div class="panel-body">
-                <section>
-                    <h2>Najpoužívanejšie tagy</h2>
-                    @foreach (var tag in DevPortal.Web.Data.SampleData.Tags)
-                    {
-                        <div><a class="label label-default lg">@tag</a></div>
-                    }
-                </section>
+                @await Component.InvokeAsync(typeof(ForumOverviewViewComponent))
             </div>
         </div>
     </div>
