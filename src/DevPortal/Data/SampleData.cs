@@ -88,7 +88,7 @@ namespace DevPortal.Web.Data
                 Answers = i * i % 50,
                 Avatar = from(UserPictures, i),
                 Tags = Tags.Repeat().Skip(i * 2).Take((int)(i * 1.5 % 3) + 1).ToArray()
-            }).ToArray();
+            }).ToList();
 
             BlogPosts = Enumerable.Range(15, 10).Select(i => new BlogInfoViewModel
             {
@@ -104,7 +104,7 @@ namespace DevPortal.Web.Data
 
         public NewsItemViewModel[] News { get; private set; }
 
-        public ForumQuestionPostViewModel[] ForumPosts { get; private set; }
+        public List<ForumQuestionPostViewModel> ForumPosts { get; private set; }
 
         public BlogInfoViewModel[] BlogPosts { get; private set; }
 

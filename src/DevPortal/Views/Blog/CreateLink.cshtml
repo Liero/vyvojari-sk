@@ -19,11 +19,11 @@
                     </div>
                     <div class="form-group">
                         <label asp-for="Content">Obsah</label>
-                        @await Component.InvokeAsync(typeof(EditorViewComponent))
+                        <vc:editor asp-for="@Model.Content" />
                     </div>
                     <div class="form-group">
                         <label asp-for="Tags">Tagy</label>
-                        @await Component.InvokeAsync(typeof(TagsSelectorViewComponent))
+                        <vc:tags-selector asp-for="@Model.Tags" />
                     </div>
                 </div>
                 <div class="panel-footer">

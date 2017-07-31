@@ -1,4 +1,5 @@
-﻿@{
-}
+﻿@model Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpression
 
-<textarea class="form-control" rows="20" data-provide="markdown"></textarea>
+
+<textarea name="@Model.Name" class="form-control" rows="20" data-provide="markdown"
+          ></textarea>

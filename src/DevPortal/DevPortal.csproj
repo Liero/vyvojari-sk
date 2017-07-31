@@ -11,6 +11,7 @@
     <UserSecretsId>aspnet-DevPortal.Web-20161230052130</UserSecretsId>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
+    <RootNamespace>DevPortal.Web</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,7 +38,7 @@
   </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
-    <Exec Command="bower install" />
+    <!--<Exec Command="bower install" />-->
   </Target>
 
 </Project>

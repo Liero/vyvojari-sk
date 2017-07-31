@@ -54,7 +54,7 @@ namespace DevPortal.Web
             app.UseDeveloperExceptionPage();
             if (env.IsDevelopment())
             {
-                builder.AddUserSecrets();
+                builder.AddUserSecrets<Startup>();
                 app.UseBrowserLink();
             }
 
