@@ -69,12 +69,13 @@ namespace DevPortal.Web.Data
 
             News = Enumerable.Range(0, 20).Select(i => new NewsItemViewModel
             {
+                Id = i.ToString(),
                 Title = from(Titles, i),
                 UserName = from(UserNames, i),
                 Content = from(LoremIpsum, i),
                 Comments = rnd.Next(3) > 0 ? new List<CommentViewModel>() :
                    GenerateComments().Skip(i).Take(rnd.Next(10)).ToList()
-            }).ToArray();
+            }).ToList();
 
             ForumPosts = Enumerable.Range(3, 20).Select(i => new ForumQuestionPostViewModel
             {
@@ -102,7 +103,7 @@ namespace DevPortal.Web.Data
             }).ToArray();
         }
 
-        public NewsItemViewModel[] News { get; private set; }
+        public List<NewsItemViewModel> News { get; private set; }
 
         public List<ForumQuestionPostViewModel> ForumPosts { get; private set; }
 

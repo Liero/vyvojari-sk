@@ -30,7 +30,7 @@
 {
     <div class="panel panel-default">
         <div class="panel-body">
-            <h3>@newsItem.Title</h3>
+            <h3><a asp-action="@nameof(NewsController.Detail)" asp-route-id="@newsItem.Id">@newsItem.Title</a></h3>
             <p>@newsItem.Content</p>
             <ul class="actions list-inline">
                 <li><button class="btn btn-default">Upvote</button></li>

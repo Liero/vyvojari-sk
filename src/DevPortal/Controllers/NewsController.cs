@@ -19,9 +19,9 @@ namespace DevPortal.Web.Controllers
             return View(new IndexPageViewModel { Items = pageItems.ToList() });
         }
             
-        public IActionResult View(Guid id)
+        public IActionResult Detail(string id)
         {
-            NewsItemViewModel viewModel = SampleData.Instance.News.First();
+            NewsItemViewModel viewModel = SampleData.Instance.News.First(i => i.Id == id);
             return View(viewModel);
         }
 
@@ -37,26 +37,49 @@ namespace DevPortal.Web.Controllers
             {
                 return View(viewModel);
             }
-
-            Guid id = /* Save*/ Guid.NewGuid();
-            return RedirectToAction(nameof(View), new { id = id });
+            viewModel.Id = Guid.NewGuid().ToString();
+            SampleData.Instance.News.Add(viewModel);
+            return RedirectToAction(nameof(Detail), new { id = viewModel.Id });
         }
 
-        public IActionResult Edit(Guid id)
+        public IActionResult Edit(string id)
         {
-            NewsItemViewModel viewModel = SampleData.Instance.News.First();
+            NewsItemViewModel viewModel = SampleData.Instance.News.First(i => i.Id == id);
             return View(viewModel);
         }
 
         [HttpPost]
-        public IActionResult Edit(Guid id, NewsItemViewModel viewModel)
+        public IActionResult Edit(string id, NewsItemViewModel viewModel)
         {
-            return View();
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+            NewsItemViewModel item = SampleData.Instance.News.First(i => i.Id == id);
+            item.Content = viewModel.Content;
+            item.Title = viewModel.Title;
+            item.Categories = viewModel.Categories;
+            return RedirectToAction(nameof(Detail), new { id = id });
         }
 
-        public IActionResult Publish(Guid id)
+        [HttpPost]
+        public IActionResult AddComment(string id, string comment)
         {
-            return RedirectToAction(nameof(View), new { id = id });
+            NewsItemViewModel item = SampleData.Instance.News.First(i => i.Id == id);
+            item.Comments.Add(new Models.SharedViewModels.CommentViewModel
+            {
+                Message = comment,
+                UserName = User.Identity.Name
+            });
+            return RedirectToAction(nameof(Detail), new { id = id });
+        }
+
+        [HttpPost]
+        public IActionResult Publish(string id)
+        {
+            NewsItemViewModel item = SampleData.Instance.News.First(i => i.Id == id);
+            item.IsPublished = true;
+            return RedirectToAction(nameof(Detail), new { id = id });
         }
     }
 }

@@ -8,6 +8,7 @@ namespace DevPortal.Web.Models.NewsViewModels
 {
     public class NewsItemViewModel
     {
+        public string Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
 
@@ -15,6 +16,8 @@ namespace DevPortal.Web.Models.NewsViewModels
 
         public string UserName { get; set; }
 
-        public List<CommentViewModel> Comments { get; set; }
+        public bool IsPublished { get; set; }
+
+        public List<CommentViewModel> Comments { get; set; } = new List<CommentViewModel>();
     }
 }
