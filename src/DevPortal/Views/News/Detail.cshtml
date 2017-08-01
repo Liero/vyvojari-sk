@@ -23,13 +23,11 @@
         <div class="panel panel-primary">
             <div class="panel-heading">@Model.Title</div>
             <div class="panel-body">
-                <pre>
-                    @Model.Content
-                </pre>
-                <div class="form-group">
-                    <label for="tags">Tagy</label>
-                    <tags-editor asp-for="@Model.Categories" />
-                </div>
+                <markdown>@Model.Content</markdown>
+                @foreach (var tag in Model.Categories)
+                {
+                    <span class="label label-default">@tag</span>
+                }
             </div>
             <div class="panel-footer clearfix">
                 <form asp-action="@nameof(NewsController.Publish)" asp-route-id="@Model.Id" method="post">

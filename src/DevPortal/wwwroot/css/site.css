@@ -38,6 +38,9 @@
 .comment-title::after {
 
 }
+.panel-primary.comment-title::before {
+    border-right: 8px solid #337ab7;
+}
 
 
 .jumbotron-forum {

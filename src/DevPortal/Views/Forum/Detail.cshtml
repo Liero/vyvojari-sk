@@ -18,19 +18,20 @@
                     <span class="label label-default">@tag</span>
                 }
 
-                @foreach (var answer in posts)
+                @for (int i = 0; i < posts.Count; i++)
                 {
+                    var answer = posts[i];
                     <div class="forum-post">
                         <a>
                             <img src="@answer.Avatar"
                                  class="avatar" />
                         </a>
-                        <div class="panel panel-default comment-title">
+                        <div class="panel @(i == 0 ? "panel-primary" : "panel-default") comment-title">
                             <div class="panel-heading">
                                 <strong>@answer.UserName</strong> napísal pred 8 hodinami
                             </div>
                             <div class="panel-body">
-                                @answer.Content
+                                <markdown>@answer.Content</markdown>
                             </div>
                         </div>
                     </div>
