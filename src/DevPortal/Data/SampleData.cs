@@ -67,9 +67,9 @@ namespace DevPortal.Web.Data
         {
             var rnd = new Random();
 
-            News = Enumerable.Range(0, 20).Select(i => new NewsItemViewModel
+            News = Enumerable.Range(1, 20).Select(i => new NewsItemViewModel
             {
-                Id = i.ToString(),
+                Id = new Guid(i, 0,0,new byte[8]).ToString(),
                 Title = from(Titles, i),
                 UserName = from(UserNames, i),
                 Content = from(LoremIpsum, i),

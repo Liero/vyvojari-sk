@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using DevPortal.Web.Data;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using DevPortal.Web.Services;
+using DevPortal.Web.AppCode.Startup;
 
 namespace DevPortal.Web
 {
@@ -40,6 +41,8 @@ namespace DevPortal.Web
 
             services.AddMvc();
             services.AddTransient<IEmailSender, EmailSender>();
+
+            services.AddEventSourcing();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

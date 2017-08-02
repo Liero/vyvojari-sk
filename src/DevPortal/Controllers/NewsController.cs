@@ -5,11 +5,20 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DevPortal.Web.Models.NewsViewModels;
 using DevPortal.Web.Data;
+using DevPortal.CommandStack.Events;
+using DevPortal.CommandStack.Infrastructure;
 
 namespace DevPortal.Web.Controllers
 {
     public class NewsController : Controller
     {
+        readonly IEventStore _eventStore;
+
+        public NewsController(IEventStore eventStore)
+        {
+            _eventStore = eventStore;
+        }
+
         public IActionResult Index(int skip = 1, int take = 20)
         {
             var pageItems = SampleData.Instance.News
@@ -31,15 +40,31 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(NewsItemViewModel viewModel)
+        public IActionResult Create(CreateNewsItemViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
                 return View(viewModel);
             }
-            viewModel.Id = Guid.NewGuid().ToString();
-            SampleData.Instance.News.Add(viewModel);
-            return RedirectToAction(nameof(Detail), new { id = viewModel.Id });
+            var evt = new NewsItemCreated
+            {
+                NewsItemId = Guid.NewGuid(),
+                AuthorUserName = User.Identity.Name,
+                Title = viewModel.Title,
+                Content = viewModel.Content,
+                Tags = AppCode.TagsConverter.StringToArray(viewModel.Categories)
+            };
+            _eventStore.Save(evt);
+
+            SampleData.Instance.News.Add(new NewsItemViewModel
+            {
+                Id = evt.NewsItemId.ToString(),
+                UserName = evt.AuthorUserName,
+                Categories = viewModel.Categories,
+                Title = evt.Title,
+                Content = evt.Content,
+            });
+            return RedirectToAction(nameof(Detail), new { id = evt.NewsItemId });
         }
 
         public IActionResult Edit(string id)
@@ -55,6 +80,17 @@ namespace DevPortal.Web.Controllers
             {
                 return View(viewModel);
             }
+
+            var evt = new NewsItemEdited
+            {
+                NewsItemId = Guid.Parse(id),
+                EditorUserName = User.Identity.Name,
+                Title = viewModel.Title,
+                Content = viewModel.Content,
+                Tags = AppCode.TagsConverter.StringToArray(viewModel.Categories),
+            };
+            _eventStore.Save(evt);
+
             NewsItemViewModel item = SampleData.Instance.News.First(i => i.Id == id);
             item.Content = viewModel.Content;
             item.Title = viewModel.Title;
@@ -65,6 +101,20 @@ namespace DevPortal.Web.Controllers
         [HttpPost]
         public IActionResult AddComment(string id, string comment)
         {
+            if (string.IsNullOrWhiteSpace(comment))
+            {
+                ModelState.AddModelError(nameof(comment), "Comment cannot be empty");
+                return View(nameof(Detail), new { id = id });
+            }
+            var evt = new NewsItemCommented
+            {
+                NewsItemId = Guid.Parse(id),
+                CommentId = Guid.NewGuid(),
+                UserName = User.Identity.Name,
+                Comment = comment
+            };
+            _eventStore.Save(evt);
+
             NewsItemViewModel item = SampleData.Instance.News.First(i => i.Id == id);
             item.Comments.Add(new Models.SharedViewModels.CommentViewModel
             {
@@ -77,6 +127,12 @@ namespace DevPortal.Web.Controllers
         [HttpPost]
         public IActionResult Publish(string id)
         {
+            var evt = new NewsItemPublished
+            {
+                NewsItemId = Guid.Parse(id),
+            };
+            _eventStore.Save(evt);
+
             NewsItemViewModel item = SampleData.Instance.News.First(i => i.Id == id);
             item.IsPublished = true;
             return RedirectToAction(nameof(Detail), new { id = id });
