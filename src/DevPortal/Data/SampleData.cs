@@ -1,4 +1,5 @@
-﻿using DevPortal.Web.AppCode.Extensions;
+﻿using DevPortal.QueryStack.Model;
+using DevPortal.Web.AppCode.Extensions;
 using DevPortal.Web.Models.BlogViewModels;
 using DevPortal.Web.Models.ForumViewModels;
 using DevPortal.Web.Models.NewsViewModels;
@@ -67,13 +68,14 @@ namespace DevPortal.Web.Data
         {
             var rnd = new Random();
 
-            News = Enumerable.Range(1, 20).Select(i => new NewsItemViewModel
+            News = Enumerable.Range(1, 20).Select(i => new NewsItem
             {
-                Id = new Guid(i, 0,0,new byte[8]).ToString(),
+                Id = new Guid(i, 0,0,new byte[8]),
                 Title = from(Titles, i),
-                UserName = from(UserNames, i),
+                Created = DateTime.Now,
+                CreatedBy = from(UserNames, i),
                 Content = from(LoremIpsum, i),
-                Comments = rnd.Next(3) > 0 ? new List<CommentViewModel>() :
+                Comments = rnd.Next(3) > 0 ? new List<NewsItemComment>() :
                    GenerateComments().Skip(i).Take(rnd.Next(10)).ToList()
             }).ToList();
 
@@ -103,18 +105,19 @@ namespace DevPortal.Web.Data
             }).ToArray();
         }
 
-        public List<NewsItemViewModel> News { get; private set; }
+        public List<NewsItem> News { get; private set; }
 
         public List<ForumQuestionPostViewModel> ForumPosts { get; private set; }
 
         public BlogInfoViewModel[] BlogPosts { get; private set; }
 
-        public static IEnumerable<CommentViewModel> GenerateComments()
+        public static IEnumerable<NewsItemComment> GenerateComments()
         {
-            return Enumerable.Range(0, int.MaxValue).Select(i => new CommentViewModel
+            return Enumerable.Range(0, int.MaxValue).Select(i => new NewsItemComment
             {
-                UserName = from(UserNames, i),
-                Message = from(LoremIpsum, i),
+                CreatedBy = from(UserNames, i),
+                Created = DateTime.Now,
+                Content = from(LoremIpsum, i),
             });
         }
 

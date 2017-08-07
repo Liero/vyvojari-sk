@@ -1,4 +1,5 @@
 ﻿using DevPortal.CommandStack.Infrastructure;
+using DevPortal.QueryStack.Denormalizers;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace DevPortal.Web.AppCode.Startup
         public static void AddEventSourcing(this IServiceCollection services)
         {
             InMemoryBus eventBus = new InMemoryBus();
+            eventBus.RegisterHandler<NewsItemDenormalizer>();
             services.AddSingleton<IEventDispatcher>(eventBus);
             //todo: register handlers;
 

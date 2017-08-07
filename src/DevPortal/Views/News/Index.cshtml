@@ -1,8 +1,6 @@
 ﻿@model DevPortal.Web.Models.NewsViewModels.IndexPageViewModel
 @{
     ViewBag.Title = "Správičky";
-    int maxComments = 3;
-    Guid guid = Guid.NewGuid();
 }
 
 @section top{
@@ -37,9 +35,9 @@
                 <li>
                     <button class="btn btn-link" data-action="show-comments">
                         Comment
-                        @if (newsItem.Comments.Count > 0)
+                        @if (newsItem.CommentsCount > 0)
                         {
-                            <span class="label label-default">@newsItem.Comments.Count</span>
+                            <span class="label label-default">@newsItem.CommentsCount</span>
                         }
                     </button>
          
@@ -49,12 +47,12 @@
         </div>
 
         <div class="panel-footer @(newsItem.Comments.Count == 0 ? "collapse" : "")">
-            @if (newsItem.Comments.Count > maxComments)
+            @if (newsItem.CommentsCount > Model.MaxCommentsPerItem)
             {
                 <a href="javascript:void()">view previous comments</a>
             }
             <ul class="media-list">
-                @foreach (var comment in newsItem.Comments.TakeLast(maxComments))
+                @foreach (var comment in newsItem.Comments.Take(Model.MaxCommentsPerItem))
                 {
                     <li class="media">
                         <div class="media-left">
@@ -63,7 +61,7 @@
                             </a>
                         </div>
                         <div class="media-body">
-                            <div class="text-justify"><strong><a href="#">@comment.UserName</a></strong> @comment.Message</div>
+                            <div class="text-justify"><strong><a href="#">@comment.CreatedBy</a></strong> @comment.Content</div>
                             <ul class="actions list-inline">
                                 <li><a href="#">like</a></li>
                                 <li><a href="#">reply</a></li>

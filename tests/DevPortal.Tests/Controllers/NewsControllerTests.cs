@@ -53,8 +53,9 @@ namespace DevPortal.Web.Controllers
         public void NewsController_Edit_Produces_NewsItemEdited_Event()
         {
             //setup
-            var id = Guid.Parse(Data.SampleData.Instance.News[0].Id);
-            var vm = new NewsItemViewModel
+            var id = Data.SampleData.Instance.News[0].Id;
+
+            var vm = new EditNewsItemViewModel
             {
                 Title = "TitleEdited",
                 Content = "ContentEdited",
@@ -68,7 +69,7 @@ namespace DevPortal.Web.Controllers
             NewsController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.Edit(id.ToString(), vm);
+            IActionResult actionResult = controller.Edit(id, vm);
 
             //assert
             void NewsItemEdited(DomainEvent savedEvent)
@@ -88,7 +89,7 @@ namespace DevPortal.Web.Controllers
         public void NewsController_Publish_Produces_NewsItemPublished_Event()
         {
             //setup
-            var id = Guid.Parse(Data.SampleData.Instance.News[0].Id);
+            var id = Data.SampleData.Instance.News[0].Id;
 
             EventStoreMock
                 .Setup(es => es.Save(It.IsAny<NewsItemPublished>()))
@@ -97,7 +98,7 @@ namespace DevPortal.Web.Controllers
             NewsController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.Publish(id.ToString());
+            IActionResult actionResult = controller.Publish(id);
 
             //assert
             void NewsItemPublished(DomainEvent savedEvent)
@@ -113,7 +114,7 @@ namespace DevPortal.Web.Controllers
         public void NewsController_AddComment_Produces_NewsItemCommented_Event()
         {
             //setup
-            var id = Guid.Parse(Data.SampleData.Instance.News[0].Id);
+            var id = Data.SampleData.Instance.News[0].Id;
             string comment = "expected comment";
 
             EventStoreMock
@@ -123,14 +124,14 @@ namespace DevPortal.Web.Controllers
             NewsController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.AddComment(id.ToString(), comment);
+            IActionResult actionResult = controller.AddComment(id, comment);
 
             //assert
             void NewsItemCommented(DomainEvent savedEvent)
             {
                 NewsItemCommented actualEvent = (NewsItemCommented)savedEvent;
                 Assert.AreEqual(id, actualEvent.NewsItemId, nameof(actualEvent.NewsItemId));
-                Assert.AreEqual(comment, actualEvent.Comment, nameof(actualEvent.Comment));
+                Assert.AreEqual(comment, actualEvent.Content, nameof(actualEvent.Content));
                 Assert.AreNotEqual(default(Guid), actualEvent.CommentId, nameof(actualEvent.CommentId));
             }
 

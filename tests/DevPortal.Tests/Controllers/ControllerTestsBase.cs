@@ -1,4 +1,5 @@
 ﻿using DevPortal.CommandStack.Infrastructure;
+using DevPortal.QueryStack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +25,7 @@ namespace DevPortal.Web.Controllers
             Services = new ServiceCollection();
             Services.AddTransient<TController, TController>();
             Services.AddSingleton<IEventStore>(EventStoreMock.Object);
+            Services.AddTransient<DevPortalDbContext>();
         }
 
         public virtual TController CreateController()
