@@ -8,6 +8,8 @@ namespace DevPortal.Web.Models.ForumViewModels
     {
         public ForumQuestionPostViewModel Question { get; set; }
 
-        public List<ForumPostViewModel> Answers { get; set; } 
+        public List<ForumPostViewModel> Answers { get; set; }
+
+        public NewAnswerViewModel NewAnswer {get; set;}
     }
 }

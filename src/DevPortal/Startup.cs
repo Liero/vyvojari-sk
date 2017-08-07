@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore;
 using DevPortal.Web.Data;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using DevPortal.Web.Services;
+using DevPortal.Web.AppCode.Startup;
+using DevPortal.QueryStack;
 
 namespace DevPortal.Web
 {
@@ -32,6 +34,10 @@ namespace DevPortal.Web
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase());
+
+            services.AddDbContext<DevPortalDbContext>(options =>
+                options.UseInMemoryDatabase());
+
             //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>(ConfigureIdentity)
@@ -40,6 +46,8 @@ namespace DevPortal.Web
 
             services.AddMvc();
             services.AddTransient<IEmailSender, EmailSender>();
+
+            services.AddEventSourcing();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -54,7 +62,7 @@ namespace DevPortal.Web
             app.UseDeveloperExceptionPage();
             if (env.IsDevelopment())
             {
-                builder.AddUserSecrets();
+                builder.AddUserSecrets<Startup>();
                 app.UseBrowserLink();
             }
 

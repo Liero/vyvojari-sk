@@ -5,38 +5,154 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DevPortal.Web.Models.NewsViewModels;
 using DevPortal.Web.Data;
+using DevPortal.CommandStack.Events;
+using DevPortal.CommandStack.Infrastructure;
+using DevPortal.QueryStack;
+using Microsoft.EntityFrameworkCore;
+using DevPortal.Web.Models.SharedViewModels;
+using DevPortal.QueryStack.Model;
 
 namespace DevPortal.Web.Controllers
 {
     public class NewsController : Controller
     {
-        public IActionResult Index(int skip = 1, int take = 20)
-        {
-            var pageItems = SampleData.Instance.News
-                .Skip(skip)
-                .Take(take);
+        readonly IEventStore _eventStore;
+        readonly DevPortalDbContext _devPortalDb;
 
-            return View(new IndexPageViewModel { Items = pageItems.ToList() });
+        public NewsController(IEventStore eventStore, DevPortalDbContext devPortalDbContext)
+        {
+            _eventStore = eventStore;
+            _devPortalDb = devPortalDbContext;
+        }
+
+        public IActionResult Index(int pageNumber = 1, int maxCommentsPerItem = 3)
+        {
+            int pageIndex = pageNumber - 1;
+            int pageSize = 20;
+
+            IndexPageViewModel viewModel = new IndexPageViewModel
+            {
+                PageNumber = pageNumber,
+                MaxCommentsPerItem = maxCommentsPerItem,
+            };
+
+            viewModel.Items = _devPortalDb.NewsItems
+                .Include(i => i.Comments)
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            viewModel.PageCount = _devPortalDb.NewsItems.Count();
+
+            return View(viewModel);
         }
             
-        public IActionResult View(Guid id)
+        public IActionResult Detail(Guid id)
         {
-            return View("Detail");
+            NewsItem newsItem = _devPortalDb.NewsItems
+                .Include(i => i.Comments)
+                .FirstOrDefault(i => i.Id == id);
+
+            if (newsItem == null)
+            {
+                return NotFound();
+            }
+            DetailPageViewModel viewModel = new DetailPageViewModel()
+            {
+                NewsItem = newsItem
+            };
+            return View(viewModel);
         }
 
         public IActionResult Create()
         {
-            return View();
+            return View(new CreateNewsItemViewModel());
+        }
+
+        [HttpPost]
+        public IActionResult Create(CreateNewsItemViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+            var evt = new NewsItemCreated
+            {
+                NewsItemId = Guid.NewGuid(),
+                AuthorUserName = User.Identity.Name,
+                Title = viewModel.Title,
+                Content = viewModel.Content,
+                Tags = AppCode.TagsConverter.StringToArray(viewModel.Categories)
+            };
+            _eventStore.Save(evt);
+
+            return RedirectToAction(nameof(Detail), new { id = evt.NewsItemId });
         }
 
         public IActionResult Edit(Guid id)
         {
-            return View();
+            NewsItem newsItem = _devPortalDb.NewsItems.Find(id);
+            var viewModel = new EditNewsItemViewModel
+            {
+                Id = newsItem.Id,
+                Categories = newsItem.Tags,
+                Content = newsItem.Content,
+                Title = newsItem.Title,
+            };
+            return View(viewModel);
         }
 
+        [HttpPost]
+        public IActionResult Edit(Guid id, EditNewsItemViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            var evt = new NewsItemEdited
+            {
+                NewsItemId = id,
+                EditorUserName = User.Identity.Name,
+                Title = viewModel.Title,
+                Content = viewModel.Content,
+                Tags = AppCode.TagsConverter.StringToArray(viewModel.Categories),
+            };
+            _eventStore.Save(evt);
+
+            return RedirectToAction(nameof(Detail), new { id = id });
+        }
+
+        /// <param name="id">NewsItemId</param>
+        /// <param name="comment"></param>
+        [HttpPost]
+        public IActionResult AddComment(Guid id, string comment)
+        {
+            if (string.IsNullOrWhiteSpace(comment))
+            {
+                ModelState.AddModelError(nameof(comment), "Comment cannot be empty");
+                return View(nameof(Detail), new { id = id });
+            }
+            var evt = new NewsItemCommented
+            {
+                NewsItemId = id,
+                CommentId = Guid.NewGuid(),
+                UserName = User.Identity.Name,
+                Content = comment
+            };
+            _eventStore.Save(evt);
+            return RedirectToAction(nameof(Detail), new { id = id });
+        }
+
+        [HttpPost]
         public IActionResult Publish(Guid id)
         {
-            return View();
+            var evt = new NewsItemPublished
+            {
+                NewsItemId = id,
+            };
+            _eventStore.Save(evt);
+            return RedirectToAction(nameof(Detail), new { id = id });
         }
     }
 }

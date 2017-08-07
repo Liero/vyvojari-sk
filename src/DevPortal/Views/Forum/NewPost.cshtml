@@ -1,5 +1,6 @@
-﻿@{
-    ViewBag.Title = "Diskusné fórum";
+﻿@model DevPortal.Web.Models.ForumViewModels.NewPostViewModel
+@{
+    ViewBag.Title = "Nový príspevok";
 }
 @section top{
     <div class="jumbotron-forum shadow">
@@ -19,7 +20,7 @@
 
 <div class="row">
     <div class="col-md-8">
-        <form asp-action="@nameof(ForumController.NewPost)" asp-controller="ForumController" method="post">
+        <form asp-action="@nameof(ForumController.NewPost)" asp-controller="Forum" method="post">
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Nový príspevok
@@ -27,16 +28,18 @@
                 <div class="panel-body">
                     <div class="form-group">
                         <label>Názov</label>
-                        <input type="text" class="form-control" aria-label="What's your programming question? Be specific'">
+                        <input type="text" class="form-control" aria-label="What's your programming question? Be specific'"
+                               asp-for="@Model.Title">
                     </div>
                     <div class="form-group">
-                        @await Component.InvokeAsync(typeof(EditorViewComponent))
+                        <content-editor asp-for="@Model.Content" />
                     </div>
 
                     <div class="form-group">
                         <label for="tags">Tagy</label>
-                        @await Component.InvokeAsync(typeof(TagsSelectorViewComponent))
+                        <tags-editor asp-for="@Model.Tags" />
                     </div>
+                    <div asp-validation-summary="All"></div>
                 </div>
                 <div class="panel-footer">
                     <button class="btn btn-success">Odoslať</button>

@@ -33,9 +33,9 @@
                             <li><button class="btn btn-default">Upvote</button></li>
                             <li>
                                 <button class="btn btn-link">Comment</button>
-                                @if (newsItem.Comments.Count > 0)
+                                @if (newsItem.CommentsCount > 0)
                                 {
-                                    <span class="label label-default">@newsItem.Comments.Count</span>
+                                    <span class="label label-default">@newsItem.CommentsCount</span>
                                 }
                             </li>
                             <li><button class="btn btn-link">Share</button></li>

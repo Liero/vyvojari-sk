@@ -1,4 +1,5 @@
-﻿@{
+﻿@model DevPortal.Web.Models.NewsViewModels.CreateNewsItemViewModel
+@{
     ViewBag.Title = "Pridať správičku";
 }
 @section top{
@@ -7,7 +8,6 @@
             <div class="pull-left">
                 <h1>Správičky</h1>
                 <p>Novinky, udalosti, oznámenia...<br />Zdielajte s vývojármi, čo je nové!</p>
-
             </div>
 
             <div class="pull-right">
@@ -19,42 +19,44 @@
 
 <div class="row">
     <div class="col-md-8">
-        <form action="Create" method="post">
+        <form asp-action="@nameof(NewsController.Create)" method="post">
             <div class="panel panel-primary">
                 <div class="panel-heading">Vytvoriť správičku</div>
                 <div class="panel-body">
                     <div class="form-group">
                         <label for="title">Názov správičky</label>
-                        <input name="title" class="form-control" />
+                        <input asp-for="@Model.Title" class="form-control" />
                     </div>
                     <div class="form-group">
                         <label for="message">Správička</label>
-                        @await Component.InvokeAsync(typeof(EditorViewComponent))
+                        <content-editor asp-for="@Model.Content" />
                     </div>
                     <div class="form-group">
                         <label for="tags">Tagy</label>
-                        @await Component.InvokeAsync(typeof(TagsSelectorViewComponent))
+                        <tags-editor asp-for="@Model.Categories" />
                     </div>
-                    
-                    
                 </div>
                 <div class="panel-footer">
                     <div>
                         <button class="btn btn-default" type="button">Zrušiť</button>
-                        <div class="btn-group pull-right">
-
-                            <button class="btn btn-default" type="button">Uložiť</button>
-                            <button class="btn btn-success" type="button">Publikovať</button>
+                        <div class="pull-right">
+                            <button asp-action="Create" class="btn btn-success" type="submit">Uložiť</button>
                         </div>
                     </div>
                 </div>
             </div> 
         </form>  
     </div>
-    <div class="col-md-4  p-l-0">
+    <div class="col-md-4">
         <div class="panel panel-default">
             <div class="panel-body">
-                @await Component.InvokeAsync(typeof(ForumOverviewViewComponent))
+                <section>
+                    <h2>Najpoužívanejšie tagy</h2>
+                    @foreach (var tag in DevPortal.Web.Data.SampleData.Tags)
+                    {
+                        <div><a class="label label-default lg">@tag</a></div>
+                    }
+                </section>
             </div>
         </div>
     </div>

@@ -1,4 +1,5 @@
-﻿@model DevPortal.Web.Models.ForumViewModels.ForumDetailViewModel
+﻿@using DevPortal.Web.Models.ForumViewModels;
+@model ForumDetailViewModel
 @{
     ViewBag.Title = "Diskusné fórum";
 
@@ -17,19 +18,20 @@
                     <span class="label label-default">@tag</span>
                 }
 
-                @foreach (var answer in posts)
+                @for (int i = 0; i < posts.Count; i++)
                 {
+                    var answer = posts[i];
                     <div class="forum-post">
                         <a>
                             <img src="@answer.Avatar"
                                  class="avatar" />
                         </a>
-                        <div class="panel panel-default comment-title">
+                        <div class="panel @(i == 0 ? "panel-primary" : "panel-default") comment-title">
                             <div class="panel-heading">
                                 <strong>@answer.UserName</strong> napísal pred 8 hodinami
                             </div>
                             <div class="panel-body">
-                                @answer.Content
+                                <markdown>@answer.Content</markdown>
                             </div>
                         </div>
                     </div>
@@ -37,19 +39,17 @@
             </div>
         </div>
 
-
-        <form asp-action="@nameof(ForumController.NewPost)" asp-controller="ForumController" method="post">
+        <form asp-action="@nameof(ForumController.NewAnswer)" 
+              asp-controller="Forum"
+              asp-route-id="@Model.Question.Id"
+              method="post">
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Nový príspevok
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <label>Názov</label>
-                        <input type="text" class="form-control" aria-label="What's your programming question? Be specific'">
-                    </div>
-                    <div class="form-group">
-                        <vc:editor />
+                        <content-editor asp-for="@Model.NewAnswer.Content"  />
                     </div>
                 </div>
                 <div class="panel-footer">

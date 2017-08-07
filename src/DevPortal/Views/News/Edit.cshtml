@@ -1,0 +1,58 @@
+﻿@model DevPortal.Web.Models.NewsViewModels.EditNewsItemViewModel
+@{
+    ViewBag.Title = "Pridať správičku";
+}
+@section top{
+    <div class="jumbotron-news shadow">
+        <div class="container">
+            <div class="pull-left">
+                <h1>Správičky</h1>
+                <p>Novinky, udalosti, oznámenia...<br />Zdielajte s vývojármi, čo je nové!</p>
+
+            </div>
+
+            <div class="pull-right">
+                <img src="~/media/news-icon.png" class="jumbotron-icon" />
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <form action="@nameof(NewsController.Edit)" method="post">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Upraviť správičku</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label asp-for="@Model.Title">Názov</label>
+                        <input asp-for="@Model.Title" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="@Model.Content">Správička</label>
+                        <content-editor asp-for="@Model.Content" />
+                    </div>
+                    <div class="form-group">
+                        <label for="tags">Tagy</label>
+                        <tags-editor asp-for="@Model.Categories" />
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div>
+                        <a asp-action="index" class="btn btn-default">Zrušiť</a>
+                        <div class="btn-group pull-right">
+                            <button asp-action="Edit" class="btn btn-success" type="submit">Uložiť</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4  p-l-0">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @await Component.InvokeAsync(typeof(ForumOverviewViewComponent))
+            </div>
+        </div>
+    </div>
+</div>

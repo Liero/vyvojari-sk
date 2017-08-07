@@ -1,0 +1,80 @@
+﻿@model DevPortal.Web.Models.NewsViewModels.DetailPageViewModel
+@{
+    ViewBag.Title = Model.NewsItem.Title;
+}
+@section top{
+    <div class="jumbotron-news shadow">
+        <div class="container">
+            <div class="pull-left">
+                <h1>Správičky</h1>
+                <p>Novinky, udalosti, oznámenia...<br />Zdielajte s vývojármi, čo je nové!</p>
+
+            </div>
+
+            <div class="pull-right">
+                <img src="~/media/news-icon.png" class="jumbotron-icon" />
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="panel panel-primary">
+            <div class="panel-heading">@Model.NewsItem.Title</div>
+            <div class="panel-body">
+                <markdown>@Model.NewsItem.Content</markdown>
+                @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(Model.NewsItem.Tags))
+                {
+                    <span class="label label-default">@tag</span>
+                }
+            </div>
+            <div class="panel-footer clearfix">
+                <form asp-action="@nameof(NewsController.Publish)" asp-route-id="@Model.NewsItem.Id" method="post">
+                    <div class="btn-group pull-right">
+                        <a class="btn btn-primary" asp-action="@nameof(NewsController.Edit)" asp-route-id="@Model.NewsItem.Id">Upraviť</a>
+                        @if (!Model.NewsItem.IsPublished)
+                        {
+                            <button class="btn btn-success">Publikovať</button>
+                        }
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Komentáre</div>
+            <div class="panel-body">
+
+                @if (Model.NewsItem.CommentsCount > 0)
+                {
+                <ul class="media-list">
+                    @foreach (var comment in Model.Comments)
+                    {
+                        <vc:comment model="@comment" />
+                    }
+                </ul>
+                }
+                else
+                {
+                    <p>Zatiaľ nikto nekomentoval túto správičku. Buď prvý!</p>
+                }
+
+                <form asp-action="@nameof(NewsController.AddComment)" asp-route-id="@Model.NewsItem.Id" method="post">
+                    <textarea name="comment" class="form-control" rows="5"></textarea>
+                    <div class="clearfix">
+                        <button class="btn btn-primary pull-right">Pridať komentár</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4  p-l-0">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @await Component.InvokeAsync(typeof(ForumOverviewViewComponent))
+            </div>
+        </div>
+    </div>
+</div>

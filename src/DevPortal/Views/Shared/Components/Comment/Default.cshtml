@@ -1,0 +1,23 @@
+﻿@model DevPortal.Web.Models.SharedViewModels.CommentViewModel
+
+<li class="media">
+    <div class="media-left">
+        <a href="#">
+            <img class="media-object media-object-small" src="~/media/userpicture.jpg" alt="...">
+        </a>
+    </div>
+    <div class="media-body">
+        <div class="text-justify">
+            <strong><a href="#">@Model.UserName</a></strong>
+            <markdown>@Model.Message</markdown>
+        </div>
+        <ul class="actions list-inline">
+            <li><a href="#">like</a></li>
+            <li><a href="#">reply</a></li>
+            <li><a href="#">share</a></li>
+        </ul>
+    </div>
+    <div class="media-right">
+        2h
+    </div>
+</li>
