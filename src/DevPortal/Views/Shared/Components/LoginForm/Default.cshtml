@@ -4,7 +4,7 @@
 @model LoginFormViewModel
 @inject SignInManager<ApplicationUser> SignInManager
 @{
-    var loginProviders = SignInManager.GetExternalAuthenticationSchemes().ToList();
+    var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
     Func<object,string> UrlEncode = obj => System.Text.Encodings.Web.UrlEncoder.Default.Encode((string)obj);
 }
 
@@ -25,23 +25,22 @@
                         <div asp-validation-summary="All" class="text-danger"></div>
 
                         <p>
-                            <a asp-action="@nameof(AccountController.Register)" asp-controller="Account" asp-route-returnurl="@ViewData["ReturnUrl"]">Register as a new user?</a><br/>
-                            <a asp-action="@nameof(AccountController.ResetPassword)" asp-controller="Account">Forgot your password?</a>
+                            <a asp-action="@nameof(AccountController.Register)" asp-route-returnurl="@ViewData["ReturnUrl"]">Register as a new user?</a><br/>
+                            <a asp-action="@nameof(AccountController.ResetPassword)">Forgot your password?</a>
                         </p>
                     </form>
                 </section>
             </div>
             <div class="col-md-6 col-md-border">
-                <form asp-controller="Account" asp-action="ExternalLogin" method="post" class="form-horizontal">
+                <form asp-action="@nameof(AccountController.ExternalLogin)" asp-controller="Account" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
                     <div>
                         <p>
                             @foreach (var provider in loginProviders)
                             {
-                                <button type="submit" class="btn btn-primary" name="provider"
-                                        value="@provider.AuthenticationScheme"
-                                        title="Log in using your @provider.DisplayName account">
-                                    @provider.AuthenticationScheme
-                                </button>
+                                <button type="submit" class="btn btn-primary"
+                                        name="provider"
+                                        value="@provider.Name"
+                                        title="Log in using your @provider.DisplayName account">@provider.Name</button>
                             }
                         </p>
                     </div>
@@ -63,7 +62,7 @@
                         var url = "/Account/LoginAjax";
                         @if (ViewData["ReturnUrl"] is String) {<text>url += '?returnUrl=@UrlEncode(ViewData["ReturnUrl"])'</text>};
                         $.post(url, $loginform.serialize())
-                            .done(function (reponse) {
+                            .done(function (response) {
                                 window.location.href = response.returnUrl;
                             })
                             .fail(function (response) {

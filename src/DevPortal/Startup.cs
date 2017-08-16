@@ -8,14 +8,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using DevPortal.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using DevPortal.Web.Data;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using DevPortal.Web.Services;
 using DevPortal.Web.AppCode.Startup;
 using DevPortal.QueryStack;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Facebook;
 
 namespace DevPortal.Web
 {
@@ -33,16 +33,23 @@ namespace DevPortal.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseInMemoryDatabase());
+                options.UseInMemoryDatabase("ApplicationDbContext"));
 
             services.AddDbContext<DevPortalDbContext>(options =>
-                options.UseInMemoryDatabase());
+                options.UseInMemoryDatabase("DevPortalDbContext"));
 
             //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>(ConfigureIdentity)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddAuthentication()
+                .AddFacebook(options =>
+                {
+                    options.AppId = Configuration["Authentication:Facebook:AppId"];
+                    options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                });
 
             services.AddMvc();
             services.AddTransient<IEmailSender, EmailSender>();
@@ -69,14 +76,7 @@ namespace DevPortal.Web
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
 
-            app.UseIdentity();
-            var facebookOptions = new FacebookOptions()
-            {
-                AppId = Configuration["Authentication:Facebook:AppId"],
-                AppSecret = Configuration["Authentication:Facebook:AppSecret"],
-            };
-            app.UseFacebookAuthentication(facebookOptions);
-
+            app.UseAuthentication();
 
             app.UseMvcWithDefaultRoute();
             app.UseStaticFiles();
