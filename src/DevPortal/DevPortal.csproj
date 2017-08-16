@@ -10,7 +10,6 @@
     <PackageId>DevPortal</PackageId>
     <UserSecretsId>aspnet-DevPortal.Web-20161230052130</UserSecretsId>
     <RuntimeFrameworkVersion>2.0.0</RuntimeFrameworkVersion>
-    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
     <RootNamespace>DevPortal.Web</RootNamespace>
   </PropertyGroup>
 

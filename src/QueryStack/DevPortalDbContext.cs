@@ -19,7 +19,7 @@ namespace DevPortal.QueryStack
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseInMemoryDatabase();
+            optionsBuilder.UseInMemoryDatabase(nameof(DevPortalDbContext));
         }
 
         public DbSet<NewsItem> NewsItems { get; set; }
