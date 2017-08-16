@@ -11,4 +11,59 @@
             asp-fallback-src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"
             asp-fallback-test="window.jQuery && window.jQuery.validator && window.jQuery.validator.unobtrusive">
     </script>
+
 </environment>
+
+<script>
+    (function ($) {
+        var defaultOptions = {
+            validClass: 'has-success',
+            errorClass: 'has-error',
+            highlight: function (element, errorClass, validClass) {
+                $(element).closest(".form-group")
+                    .removeClass(validClass)
+                    .addClass('has-error');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).closest(".form-group")
+                    .removeClass('has-error')
+                    .addClass(validClass);
+            }
+        };
+
+        $.validator.setDefaults(defaultOptions);
+
+        $.validator.unobtrusive.options = {
+            errorClass: defaultOptions.errorClass,
+            validClass: defaultOptions.validClass,
+        };
+    })(jQuery);
+
+        //$('form').each(function (i, form) {
+        //    var formData = $.data(form),
+        //        settings = formData.validator.settings,
+        //        oldErrorPlacement = settings.errorPlacement,
+        //        oldSuccess = settings.success;
+
+        //    settings.errorPlacement = function (label, element) {
+
+        //        // Call old handler so it can update the HTML
+        //        oldErrorPlacement(label, element);
+
+        //        // Add Bootstrap classes to newly added elements
+        //        label.parents('.form-group').addClass('has-error');
+        //        label.addClass('text-danger');
+        //    };
+
+        //    settings.success = function (label) {
+        //        // Remove error class from <div class="form-group">, but don't worry about
+        //        // validation error messages as the plugin is going to remove it anyway
+        //        label.parents('.form-group').removeClass('has-error');
+
+        //        // Call old handler to do rest of the work
+        //        oldSuccess(label);
+        //    };
+
+        //});
+
+</script>

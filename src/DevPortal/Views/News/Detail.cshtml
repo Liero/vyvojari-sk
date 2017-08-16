@@ -61,9 +61,17 @@
                     <p>Zatiaľ nikto nekomentoval túto správičku. Buď prvý!</p>
                 }
 
-                <form asp-action="@nameof(NewsController.AddComment)" asp-route-id="@Model.NewsItem.Id" method="post">
-                    <textarea name="comment" class="form-control" rows="5"></textarea>
-                    <div class="clearfix">
+                <form id="addCommentForm"
+                      asp-action="@nameof(NewsController.AddComment)" 
+                      asp-route-id="@Model.NewsItem.Id" 
+                      method="post">
+
+                    <input type="hidden" asp-for="@Model.AddComment.Parent" />
+                    <div class="form-group">
+                        <textarea asp-for="@Model.AddComment.Message" class="form-control" rows="5"></textarea>
+                        <span asp-validation-for="@Model.AddComment.Message"></span>
+                    </div>
+                    <div class="form-group">
                         <button class="btn btn-primary pull-right">Pridať komentár</button>
                     </div>
                 </form>
@@ -73,7 +81,7 @@
     <div class="col-md-4  p-l-0">
         <div class="panel panel-default">
             <div class="panel-body">
-                @await Component.InvokeAsync(typeof(ForumOverviewViewComponent))
+                <vc:forum-overview />
             </div>
         </div>
     </div>

@@ -6,15 +6,11 @@ using System.Threading.Tasks;
 
 namespace DevPortal.Web.Models.NewsViewModels
 {
-    public class CreateNewsItemViewModel
+    public class AddCommentViewModel
     {
-        [Required, MinLength(3)]
-        public string Title { get; set; }
+        public Guid? Parent { get; set; }
 
         [Required, MinLength(5)]
-        public string Content { get; set; }
-
-        [Required]
-        public string Tags { get; set; }
+        public string Message { get; set; }
     }
 }
