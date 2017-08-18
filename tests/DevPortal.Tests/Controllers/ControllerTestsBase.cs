@@ -2,6 +2,7 @@
 using DevPortal.QueryStack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -25,7 +26,8 @@ namespace DevPortal.Web.Controllers
             Services = new ServiceCollection();
             Services.AddTransient<TController, TController>();
             Services.AddSingleton<IEventStore>(EventStoreMock.Object);
-            Services.AddTransient<DevPortalDbContext>();
+            Services.AddDbContext<DevPortalDbContext>(options =>
+                options.UseInMemoryDatabase("DevPortalDbContext"));
         }
 
         public virtual TController CreateController()

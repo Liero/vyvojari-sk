@@ -31,8 +31,7 @@ namespace DevPortal.CommandStack.Infrastructure
                 Assert.AreEqual(anotherEvent, message);
             };
 
-            InMemoryBus eventDispatcher = new InMemoryBus();
-            eventDispatcher.TypeResolver = t => handler;
+            InMemoryBus eventDispatcher = new InMemoryBus(t => handler);
             eventDispatcher.RegisterHandler<EventHandlerStub>();
             
 

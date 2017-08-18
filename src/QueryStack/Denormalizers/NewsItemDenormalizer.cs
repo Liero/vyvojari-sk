@@ -1,6 +1,7 @@
 ﻿using DevPortal.CommandStack.Events;
 using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,6 +14,13 @@ namespace DevPortal.QueryStack.Denormalizers
         IHandleMessages<NewsItemPublished>,
         IHandleMessages<NewsItemCommented>
     {
+        private readonly DbContextOptions<DevPortalDbContext> _dbContextOptions;
+
+        public NewsItemDenormalizer(DbContextOptions<DevPortalDbContext> dbContextOptions)
+        {
+            this._dbContextOptions = dbContextOptions;
+        }
+
         public void Handle(NewsItemCreated message)
         {
             var newsItem = new NewsItem
@@ -24,7 +32,7 @@ namespace DevPortal.QueryStack.Denormalizers
                 CreatedBy = message.AuthorUserName,
                 Tags = string.Join(",", message.Tags)
             };
-            using(var db = new DevPortalDbContext())
+            using(var db = new DevPortalDbContext(_dbContextOptions))
             {
                 db.NewsItems.Add(newsItem);
                 db.SaveChanges();
@@ -33,7 +41,7 @@ namespace DevPortal.QueryStack.Denormalizers
 
         public void Handle(NewsItemEdited message)
         {
-            using(var db = new DevPortalDbContext())
+            using(var db = new DevPortalDbContext(_dbContextOptions))
             {
                 NewsItem newsItem = db.NewsItems.Find(message.NewsItemId);
                 newsItem.Title = message.Title;
@@ -47,7 +55,7 @@ namespace DevPortal.QueryStack.Denormalizers
 
         public void Handle(NewsItemPublished message)
         {
-            using (var db = new DevPortalDbContext())
+            using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 NewsItem newsItem = db.NewsItems.Find(message.NewsItemId);
                 newsItem.Published = message.TimeStamp;
@@ -58,7 +66,7 @@ namespace DevPortal.QueryStack.Denormalizers
 
         public void Handle(NewsItemCommented message)
         {
-            using (var db = new DevPortalDbContext())
+            using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 NewsItem newsItem = db.NewsItems.Find(message.NewsItemId);
                 if (newsItem.Comments == null)
