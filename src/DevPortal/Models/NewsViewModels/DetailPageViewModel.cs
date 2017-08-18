@@ -15,6 +15,7 @@ namespace DevPortal.Web.Models.NewsViewModels
         {
             Message = c.Content,
             UserName = c.CreatedBy,
+            Created = c.Created
         });
 
         public AddCommentViewModel AddComment { get; set; }

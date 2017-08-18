@@ -29,7 +29,7 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <h3><a asp-action="@nameof(NewsController.Detail)" asp-route-id="@newsItem.Id">@newsItem.Title</a></h3>
-            <p>@newsItem.Content</p>
+            <p><markdown>@newsItem.Content</markdown></p>
             <ul class="actions list-inline">
                 <li><button class="btn btn-default">Upvote</button></li>
                 <li>
@@ -61,7 +61,7 @@
                             </a>
                         </div>
                         <div class="media-body">
-                            <div class="text-justify"><strong><a href="#">@comment.CreatedBy</a></strong> @comment.Content</div>
+                            <div class="text-justify"><strong><a href="#">@comment.CreatedBy</a></strong><markdown>@comment.Content</markdown></div>
                             <ul class="actions list-inline">
                                 <li><a href="#">like</a></li>
                                 <li><a href="#">reply</a></li>
@@ -69,7 +69,7 @@
                             </ul>
                         </div>
                         <div class="media-right">
-                            2h
+                            <time for="@comment.Created"></time>      
                         </div>
                     </li>
                 }
