@@ -37,6 +37,7 @@ namespace DevPortal.Web.Controllers
             };
 
             viewModel.Items = _devPortalDb.NewsItems
+                .OrderByDescending(i => i.Created)
                 .Include(i => i.Comments)
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)

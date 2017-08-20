@@ -29,6 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CommandStack\CommandStack.csproj" />
     <ProjectReference Include="..\QueryStack\QueryStack.csproj" />
+    <ProjectReference Include="..\SampleData\DesignTimeData.csproj" />
   </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">

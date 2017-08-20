@@ -30,6 +30,28 @@
         <div class="panel-body">
             <h3><a asp-action="@nameof(NewsController.Detail)" asp-route-id="@newsItem.Id">@newsItem.Title</a></h3>
             <p><markdown>@newsItem.Content</markdown></p>
+            <p>
+                @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(newsItem.Tags))
+                {
+                    <span class="label label-default">@tag</span>
+                }
+                @if (newsItem.IsPublished)
+                {
+                    <div>
+                        <b>@newsItem.CreatedBy</b>, <time for="newsItem.Published" />
+                        @if (newsItem.LastModified > newsItem.Published)
+                        {
+                            <i>(edited by @newsItem.LastModifiedBy, <time for="@newsItem.LastModified" />)</i>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        <b>@newsItem.CreatedBy</b> <span class="label label-warning">Unpublished</span>
+                    </div>
+                }
+            </p>
             <ul class="actions list-inline">
                 <li><button class="btn btn-default">Upvote</button></li>
                 <li>
