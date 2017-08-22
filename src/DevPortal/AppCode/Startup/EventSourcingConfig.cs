@@ -12,13 +12,33 @@ namespace DevPortal.Web.AppCode.Startup
     {
         public static void AddEventSourcing(this IServiceCollection services)
         {
-            InMemoryBus eventBus = new InMemoryBus();
-            eventBus.RegisterHandler<NewsItemDenormalizer>();
-            services.AddSingleton<IEventDispatcher>(eventBus);
-            //todo: register handlers;
+            services.AddSingleton<IEventDispatcher>(serviceProvider =>
+            {
+                var eventDispatcher = new InMemoryBus(type => CreateInstance(type, serviceProvider));
+                RegisterHandlers(eventDispatcher);
+                return eventDispatcher;
+            });
+            services.AddSingleton<IEventStore, InMemoryEventStore>();
+        }
 
-            InMemoryEventStore eventStore = new InMemoryEventStore(eventBus);
-            services.AddSingleton<IEventStore>(eventStore);
+        private static void RegisterHandlers(IEventDispatcher eventDispatcher)
+        {
+            eventDispatcher.RegisterHandler<NewsItemDenormalizer>();
+        }
+
+        private static object CreateInstance(Type type, IServiceProvider serviceProvider)
+        {
+            var ctor = type.GetConstructors()
+                .Where(c => c.IsPublic)
+                .OrderByDescending(c => c.GetParameters().Length)
+                .FirstOrDefault()
+                ?? throw new InvalidOperationException($"No suitable contructor found on type '{type}'");
+
+            var injectionServices = ctor.GetParameters()
+                .Select(p => serviceProvider.GetRequiredService(p.ParameterType))
+                .ToArray();
+
+            return ctor.Invoke(injectionServices);
         }
     }
 }

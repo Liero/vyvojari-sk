@@ -24,7 +24,7 @@ namespace DevPortal.Web.Controllers
             {
                 Title = "Title",
                 Content = "Content",
-                Categories = "ABC,DEF"
+                Tags = "ABC,DEF"
             };
             
             EventStoreMock
@@ -59,7 +59,7 @@ namespace DevPortal.Web.Controllers
             {
                 Title = "TitleEdited",
                 Content = "ContentEdited",
-                Categories = "ABC,DEF,EFG"
+                Tags = "ABC,DEF,EFG"
             };
 
             EventStoreMock.
@@ -124,7 +124,10 @@ namespace DevPortal.Web.Controllers
             NewsController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.AddComment(id, comment);
+            IActionResult actionResult = controller.AddComment(id, new AddCommentViewModel
+            {
+                Message = comment 
+            });
 
             //assert
             void NewsItemCommented(DomainEvent savedEvent)

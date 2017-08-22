@@ -8,14 +8,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using DevPortal.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using DevPortal.Web.Data;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using DevPortal.Web.Services;
 using DevPortal.Web.AppCode.Startup;
 using DevPortal.QueryStack;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using DevPortal.Web.AppCode.Config;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace DevPortal.Web
 {
@@ -28,15 +30,25 @@ namespace DevPortal.Web
         public Startup(IHostingEnvironment env)
         {
             this._env = env;
+                  var builder = new ConfigurationBuilder()
+                  .SetBasePath(env.ContentRootPath)
+                  .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+            builder.AddEnvironmentVariables();
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets<Startup>();
+            }
+            Configuration = builder.Build();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseInMemoryDatabase());
+                options.UseInMemoryDatabase("ApplicationDbContext"));
 
             services.AddDbContext<DevPortalDbContext>(options =>
-                options.UseInMemoryDatabase());
+                options.UseInMemoryDatabase("DevPortalDbContext"));
 
             //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -44,40 +56,39 @@ namespace DevPortal.Web
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddAuthentication()
+                .AddFacebook(options =>
+                {
+                    options.AppId = Configuration["Authentication:Facebook:AppId"];
+                    options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                });
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
             services.AddMvc();
             services.AddTransient<IEmailSender, EmailSender>();
+
+            services.Configure<Imgur>(Configuration.GetSection("Imgur"));
+            services.AddSingleton<IImageStore, ImgurImageStore>();
 
             services.AddEventSourcing();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var builder = new ConfigurationBuilder()
-                  .SetBasePath(env.ContentRootPath)
-                  .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
             loggerFactory.AddConsole();
 
-            app.UseDeveloperExceptionPage();
+            if (!env.IsProduction())
+            {
+                app.UseDeveloperExceptionPage();
+            }
             if (env.IsDevelopment())
             {
-                builder.AddUserSecrets<Startup>();
                 app.UseBrowserLink();
             }
 
-            builder.AddEnvironmentVariables();
-            Configuration = builder.Build();
-
-            app.UseIdentity();
-            var facebookOptions = new FacebookOptions()
-            {
-                AppId = Configuration["Authentication:Facebook:AppId"],
-                AppSecret = Configuration["Authentication:Facebook:AppSecret"],
-            };
-            app.UseFacebookAuthentication(facebookOptions);
-
-
+            app.UseAuthentication();
             app.UseMvcWithDefaultRoute();
             app.UseStaticFiles();
         }

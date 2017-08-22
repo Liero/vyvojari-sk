@@ -15,6 +15,6 @@ namespace DevPortal.Web.Models.NewsViewModels
         public string Content { get; set; }
 
         [Required]
-        public string Categories { get; set; }
+        public string Tags { get; set; }
     }
 }

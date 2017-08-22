@@ -3,6 +3,8 @@
   "private": true,
   "dependencies": {
     "jquery": "2.2.3",
+    "jquery-validation": "jquery-validate#1.17.0",
+    "jquery-validation-unobtrusive": "v3.2.6",
     "bootstrap": "3.3.6",
     "typeahead.js": "0.11.1",
     "marked": "0.3.5",

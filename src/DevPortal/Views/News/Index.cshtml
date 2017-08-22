@@ -8,7 +8,7 @@
         <div class="container">
             <div class="pull-left">
                 <h1>Správičky</h1>
-                <p>Novinky, udalosti, oznámenia...<br/>Majte prehľad o tom, čo je nové vo svete vývojárov!</p>
+                <p>Novinky, udalosti, oznámenia...<br />Majte prehľad o tom, čo je nové vo svete vývojárov!</p>
 
             </div>
 
@@ -29,7 +29,15 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <h3><a asp-action="@nameof(NewsController.Detail)" asp-route-id="@newsItem.Id">@newsItem.Title</a></h3>
-            <p>@newsItem.Content</p>
+            <p><markdown>@newsItem.Content</markdown></p>
+            <p>
+                @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(newsItem.Tags))
+                {
+                    <span class="label label-default">@tag</span>
+                }
+
+                @Html.Partial("_UserInfo", newsItem)
+            </p>
             <ul class="actions list-inline">
                 <li><button class="btn btn-default">Upvote</button></li>
                 <li>
@@ -40,7 +48,7 @@
                             <span class="label label-default">@newsItem.CommentsCount</span>
                         }
                     </button>
-         
+
                 </li>
                 <li><button class="btn btn-link">Share</button></li>
             </ul>
@@ -56,12 +64,10 @@
                 {
                     <li class="media">
                         <div class="media-left">
-                            <a href="#">
-                                <img class="media-object media-object-small" src="~/media/userpicture.jpg" alt="...">
-                            </a>
+                            <a class="avatar avatar-small" avatar-for-user="@comment.CreatedBy" />
                         </div>
                         <div class="media-body">
-                            <div class="text-justify"><strong><a href="#">@comment.CreatedBy</a></strong> @comment.Content</div>
+                            <div class="text-justify"><strong><a href="#">@comment.CreatedBy</a></strong><markdown>@comment.Content</markdown></div>
                             <ul class="actions list-inline">
                                 <li><a href="#">like</a></li>
                                 <li><a href="#">reply</a></li>
@@ -69,7 +75,7 @@
                             </ul>
                         </div>
                         <div class="media-right">
-                            2h
+                            <time for="@comment.Created"></time>
                         </div>
                     </li>
                 }

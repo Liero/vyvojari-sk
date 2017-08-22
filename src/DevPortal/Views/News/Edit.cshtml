@@ -25,16 +25,19 @@
                 <div class="panel-heading">Upraviť správičku</div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <label asp-for="@Model.Title">Názov</label>
-                        <input asp-for="@Model.Title" class="form-control" />
+                        <label asp-for="@Model.Title">Názov správičky</label>
+                        <input asp-for="@Model.Title" class="form-control">
+                        <span asp-validation-for="@Model.Title"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="@Model.Content">Správička</label>
+                        <label for="message">Správička</label>
                         <content-editor asp-for="@Model.Content" />
+                        <span asp-validation-for="@Model.Content"></span>
                     </div>
                     <div class="form-group">
-                        <label for="tags">Tagy</label>
-                        <tags-editor asp-for="@Model.Categories" />
+                        <label asp-for="@Model.Tags">Tagy</label>
+                        <tags-editor asp-for="@Model.Tags" />
+                        <span asp-validation-for="@Model.Tags"></span>
                     </div>
                 </div>
                 <div class="panel-footer">
@@ -51,7 +54,7 @@
     <div class="col-md-4  p-l-0">
         <div class="panel panel-default">
             <div class="panel-body">
-                @await Component.InvokeAsync(typeof(ForumOverviewViewComponent))
+                <vc:forum-overview />
             </div>
         </div>
     </div>

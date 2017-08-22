@@ -9,22 +9,17 @@ namespace DevPortal.CommandStack.Infrastructure
     public class InMemoryBus : IEventDispatcher
     {
         private readonly List<Type> _handlers = new List<Type>();
-        public Func<Type, object> TypeResolver { get; set; } = t => Activator.CreateInstance(t);
+        private readonly Func<Type, object> activator;
 
-        public InMemoryBus()
+        /// <param name="activator">Used to create instance of message handlers</param>
+        public InMemoryBus(Func<Type, object> activator)
         {
-            
+            this.activator = activator;
         }
 
-        public void RegisterHandler<THandler>()
-        {
-            _handlers.Add(typeof(THandler));
-        }
+        public void RegisterHandler(Type type) => _handlers.Add(type);
 
-        public void Dispatch(DomainEvent @event)
-        {
-            DeliverMessageToRegisteredHandlers(@event);
-        }
+        public void Dispatch(DomainEvent @event) => DeliverMessageToRegisteredHandlers(@event);
 
         private void DeliverMessageToRegisteredHandlers<T>(T message) where T : class
         {
@@ -38,7 +33,7 @@ namespace DevPortal.CommandStack.Infrastructure
 
             foreach (Type h in handlersToNotify)
             {
-                var handlerInstance = TypeResolver(h);
+                var handlerInstance = activator(h);
                 closedInterface.GetTypeInfo()
                     .GetMethod(nameof(IHandleMessages<T>.Handle))
                     .Invoke(handlerInstance, new[] { message });

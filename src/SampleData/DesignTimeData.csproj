@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>DevPortal.DesignTimeData</AssemblyName>
+    <RootNamespace>DevPortal.DesignTimeData</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CommandStack\CommandStack.csproj" />
+    <ProjectReference Include="..\QueryStack\QueryStack.csproj" />
+  </ItemGroup>
+
+</Project>

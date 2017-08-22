@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DevPortal.Web.Controllers;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
@@ -25,6 +26,24 @@ namespace DevPortal.Web.AppCode.Extensions
             bool isCurrentAction = action == null || action.Equals(routeAction, StringComparison.CurrentCultureIgnoreCase);
 
             return isCurrentController && isCurrentAction;
+        }
+
+        public static string EmailConfirmationLink(this IUrlHelper urlHelper, string userId, string code, string scheme)
+        {
+            return urlHelper.Action(
+                action: nameof(AccountController.ConfirmEmail),
+                controller: "Account",
+                values: new { userId, code },
+                protocol: scheme);
+        }
+
+        public static string ResetPasswordCallbackLink(this IUrlHelper urlHelper, string userId, string code, string scheme)
+        {
+            return urlHelper.Action(
+                action: nameof(AccountController.ResetPassword),
+                controller: "Account",
+                values: new { userId, code },
+                protocol: scheme);
         }
     }
 }

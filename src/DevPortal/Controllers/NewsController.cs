@@ -36,8 +36,20 @@ namespace DevPortal.Web.Controllers
                 MaxCommentsPerItem = maxCommentsPerItem,
             };
 
-            viewModel.Items = _devPortalDb.NewsItems
-                .Include(i => i.Comments)
+            IQueryable<NewsItem> query = _devPortalDb.NewsItems.Include(i => i.Comments);
+
+            if (!User.Identity.IsAuthenticated)
+            {
+                query = query.Where(newsItem => newsItem.IsPublished);
+            }
+            else
+            {
+                query = query.Where(newsItem => newsItem.IsPublished || newsItem.CreatedBy == User.Identity.Name);
+            }
+
+            viewModel.Items = query
+                .OrderBy(i => i.IsPublished)
+                .ThenByDescending(i => i.Published)
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)
                 .ToList();
@@ -46,7 +58,7 @@ namespace DevPortal.Web.Controllers
 
             return View(viewModel);
         }
-            
+
         public IActionResult Detail(Guid id)
         {
             NewsItem newsItem = _devPortalDb.NewsItems
@@ -82,7 +94,7 @@ namespace DevPortal.Web.Controllers
                 AuthorUserName = User.Identity.Name,
                 Title = viewModel.Title,
                 Content = viewModel.Content,
-                Tags = AppCode.TagsConverter.StringToArray(viewModel.Categories)
+                Tags = AppCode.TagsConverter.StringToArray(viewModel.Tags)
             };
             _eventStore.Save(evt);
 
@@ -95,7 +107,7 @@ namespace DevPortal.Web.Controllers
             var viewModel = new EditNewsItemViewModel
             {
                 Id = newsItem.Id,
-                Categories = newsItem.Tags,
+                Tags = newsItem.Tags,
                 Content = newsItem.Content,
                 Title = newsItem.Title,
             };
@@ -116,29 +128,30 @@ namespace DevPortal.Web.Controllers
                 EditorUserName = User.Identity.Name,
                 Title = viewModel.Title,
                 Content = viewModel.Content,
-                Tags = AppCode.TagsConverter.StringToArray(viewModel.Categories),
+                Tags = AppCode.TagsConverter.StringToArray(viewModel.Tags),
             };
             _eventStore.Save(evt);
 
             return RedirectToAction(nameof(Detail), new { id = id });
         }
 
-        /// <param name="id">NewsItemId</param>
-        /// <param name="comment"></param>
         [HttpPost]
-        public IActionResult AddComment(Guid id, string comment)
+        public IActionResult AddComment(
+            Guid id,
+            [Bind(Prefix = nameof(DetailPageViewModel.AddComment))] AddCommentViewModel comment)
         {
-            if (string.IsNullOrWhiteSpace(comment))
+       
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError(nameof(comment), "Comment cannot be empty");
-                return View(nameof(Detail), new { id = id });
+                return BadRequest(ModelState);
             }
+
             var evt = new NewsItemCommented
             {
                 NewsItemId = id,
                 CommentId = Guid.NewGuid(),
                 UserName = User.Identity.Name,
-                Content = comment
+                Content = comment.Message
             };
             _eventStore.Save(evt);
             return RedirectToAction(nameof(Detail), new { id = id });

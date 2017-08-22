@@ -42,9 +42,14 @@
                     <li class='@(this.Url.IsCurrentRoute("Forum") ? "active" : "")'>
                         <a asp-controller="Forum" asp-action="@nameof(ForumController.Index)">Diskusia</a>
                     </li>
-                    <li class='@(this.Url.IsCurrentRoute("Blogs") ? "active" : "")'>
+                    <li class='@(this.Url.IsCurrentRoute("Blog") ? "active" : "")'>
                         <a asp-controller="Blog" asp-action="@nameof(BlogController.Index)">Blogy</a>
                     </li>
+                    <environment names="Development">
+                        <li class='@(this.Url.IsCurrentRoute("SampleData") ? "active" : "")'>
+                            <a asp-controller="SampleData" asp-action="@nameof(SampleDataController.Index)">Sample Data</a>
+                        </li>
+                    </environment>
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
@@ -69,7 +74,7 @@
                                 @User.Identity.Name <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a asp-controller="Manage">Manage</a></li>
+                                <li><a asp-controller="Manage" asp-action="@nameof(ManageController.Index)">Manage</a></li>
                                 <li>
                                     <form asp-controller="Account" asp-action="LogOff" method="post">
                                         <button class="btn btn-link navbar-link">Log off</button>

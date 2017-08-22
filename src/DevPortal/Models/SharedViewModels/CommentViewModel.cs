@@ -9,5 +9,6 @@ namespace DevPortal.Web.Models.SharedViewModels
     {
         public string Message { get; set; }
         public string UserName { get; set; }
+        public DateTime Created { get; set; }
     }
 }
