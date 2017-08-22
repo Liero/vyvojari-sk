@@ -16,6 +16,7 @@ using DevPortal.Web.AppCode.Startup;
 using DevPortal.QueryStack;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Facebook;
+using DevPortal.Web.AppCode.Config;
 
 namespace DevPortal.Web
 {
@@ -28,6 +29,16 @@ namespace DevPortal.Web
         public Startup(IHostingEnvironment env)
         {
             this._env = env;
+                  var builder = new ConfigurationBuilder()
+                  .SetBasePath(env.ContentRootPath)
+                  .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+            builder.AddEnvironmentVariables();
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets<Startup>();
+            }
+            Configuration = builder.Build();
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -54,30 +65,26 @@ namespace DevPortal.Web
             services.AddMvc();
             services.AddTransient<IEmailSender, EmailSender>();
 
+            services.Configure<Imgur>(Configuration.GetSection("Imgur"));
+            services.AddSingleton<IImageStore, ImgurImageStore>();
+
             services.AddEventSourcing();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var builder = new ConfigurationBuilder()
-                  .SetBasePath(env.ContentRootPath)
-                  .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
             loggerFactory.AddConsole();
 
-            app.UseDeveloperExceptionPage();
+            if (!env.IsProduction())
+            {
+                app.UseDeveloperExceptionPage();
+            }
             if (env.IsDevelopment())
             {
-                builder.AddUserSecrets<Startup>();
                 app.UseBrowserLink();
             }
 
-            builder.AddEnvironmentVariables();
-            Configuration = builder.Build();
-
             app.UseAuthentication();
-
             app.UseMvcWithDefaultRoute();
             app.UseStaticFiles();
         }

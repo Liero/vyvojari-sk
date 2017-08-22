@@ -20,6 +20,8 @@ namespace DevPortal.Web.Controllers
         protected ServiceCollection Services { get; set; }
 
         [TestInitialize]
+        public void TestInitialize() => Init();
+
         public virtual void Init()
         {
             EventStoreMock = new Mock<IEventStore>();
