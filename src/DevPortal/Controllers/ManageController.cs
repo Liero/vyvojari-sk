@@ -14,6 +14,8 @@ using DevPortal.Web.Models;
 using DevPortal.Web.Models.ManageViewModels;
 using DevPortal.Web.Services;
 using DevPortal.Web.AppCode.Extensions;
+using DevPortal.CommandStack.Infrastructure;
+using DevPortal.CommandStack.Events;
 
 namespace DevPortal.Web.Controllers
 {
@@ -23,6 +25,7 @@ namespace DevPortal.Web.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IEventStore eventStore;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly UrlEncoder _urlEncoder;
@@ -30,6 +33,7 @@ namespace DevPortal.Web.Controllers
         private const string AuthenicatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
         public ManageController(
+          IEventStore eventStore,
           UserManager<ApplicationUser> userManager,
           SignInManager<ApplicationUser> signInManager,
           IEmailSender emailSender,
@@ -38,6 +42,7 @@ namespace DevPortal.Web.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            this.eventStore = eventStore;
             _emailSender = emailSender;
             _logger = logger;
             _urlEncoder = urlEncoder;
@@ -61,7 +66,8 @@ namespace DevPortal.Web.Controllers
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 IsEmailConfirmed = user.EmailConfirmed,
-                StatusMessage = StatusMessage
+                StatusMessage = StatusMessage,
+                AvatarUrl = user.AvatarUrl,
             };
 
             return View(model);
@@ -101,6 +107,25 @@ namespace DevPortal.Web.Controllers
                     throw new ApplicationException($"Unexpected error occurred setting phone number for user with ID '{user.Id}'.");
                 }
             }
+
+            bool profileChanged = false;
+
+            if (model.AvatarUrl != user.AvatarUrl)
+            {
+                user.AvatarUrl = model.AvatarUrl;
+                eventStore.Save(new AvatarChanged
+                {
+                    Url = model.AvatarUrl,
+                    UserName = User.Identity.Name
+                });
+                profileChanged = true;
+            }
+
+            if (profileChanged)
+            {
+                await _userManager.UpdateAsync(user);
+            }
+
 
             StatusMessage = "Your profile has been updated";
             return RedirectToAction(nameof(Index));

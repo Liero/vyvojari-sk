@@ -21,5 +21,7 @@ namespace DevPortal.Web.Models.ManageViewModels
         public string PhoneNumber { get; set; }
 
         public string StatusMessage { get; set; }
+
+        public string AvatarUrl { get; set; }
     }
 }

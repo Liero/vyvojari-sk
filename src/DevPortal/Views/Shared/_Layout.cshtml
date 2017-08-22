@@ -74,7 +74,7 @@
                                 @User.Identity.Name <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a asp-controller="Manage">Manage</a></li>
+                                <li><a asp-controller="Manage" asp-action="@nameof(ManageController.Index)">Manage</a></li>
                                 <li>
                                     <form asp-controller="Account" asp-action="LogOff" method="post">
                                         <button class="btn btn-link navbar-link">Log off</button>
