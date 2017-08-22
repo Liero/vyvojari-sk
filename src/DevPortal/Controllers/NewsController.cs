@@ -36,9 +36,20 @@ namespace DevPortal.Web.Controllers
                 MaxCommentsPerItem = maxCommentsPerItem,
             };
 
-            viewModel.Items = _devPortalDb.NewsItems
-                .OrderByDescending(i => i.Created)
-                .Include(i => i.Comments)
+            IQueryable<NewsItem> query = _devPortalDb.NewsItems.Include(i => i.Comments);
+
+            if (!User.Identity.IsAuthenticated)
+            {
+                query = query.Where(newsItem => newsItem.IsPublished);
+            }
+            else
+            {
+                query = query.Where(newsItem => newsItem.IsPublished || newsItem.CreatedBy == User.Identity.Name);
+            }
+
+            viewModel.Items = query
+                .OrderBy(i => i.IsPublished)
+                .ThenByDescending(i => i.Published)
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)
                 .ToList();

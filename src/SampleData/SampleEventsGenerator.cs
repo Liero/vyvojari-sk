@@ -37,7 +37,7 @@ namespace DevPortal.DesignTimeData
             for (int i = 0; i < count; i++)
             {
                 int backIndex = count - 1 - i;
-                DateTime timestamp = DateTime.Now.AddMinutes(-(backIndex * 100) ^ 2 + 5);
+                DateTime timestamp = DateTime.Now.AddMinutes(-(backIndex * 100) ^ 2 + 1);
 
                 var created = new NewsItemCreated
                 {

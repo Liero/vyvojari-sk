@@ -28,22 +28,7 @@
                 {
                     <span class="label label-default">@tag</span>
                 }
-                    @if (Model.NewsItem.IsPublished)
-                    {
-                        <div>
-                            <b>@Model.NewsItem.CreatedBy</b>, <time for="Model.NewsItem.Published" />
-                            @if (Model.NewsItem.LastModified > Model.NewsItem.Published)
-                            {
-                                <i>(edited by @Model.NewsItem.LastModifiedBy, <time for="@Model.NewsItem.LastModified" />)</i>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <div>
-                            <b>@Model.NewsItem.CreatedBy</b> <span class="label label-warning">Unpublished</span>
-                        </div>
-                    }
+                @Html.Partial("_UserInfo", Model.NewsItem)
 
             </div>
             <div class="panel-footer clearfix">

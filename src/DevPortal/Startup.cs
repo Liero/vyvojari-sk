@@ -17,6 +17,7 @@ using DevPortal.QueryStack;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using DevPortal.Web.AppCode.Config;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace DevPortal.Web
 {
@@ -61,6 +62,9 @@ namespace DevPortal.Web
                     options.AppId = Configuration["Authentication:Facebook:AppId"];
                     options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
                 });
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
             services.AddMvc();
             services.AddTransient<IEmailSender, EmailSender>();
