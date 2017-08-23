@@ -16,6 +16,8 @@ namespace DevPortal.Web.Controllers
 {
     public class NewsController : Controller
     {
+        public const string ControllerName = "News";
+
         readonly IEventStore _eventStore;
         readonly DevPortalDbContext _devPortalDb;
 
@@ -154,7 +156,7 @@ namespace DevPortal.Web.Controllers
                 Content = comment.Message
             };
             _eventStore.Save(evt);
-            return RedirectToAction(nameof(Detail), new { id = id });
+            return RedirectToAction(nameof(Detail), ControllerName, new { id = id }, fragment: evt.CommentId.ToString());
         }
 
         [HttpPost]

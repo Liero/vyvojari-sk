@@ -1,4 +1,5 @@
-﻿@model DevPortal.Web.Models.NewsViewModels.IndexPageViewModel
+﻿@using DevPortal.Web.Models.NewsViewModels;
+@model IndexPageViewModel
 @{
     ViewBag.Title = "Správičky";
 }
@@ -84,7 +85,11 @@
 
 
             <div class="form-group">
-                <input class="form-control" placeholder="Add comment" />
+                <form method="post" asp-action="@nameof(NewsController.AddComment)" asp-route-id="@newsItem.Id">
+                    <input asp-for="@Model.AddComment.Message" class="form-control" placeholder="Add comment"
+                           data-action="submit" />
+                    <span asp-validation-for="@Model.AddComment.Message" />
+                </form>
             </div>
         </div>
     </div>

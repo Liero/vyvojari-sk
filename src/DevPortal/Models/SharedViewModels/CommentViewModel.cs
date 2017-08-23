@@ -7,6 +7,7 @@ namespace DevPortal.Web.Models.SharedViewModels
 {
     public class CommentViewModel
     {
+        public Guid Id { get; set; }
         public string Message { get; set; }
         public string UserName { get; set; }
         public DateTime Created { get; set; }

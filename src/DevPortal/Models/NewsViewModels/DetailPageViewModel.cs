@@ -13,6 +13,7 @@ namespace DevPortal.Web.Models.NewsViewModels
 
         public IEnumerable<CommentViewModel> Comments => NewsItem?.Comments.Select(c => new CommentViewModel
         {
+            Id = c.Id,
             Message = c.Content,
             UserName = c.CreatedBy,
             Created = c.Created

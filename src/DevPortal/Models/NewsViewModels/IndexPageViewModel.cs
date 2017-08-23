@@ -12,5 +12,7 @@ namespace DevPortal.Web.Models.NewsViewModels
         public int PageNumber { get; set; }
         public int PageCount { get; set; }
         public int MaxCommentsPerItem { get; set; }
+
+        public AddCommentViewModel AddComment { get; set; }
     }
 }
