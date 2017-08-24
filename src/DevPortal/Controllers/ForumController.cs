@@ -11,16 +11,17 @@ using System.Threading.Tasks;
 
 namespace DevPortal.Web.Controllers
 {
+    [Authorize]
     public class ForumController : Controller
     {
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         public ActionResult Index()
         {
             var viewModel = new IndexPageViewModel();
             return View(viewModel);
         }
 
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         public ActionResult Detail(string id)
         {
             var post = SampleData.Instance.ForumPosts.FirstOrDefault(p => p.Id == id);

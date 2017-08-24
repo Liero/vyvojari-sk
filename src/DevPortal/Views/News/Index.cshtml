@@ -70,8 +70,11 @@
                         <div class="media-body">
                             <div class="text-justify"><strong><a href="#">@comment.CreatedBy</a></strong><markdown>@comment.Content</markdown></div>
                             <ul class="actions list-inline">
-                                <li><a href="#">like</a></li>
-                                <li><a href="#">reply</a></li>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <li><a href="#">like</a></li>
+                                    <li><a href="#">reply</a></li>
+                                }
                                 <li><a href="#">share</a></li>
                             </ul>
                         </div>
@@ -82,15 +85,17 @@
                 }
             </ul>
 
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="form-group">
+                    <form method="post" asp-action="@nameof(NewsController.AddComment)" asp-route-id="@newsItem.Id">
+                        <input asp-for="@Model.AddComment.Message" class="form-control" placeholder="Add comment"
+                               data-action="submit" />
+                        <span asp-validation-for="@Model.AddComment.Message" />
+                    </form>
+                </div>
+            }
 
-
-            <div class="form-group">
-                <form method="post" asp-action="@nameof(NewsController.AddComment)" asp-route-id="@newsItem.Id">
-                    <input asp-for="@Model.AddComment.Message" class="form-control" placeholder="Add comment"
-                           data-action="submit" />
-                    <span asp-validation-for="@Model.AddComment.Message" />
-                </form>
-            </div>
         </div>
     </div>
 }

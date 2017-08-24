@@ -30,10 +30,11 @@ namespace DevPortal.Web
         public Startup(IHostingEnvironment env)
         {
             this._env = env;
-                  var builder = new ConfigurationBuilder()
-                  .SetBasePath(env.ContentRootPath)
-                  .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
             builder.AddEnvironmentVariables();
             if (env.IsDevelopment())
             {
@@ -66,7 +67,8 @@ namespace DevPortal.Web
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
-            services.AddMvc();
+            services.AddMvc().AddMvcOptions(opt => opt.Filters.Add<GlobalExceptionFilter>());
+
             services.AddTransient<IEmailSender, EmailSender>();
 
             services.Configure<Imgur>(Configuration.GetSection("Imgur"));

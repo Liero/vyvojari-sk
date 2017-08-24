@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DevPortal.Web.Models.BlogViewModels;
 using DevPortal.Web.Data;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace DevPortal.Web.Controllers
 {
+    [Authorize]
     public class BlogController : Controller
     {
         public BlogController()
@@ -17,6 +19,7 @@ namespace DevPortal.Web.Controllers
 
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             IndexPageViewModel model = new IndexPageViewModel()

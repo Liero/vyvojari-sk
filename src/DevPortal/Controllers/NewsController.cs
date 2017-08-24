@@ -11,9 +11,11 @@ using DevPortal.QueryStack;
 using Microsoft.EntityFrameworkCore;
 using DevPortal.Web.Models.SharedViewModels;
 using DevPortal.QueryStack.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DevPortal.Web.Controllers
 {
+    [Authorize]
     public class NewsController : Controller
     {
         public const string ControllerName = "News";
@@ -27,6 +29,7 @@ namespace DevPortal.Web.Controllers
             _devPortalDb = devPortalDbContext;
         }
 
+        [AllowAnonymous]
         public IActionResult Index(int pageNumber = 1, int maxCommentsPerItem = 3)
         {
             int pageIndex = pageNumber - 1;
@@ -61,6 +64,7 @@ namespace DevPortal.Web.Controllers
             return View(viewModel);
         }
 
+        [AllowAnonymous]
         public IActionResult Detail(Guid id)
         {
             NewsItem newsItem = _devPortalDb.NewsItems
