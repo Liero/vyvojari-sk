@@ -13,6 +13,7 @@ namespace DevPortal.QueryStack
         }
 
         public DbSet<NewsItem> NewsItems { get; set; }
+        public DbSet<ForumThread> ForumThreads { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
