@@ -46,10 +46,10 @@ namespace DevPortal.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseInMemoryDatabase("ApplicationDbContext"));
+                options.UseInMemoryDatabase("ApplicationDbContext"), ServiceLifetime.Transient);
 
             services.AddDbContext<DevPortalDbContext>(options =>
-                options.UseInMemoryDatabase("DevPortalDbContext"));
+                options.UseInMemoryDatabase("DevPortalDbContext"), ServiceLifetime.Transient);
 
             //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 

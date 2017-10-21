@@ -16,6 +16,6 @@ namespace DevPortal.QueryStack.Model
         public DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
         public virtual List<ForumPost> Posts { get; set; }
-        public int AnswersCount { get; set; }
+        public int PostsCount { get; set; }
     }   
 }

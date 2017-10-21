@@ -1,26 +1,11 @@
-﻿@model DevPortal.Web.Models.ForumViewModels.NewPostViewModel
+﻿@model DevPortal.Web.Models.ForumViewModels.CreateForumThreadViewModel
 @{
     ViewBag.Title = "Nový príspevok";
-}
-@section top{
-    <div class="jumbotron-forum shadow">
-        <div class="container">
-            <div class="pull-left">
-                <h1>Diskusné Fórum</h1>
-                <p>Miesto pre vaše otázky, návrhy a postrehy.</p>
-             
-            </div>
-
-            <div class="pull-right">
-                <img src="~/media/forum-icon.png" class="jumbotron-icon" />
-            </div>
-        </div>
-    </div>
 }
 
 <div class="row">
     <div class="col-md-8">
-        <form asp-action="@nameof(ForumController.NewPost)" asp-controller="Forum" method="post">
+        <form asp-action="@nameof(ForumController.Create)" asp-controller="Forum" method="post">
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     Nový príspevok
@@ -28,7 +13,7 @@
                 <div class="panel-body">
                     <div class="form-group">
                         <label>Názov</label>
-                        <input type="text" class="form-control" aria-label="What's your programming question? Be specific'"
+                        <input type="text" class="form-control" aria-label="Definujte názov témy alebo otázku"
                                asp-for="@Model.Title">
                     </div>
                     <div class="form-group">

@@ -77,7 +77,7 @@ namespace DevPortal.QueryStack.Denormalizers
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
-                ForumThread forumThread = db.ForumThreads.Find(message.ForumItemId);
+                ForumThread forumThread = db.ForumThreads.Find(message.ForumThreadId);
                 if (forumThread.Posts == null)
                 {
                     forumThread.Posts = new List<ForumPost>();
@@ -89,7 +89,7 @@ namespace DevPortal.QueryStack.Denormalizers
                     Created = message.TimeStamp,
                     CreatedBy = message.AuthorUserName,
                 });
-                forumThread.AnswersCount++;
+                forumThread.PostsCount++;
                 db.SaveChanges();
             }
         }
@@ -110,7 +110,7 @@ namespace DevPortal.QueryStack.Denormalizers
                     LastModified = message.TimeStamp,
                     LastModifiedBy = message.EditorUserName,
                 });
-                forumThread.AnswersCount++;
+                forumThread.PostsCount++;
                 db.SaveChanges();
             }
         }

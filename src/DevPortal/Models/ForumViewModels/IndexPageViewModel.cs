@@ -1,4 +1,5 @@
-﻿using DevPortal.Web.Data;
+﻿using DevPortal.QueryStack.Model;
+using DevPortal.Web.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,13 +9,13 @@ namespace DevPortal.Web.Models.ForumViewModels
 {
     public class IndexPageViewModel
     {
-        public List<ForumQuestionPostViewModel> Posts { get; }
+        public List<ForumThread> Threads { get; set; }
 
         public string[] MostUsedTags { get; }
+        public int PageNumber { get; set; }
 
         public IndexPageViewModel()
         {
-            Posts = SampleData.Instance.ForumPosts;
             MostUsedTags = SampleData.Tags;
         }
     }

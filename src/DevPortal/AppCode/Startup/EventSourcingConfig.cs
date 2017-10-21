@@ -24,6 +24,7 @@ namespace DevPortal.Web.AppCode.Startup
         private static void RegisterHandlers(IEventDispatcher eventDispatcher)
         {
             eventDispatcher.RegisterHandler<NewsItemDenormalizer>();
+            eventDispatcher.RegisterHandler<ForumThreadDenormalizer>();
         }
 
         private static object CreateInstance(Type type, IServiceProvider serviceProvider)

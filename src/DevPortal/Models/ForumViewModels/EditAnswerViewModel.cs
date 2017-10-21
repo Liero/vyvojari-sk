@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace DevPortal.Web.Models.ForumViewModels
 {
-    public class EditPostViewModel : NewPostViewModel
+    public class EditAnswerViewModel : NewAnswerViewModel
     {
         [HiddenInput]
         [Required]
-        public string Id { get; set; }
+        public Guid ForumPostId { get; set; }
     }
 }

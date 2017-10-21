@@ -19,23 +19,59 @@ a.avatar {
         position: absolute;
     }
 
-    a.avatar > span {
+    a.avatar > * {
         color: white;
         font-size: 36px;
         position: absolute;
         text-align: center;
-        vertical-align: middle;      
+        vertical-align: middle;
     }
 
 a.avatar-small {
-    height: 64px;
-    width: 64px;
+    height: 48px;
+    width: 48px;
 }
 
     a.avatar-small > * {
-        height: 64px;
-        width: 64px;
-        line-height: 64px;
+        height: 48px;
+        width: 48px;
+        line-height: 48px;
+        font-size: 28px;
+    }
+
+a.avatar-xsmall {
+    height: 42px;
+    width: 42px;
+}
+
+    a.avatar-xsmall > * {
+        height: 42px;
+        width: 42px;
+        line-height: 40px;
+        font-size: 24px;
+    }
+.threads-item {
+    display: table;
+    width: 100%;
+}
+
+    .threads-item > .author {
+        display: table-cell;
+        width: 100px;
+        padding: 20px;
+        vertical-align: top;
+    }
+
+    .threads-item .stats {
+        display: table-cell;
+        width: 100px;
+        text-align: center;
+        vertical-align: top
+    }
+
+    .threads-item .body {
+        display: table-cell;
+        vertical-align: top;
     }
 
 .forum-post {
@@ -52,6 +88,7 @@ a.avatar-small {
     .forum-post > .panel {
         box-shadow: none;
     }
+
 
 .comment-title {
     margin-left: 60px;
