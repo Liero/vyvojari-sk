@@ -64,7 +64,7 @@ namespace DevPortal.QueryStack.Denormalizers
             {
                 var entity = new ForumThread { Id = message.Id };
                 db.ForumThreads.Attach(entity);
-                db.ForumThreads.RemoveRange(entity);
+                db.ForumThreads.Remove(entity);
                 db.SaveChanges();
             }
         }

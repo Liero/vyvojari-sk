@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace DevPortal.Web.ViewComponents
 {
-    [ViewComponent(Name ="LoginForm")]
     public class LoginFormViewComponent: ViewComponent
     {
         public IViewComponentResult Invoke(LoginFormViewModel model = null)

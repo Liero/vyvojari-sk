@@ -1,47 +1,46 @@
 ﻿@model DevPortal.Web.Models.BlogViewModels.IndexPageViewModel
 @{
     ViewBag.Title = "Blogy";
-    Guid guid = Guid.NewGuid();
 }
 
 <div class="clearfix m-b-sm">
     <div class="btn-group pull-right">
-        <a class="btn btn-warning " asp-action="Create">Vytvor blog post</a>
+        @*<a class="btn btn-warning " asp-action="Create">Vytvor blog post</a>*@
         <a class="btn btn-warning " asp-action="CreateLink">Vytvor odkaz na blog</a>
     </div>
 </div>
 
-@foreach (var newsItem in Model.Items)
+@foreach (var blog in Model.Blogs)
 {
     <div class="panel panel-default">
         <div class="panel-body">
             <h3>
-                <a class="h3" href="@newsItem.ExternalLink" target="_blank">
-                    @newsItem.Title
-                    @if (newsItem.IsExternalLink)
+                <a class="h3" href="@blog.ExternalUrl" target="_blank">
+                    @blog.Title
+                    @*@if (newsItem.IsExternalLink)*@
                     {
-                        <i class="glyphicon glyphicon-new-window"></i>
+                    <i class="glyphicon glyphicon-new-window"></i>
                     }
                 </a>
+
+
+                @if (User.Identity.Name == blog.CreatedBy)
+                {
+                    <button class="btn btn-default pull-right">Delete</button>
+                }
             </h3>
-            <span>@newsItem.Created of <strong>@newsItem.UserName</strong></span>
-            <p>@newsItem.Description</p>
+            <p><markdown>@blog.Description</markdown></p>
 
-            <ul class="actions list-inline">
-                <li><button class="btn btn-default">Upvote</button></li>
-                <li><button class="btn btn-link">Show details</button></li>
-                <li>
-                    <button class="btn btn-link" data-action="show-comments">
-                        Comment
-                        @if (newsItem.CommentsCount > 0)
-                        {
-                            <span class="label label-default">@newsItem.CommentsCount</span>
-                        }
-                    </button>
+            <div class="media">
+                <div class="media-left">
+                    <a avatar-for-user="@blog.CreatedBy" class="avatar avatar-small" />
+                </div>
+                <div class="media-body">
+                    <b>@blog.CreatedBy</b>, <time for="blog.Created" />
+                </div>
+            </div>
 
-                </li>
-                <li><button class="btn btn-link">Share</button></li>
-            </ul>
+
         </div>
     </div>
 }

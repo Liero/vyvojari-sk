@@ -5,15 +5,9 @@ using System.Threading.Tasks;
 
 namespace DevPortal.Web.Models.BlogViewModels
 {
-    public class CrateLinkViewModel
+    public class CreateViewModel
     {
         public string Title
-        {
-            get;
-            set;
-        }
-
-        public string Link
         {
             get;
             set;
@@ -31,9 +25,9 @@ namespace DevPortal.Web.Models.BlogViewModels
             set;
         }
 
-        public CrateLinkViewModel()
+        public CreateViewModel()
         {
-            this.Link = "https://";
+
         }
     }
 }

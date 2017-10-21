@@ -14,17 +14,20 @@
                     <div class="form-group">
                         <label>Názov</label>
                         <input type="text" class="form-control" aria-label="Definujte názov témy alebo otázku"
-                               asp-for="@Model.Title">
+                               asp-for="Title">
+                        <span asp-validation-for="Content"></span>
+
                     </div>
                     <div class="form-group">
-                        <content-editor asp-for="@Model.Content" />
+                        <content-editor asp-for="Content" />
+                        <span asp-validation-for="Content"></span>
                     </div>
 
                     <div class="form-group">
                         <label for="tags">Tagy</label>
-                        <tags-editor asp-for="@Model.Tags" />
+                        <tags-editor asp-for="Tags" />
+                        <span asp-validation-for="Tags"></span>
                     </div>
-                    <div asp-validation-summary="All"></div>
                 </div>
                 <div class="panel-footer">
                     <button class="btn btn-success">Odoslať</button>

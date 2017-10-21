@@ -1,38 +1,35 @@
-﻿@model DevPortal.Web.Models.BlogViewModels.CrateLinkViewModel
+﻿@model DevPortal.Web.Models.BlogViewModels.CreateLinkViewModel
 @{
     ViewBag.Title = "Pridať odkaz na blog";
 }
 
 <div class="row">
     <div class="col-md-8">
-        <form action="Create" method="post">
+        <form asp-action="@nameof(BlogController.CreateLink)" asp-controller="Blog" method="post">
             <div class="panel panel-primary">
-                <div class="panel-heading">Vytvoriť odkaz na blog</div>
+                <div class="panel-heading">Vytvor odkaz na blog</div>
                 <div class="panel-body">
                     <div class="form-group">
                         <label asp-for="Title">Titulka</label>
                         <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Link">URL Adresa</label>
                         <input asp-for="Link" class="form-control" />
+                        <span asp-validation-for="Link"></span>
                     </div>
                     <div class="form-group">
-                        <label asp-for="Content">Obsah</label>
-                        <vc:editor asp-for="@Model.Content" />
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Tags">Tagy</label>
-                        <vc:tags-selector asp-for="@Model.Tags" />
+                        <label asp-for="Description">Kratky popis</label>
+                        <textarea asp-for="Description" class="form-control"></textarea>
+                        <span asp-validation-for="Description"></span>
                     </div>
                 </div>
                 <div class="panel-footer">
                     <div>
-                        <button class="btn btn-default" type="button">Zrušiť</button>
+                        <a asp-action="Index" class="btn btn-default">Zrušiť</a>
                         <div class="btn-group pull-right">
-
-                            <button class="btn btn-default" type="button">Uložiť</button>
-                            <button class="btn btn-success" type="button">Publikovať</button>
+                            <button class="btn btn-success">Publikovať</button>
                         </div>
                     </div>
                 </div>
