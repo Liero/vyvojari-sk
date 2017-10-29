@@ -7,6 +7,10 @@ namespace DevPortal.QueryStack.Model
 {
     public class ForumThread
     {
+        public ForumThread()
+        {
+            Posts = new HashSet<ForumPost>();
+        }
         public Guid Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
@@ -15,7 +19,7 @@ namespace DevPortal.QueryStack.Model
         public string CreatedBy { get; set; }
         public DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
-        public virtual List<ForumPost> Posts { get; set; }
+        public virtual ICollection<ForumPost> Posts { get; set; }
         public int PostsCount { get; set; }
     }   
 }

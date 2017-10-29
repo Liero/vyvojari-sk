@@ -6,6 +6,10 @@ namespace DevPortal.QueryStack.Model
 {
     public class NewsItem
     {
+        public NewsItem()
+        {
+            Comments = new HashSet<NewsItemComment>();
+        }
         public Guid Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
@@ -17,7 +21,7 @@ namespace DevPortal.QueryStack.Model
         public DateTime Published { get; set; }
         public bool IsPublished { get; set; }
 
-        public virtual List<NewsItemComment> Comments { get; set; }
+        public virtual ICollection<NewsItemComment> Comments { get; set; }
         public int CommentsCount { get; set; }
     }
 }

@@ -4,6 +4,8 @@ using DevPortal.QueryStack.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace DevPortal.QueryStack.Denormalizers
@@ -78,10 +80,7 @@ namespace DevPortal.QueryStack.Denormalizers
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 ForumThread forumThread = db.ForumThreads.Find(message.ForumThreadId);
-                if (forumThread.Posts == null)
-                {
-                    forumThread.Posts = new List<ForumPost>();
-                }
+                Trace.WriteLine("Posted ForumItem with Id " + message.ForumItemId);
                 forumThread.Posts.Add(new ForumPost
                 {
                     Id = message.ForumItemId,
@@ -98,19 +97,14 @@ namespace DevPortal.QueryStack.Denormalizers
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
-                ForumThread forumThread = db.ForumThreads.Find(message.ForumItemId);
-                if (forumThread.Posts == null)
-                {
-                    forumThread.Posts = new List<ForumPost>();
-                }
-                forumThread.Posts.Add(new ForumPost
-                {
-                    Id = message.ForumItemId,
-                    Content = message.Content,
-                    LastModified = message.TimeStamp,
-                    LastModifiedBy = message.EditorUserName,
-                });
-                forumThread.PostsCount++;
+                ForumPost post = db.ForumPosts
+                    .Include(p => p.Thread)
+                    .First(p => p.Id == message.ForumItemId);
+
+                post.Thread.PostsCount++;
+                post.Content = message.Content;
+                post.LastModified = message.TimeStamp;
+                post.LastModifiedBy = message.EditorUserName;
                 db.SaveChanges();
             }
         }

@@ -15,6 +15,7 @@ namespace DevPortal.QueryStack
 
         public DbSet<NewsItem> NewsItems { get; set; }
         public DbSet<ForumThread> ForumThreads { get; set; }
+        public DbSet<ForumPost> ForumPosts { get; set; }
         public DbSet<Blog> Blogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,7 +32,7 @@ namespace DevPortal.QueryStack
             modelBuilder.Entity<ForumThread>(entity =>
             {
                 entity.HasMany(e => e.Posts)
-                    .WithOne()
+                    .WithOne(e => e.Thread)
                     .OnDelete(DeleteBehavior.Cascade);
             });
         }
