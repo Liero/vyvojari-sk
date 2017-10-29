@@ -34,6 +34,16 @@ namespace DevPortal.Web.Controllers
                 _eventStore.Save(evt);
                 counter++;
             }
+            foreach (var evt in sampleData.Forum(20))
+            {
+                _eventStore.Save(evt);
+                counter++;
+            }
+            foreach (var evt in sampleData.Blog(10))
+            {
+                _eventStore.Save(evt);
+                counter++;
+            }
             ViewBag.Message = $"Generated {counter} events";
             return View(nameof(Index));
         }

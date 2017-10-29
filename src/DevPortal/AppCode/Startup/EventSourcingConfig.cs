@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace DevPortal.Web.AppCode.Startup
@@ -14,7 +15,9 @@ namespace DevPortal.Web.AppCode.Startup
         {
             services.AddSingleton<IEventDispatcher>(serviceProvider =>
             {
-                var eventDispatcher = new InMemoryBus(type => CreateInstance(type, serviceProvider));
+                
+                var eventDispatcher = new InMemoryBus(type =>
+                    ActivatorUtilities.CreateInstance(serviceProvider, type));
                 RegisterHandlers(eventDispatcher);
                 return eventDispatcher;
             });
@@ -23,22 +26,19 @@ namespace DevPortal.Web.AppCode.Startup
 
         private static void RegisterHandlers(IEventDispatcher eventDispatcher)
         {
-            eventDispatcher.RegisterHandler<NewsItemDenormalizer>();
+            //eventDispatcher.RegisterHandler<NewsItemDenormalizer>();
+            //eventDispatcher.RegisterHandler<BlogDenormalizer>();
+            //eventDispatcher.RegisterHandler<ForumThreadDenormalizer>();
+
+            foreach (var denormalizer in AllDenormalizers)
+            {
+                eventDispatcher.RegisterHandler(denormalizer);
+            }
         }
 
-        private static object CreateInstance(Type type, IServiceProvider serviceProvider)
-        {
-            var ctor = type.GetConstructors()
-                .Where(c => c.IsPublic)
-                .OrderByDescending(c => c.GetParameters().Length)
-                .FirstOrDefault()
-                ?? throw new InvalidOperationException($"No suitable contructor found on type '{type}'");
+        private static IEnumerable<Type> AllDenormalizers => Assembly.GetAssembly(typeof(NewsItemDenormalizer))
+                .GetExportedTypes()
+                .Where(t => t.Name.EndsWith("Denormalizer"));
 
-            var injectionServices = ctor.GetParameters()
-                .Select(p => serviceProvider.GetRequiredService(p.ParameterType))
-                .ToArray();
-
-            return ctor.Invoke(injectionServices);
-        }
     }
 }

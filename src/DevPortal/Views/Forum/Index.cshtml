@@ -12,7 +12,7 @@
                 <div class="m-t">
                     <a class="btn btn-primary"
                        asp-controller="Forum"
-                       asp-action="@nameof(ForumController.NewPost)">
+                       asp-action="@nameof(ForumController.Create)">
                         Nová Diskusia
                     </a>
                 </div>
@@ -32,43 +32,41 @@
 <div class="row">
     <div class="col-md-8">
         <section>
-            @foreach (var forumItem in Model.Posts)
+            @foreach (var thread in Model.Threads)
             {
-                <div class="panel panel-default">
-                    <div class="post-author">
+                <div class="panel panel-default threads-item">
+                    <div class="author">
+                        <a avatar-for-user="@thread.CreatedBy" />
                         <a href="#">
-                            <img src="@Url.Content(forumItem.Avatar)" alt="...">
-                        </a>
-                        <a href="#">
-                            @forumItem.UserName
+                            @thread.CreatedBy
                         </a>
                     </div>
-                    <div class="post-body">
+                    <div class="body">
                         <h3>
-                            <a class="h3" asp-action="@nameof(ForumController.Detail)" asp-route-id="@forumItem.Id">
-                                @forumItem.Title
+                            <a class="h3" asp-action="@nameof(ForumController.Detail)" asp-route-id="@thread.Id">
+                                @thread.Title
                             </a>
                         </h3>
-                        <p>@forumItem.Content</p>
+                        <p>@thread.Content</p>
 
                         <div class="m-b">
-                            @foreach (var tag in forumItem.Tags)
+                            @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(thread.Tags))
                             {
                                 <span class="label label-default">@tag</span>
                             }
                         </div>
                     </div>
-                    <div class="post-stats text-muted b-l">
+                    <div class="stats text-muted b-l">
                         <div class="badge-comments m-a" title="Počet odpovedí">
-                            @forumItem.Answers
+                            @thread.PostsCount
                         </div>
                         <div class="b-t" style="margin-top:20px; padding:5px">
                             <span class="glyphicon glyphicon-eye-open"></span>
-                            @forumItem.Views
+                            Todo
                         </div>
                         <div class="b-t" style="padding:5px">
                             <span class="glyphicon glyphicon-time"></span>
-                            @Html.DisplayAge(forumItem.LastPost)
+                            <time for="@thread.Created" />
                         </div>
                     </div>
                 </div>

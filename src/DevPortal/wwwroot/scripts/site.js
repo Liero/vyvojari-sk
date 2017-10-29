@@ -11,6 +11,8 @@ var app = {};
         $("input[data-provider=tagseditor]").tagsinput({
                 confirmKeys: [13, 32, 44, 59] //13=enter, 32=space, 44=;59=,
         });
+
+        $(document.body).on('key-press', '[data-action="submit"]', submitForm)
     }
 
 
@@ -18,6 +20,10 @@ var app = {};
         var footer = $(this).closest(".panel").find('.panel-footer');
         footer.show();
         footer.find('input').focus();
+    }
+
+    function submitForm() {
+        $(this).closest('form').submit();
     }
 
     app.init();

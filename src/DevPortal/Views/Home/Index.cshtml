@@ -2,24 +2,24 @@
 @model HomePageViewModel
 
 <div class="clearfix m-b-sm">
-    <a class="btn btn-warning pull-right" href="@Url.Action(nameof(ForumController.NewPost), "Forum")">Ask question</a>
+    <a asp-controller="@ForumController.ControllerName" asp-action="@nameof(ForumController.Create)" class="btn btn-warning pull-right">Ask Question</a>
 </div>
 
 <div class="row">
     <div class="col-md-8">
         @if (!User.Identity.IsAuthenticated)
-            {
-            @await Component.InvokeAsync(typeof(LoginFormViewComponent));
-            }
-            else
-            {
-                Html.RenderPartial("_UserInfo");
-            }
+        {
+            <vc:login-form model="null" />
+        }
+        else
+        {
+            Html.RenderPartial("_UserInfo");
+        }
 
         <div class="btn-group btn-group-justified m-b" role="group" aria-label="...">
             <a asp-controller="News" asp-action="Create" class="btn btn-warning">Vytvor správičku</a>
-            <a class="btn btn-info" asp-action="Create" asp-controller="Blog">Napíš článok</a>
-            <a asp-controller="Forum" asp-action="NewPost" class="btn btn-success">Začni diskusiu</a>
+            <a class="btn btn-info" asp-action="CreateLink" asp-controller="Blog">Napíš článok</a>
+            <a asp-controller="Forum" asp-action="Create" class="btn btn-success">Začni diskusiu</a>
         </div>
 
         <section>
@@ -48,12 +48,13 @@
     <div class="col-md-4 p-l-0">
         <div class="panel panel-default">
             <div class="panel-body">
-                @await Component.InvokeAsync(typeof(ForumOverviewViewComponent))
+                <vc:forum-overview />
             </div>
         </div>
         <div class="panel panel-default">
             <div class="panel-body">
-                @await Component.InvokeAsync(typeof(BlogsOverviewViewComponent))
+                <vc:blogs-overview />
+
             </div>
         </div>
     </div>

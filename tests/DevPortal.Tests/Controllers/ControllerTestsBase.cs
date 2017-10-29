@@ -15,9 +15,21 @@ namespace DevPortal.Web.Controllers
 {
     public class ControllerTestsBase<TController> where TController : Controller
     {
+        private ServiceProvider _serviceProvider;
+
         public Mock<IEventStore> EventStoreMock { get; set; }
         public TController Controller { get; set; }
         protected ServiceCollection Services { get; set; }
+
+        protected ServiceProvider ServiceProvider
+        {
+            get
+            {
+                return _serviceProvider ?? (_serviceProvider = Services.BuildServiceProvider());
+            }
+        }
+
+        public T GetService<T>() => ServiceProvider.GetRequiredService<T>();
 
         [TestInitialize]
         public void TestInitialize() => Init();
@@ -26,18 +38,19 @@ namespace DevPortal.Web.Controllers
         {
             EventStoreMock = new Mock<IEventStore>();
             Services = new ServiceCollection();
-            Services.AddTransient<TController, TController>();
             Services.AddSingleton<IEventStore>(EventStoreMock.Object);
             Services.AddDbContext<DevPortalDbContext>(options =>
-                options.UseInMemoryDatabase("DevPortalDbContext"));
+                options.UseInMemoryDatabase("DevPortalDbContext"), ServiceLifetime.Transient);
         }
+
 
         public virtual TController CreateController()
         {
-            var controller = Services.BuildServiceProvider().GetRequiredService<TController>();
+            var controller = ActivatorUtilities.CreateInstance<TController>(ServiceProvider);
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             return controller;
         }
+
         public virtual TController CreateAuthenticatedController(string userName)
         {
             var controller = CreateController();
@@ -48,6 +61,9 @@ namespace DevPortal.Web.Controllers
             return controller;
         }
 
-
+        protected EventStoreListener<T> ListenInEventStoreFor<T>() where T : DomainEvent
+        {
+            return new EventStoreListener<T>(EventStoreMock);
+        }
     }
 }

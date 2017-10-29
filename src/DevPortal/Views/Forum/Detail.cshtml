@@ -2,54 +2,70 @@
 @model ForumDetailViewModel
 @{
     ViewBag.Title = "Diskusné fórum";
-
-    var posts = Model.Answers.ToList();
-    posts.Insert(0, Model.Question);
 }
 
 
 <div class="row">
     <div class="col-md-8">
-        <div class="panel panel-default">
+
+        <div class="panel panel-primary">
             <div class="panel-body">
-                <h1>@Model.Question.Title</h1>
-                @foreach (var tag in Model.Question.Tags)
+                <h1>@Model.Thread.Title</h1>
+                <markdown>@Model.Thread.Content</markdown>
+                @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(Model.Thread.Tags))
                 {
                     <span class="label label-default">@tag</span>
                 }
-
-                @for (int i = 0; i < posts.Count; i++)
-                {
-                    var answer = posts[i];
-                    <div class="forum-post">
-                        <a>
-                            <img src="@answer.Avatar"
-                                 class="avatar" />
-                        </a>
-                        <div class="panel @(i == 0 ? "panel-primary" : "panel-default") comment-title">
-                            <div class="panel-heading">
-                                <strong>@answer.UserName</strong> napísal pred 8 hodinami
-                            </div>
-                            <div class="panel-body">
-                                <markdown>@answer.Content</markdown>
-                            </div>
-                        </div>
+            </div>
+            <div class="panel-footer">
+                <div class="media">
+                    <div class="media-left">
+                        <a avatar-for-user="@Model.Thread.CreatedBy" class="avatar avatar-small" />
                     </div>
-                }
+
+                    <div class="media-body">
+                        <b>@Model.Thread.CreatedBy</b>, <time for="Model.Thread.Created" />
+                        @if (Model.Thread.LastModified > Model.Thread.Created)
+                        {
+                             <i>(edited by @Model.Thread.LastModifiedBy, <time for="@Model.Thread.LastModified" />)</i>
+                        }
+                    </div>                   
+                </div>
             </div>
         </div>
 
-        <form asp-action="@nameof(ForumController.NewAnswer)" 
+        @foreach (var answer in Model.Thread.Posts)
+        {
+            <div class="forum-post">
+                <a avatar-for-user="@Model.Thread.CreatedBy" class="avatar avatar-xsmall" />
+                <div class="panel panel-default comment-title">
+                    <div class="panel-heading">
+                        <strong>@answer.CreatedBy</strong> <time for="@answer.Created" />
+                    </div>
+                    <div class="panel-body">
+                        <markdown>@answer.Content</markdown>
+                        @if (Model.Thread.LastModified > Model.Thread.Created)
+                        {
+                            <i>(edited by @Model.Thread.LastModifiedBy, <time for="@Model.Thread.LastModified" />)</i>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+       
+
+        <form asp-action="@nameof(ForumController.NewPost)" 
               asp-controller="Forum"
-              asp-route-id="@Model.Question.Id"
+              asp-route-id="@Model.Thread.Id"
               method="post">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    Nový príspevok
+                    Nová odpoveď
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
                         <content-editor asp-for="@Model.NewAnswer.Content"  />
+                        <span asp-validation-for="@Model.NewAnswer.Content"></span>
                     </div>
                 </div>
                 <div class="panel-footer">
@@ -65,17 +81,15 @@
                 <section>
                     <h2>Prehľad diskusie</h2>
                     <ul class="media-list">
-                        @foreach (var post in posts)
+                        @foreach (var post in Model.Thread.Posts)
                         {
                             <li class="media">
                                 <div class="media-left">
-                                    <a href="#">
-                                        <img class="media-object media-object-small" src="@Url.Content(post.Avatar)" alt="...">
-                                    </a>
+                                    <a avatar-for-user="@post.CreatedBy" class="avatar avatar-small" />
                                 </div>
                                 <div class="media-body">
-                                    <h4 class="media-heading">@post.UserName @(post == Model.Question ? "sa opýtal" : "napísal odpoveď")</h4>
-                                    @post.Created
+                                    <h4 class="media-heading">@post.CreatedBy napísal odpoveď</h4>
+                                    <time for="@post.Created" />
                                 </div>
                             </li>
                         }

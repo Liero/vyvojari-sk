@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DevPortal.QueryStack.Model
 {
-    public class NewsItem
+    public class ForumThread
     {
-        public NewsItem()
+        public ForumThread()
         {
-            Comments = new HashSet<NewsItemComment>();
+            Posts = new HashSet<ForumPost>();
         }
         public Guid Id { get; set; }
         public string Title { get; set; }
@@ -18,10 +19,7 @@ namespace DevPortal.QueryStack.Model
         public string CreatedBy { get; set; }
         public DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
-        public DateTime Published { get; set; }
-        public bool IsPublished { get; set; }
-
-        public virtual ICollection<NewsItemComment> Comments { get; set; }
-        public int CommentsCount { get; set; }
-    }
+        public virtual ICollection<ForumPost> Posts { get; set; }
+        public int PostsCount { get; set; }
+    }   
 }

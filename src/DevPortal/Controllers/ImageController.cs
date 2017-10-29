@@ -11,12 +11,13 @@ using Newtonsoft.Json;
 using DevPortal.Web.Services;
 using DevPortal.CommandStack.Infrastructure;
 using DevPortal.CommandStack.Events;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace DevPortal.Web.Controllers
 {
-    [Route("api/image")]
+    [Route("api/image"), Authorize]
     public class ImageController : Controller
     {
         private readonly IImageStore _imageStore;

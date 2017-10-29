@@ -5,36 +5,55 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DevPortal.Web.Models.BlogViewModels;
 using DevPortal.Web.Data;
+using Microsoft.AspNetCore.Authorization;
+using DevPortal.CommandStack.Infrastructure;
+using DevPortal.QueryStack;
+using DevPortal.CommandStack.Events;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace DevPortal.Web.Controllers
 {
+    [Authorize]
     public class BlogController : Controller
     {
-        public BlogController()
-        {
+        private readonly IEventStore _eventStore;
+        private readonly DevPortalDbContext _devPortalDb;
 
+        public BlogController(IEventStore eventStore, DevPortalDbContext devPortalDbContext)
+        {
+            _eventStore = eventStore;
+            _devPortalDb = devPortalDbContext;
         }
 
-        public IActionResult Index()
+        [AllowAnonymous]
+        public IActionResult Index(int pageNumber = 1)
         {
-            IndexPageViewModel model = new IndexPageViewModel()
+            int pageIndex = pageNumber - 1;
+            int pageSize = 20;
+
+            IndexPageViewModel viewModel = new IndexPageViewModel
             {
-                Items = SampleData.Instance.BlogPosts
+                PageNumber = pageNumber,
             };
 
-            return View(model);
+            viewModel.Blogs = _devPortalDb.Blogs
+                .OrderBy(i => i.Created)
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return View(viewModel);
         }
 
         public IActionResult Create()
         {
-            CrateViewModel model = new CrateViewModel();
+            CreateViewModel model = new CreateViewModel();
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Create(CrateViewModel model)
+        public IActionResult Create(CreateViewModel model)
         {
 
             return this.RedirectToAction(nameof(this.Index));
@@ -42,15 +61,48 @@ namespace DevPortal.Web.Controllers
 
         public IActionResult CreateLink()
         {
-            CrateLinkViewModel model = new CrateLinkViewModel();
+            CreateLinkViewModel model = new CreateLinkViewModel();
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult CreateLink(CrateLinkViewModel model)
+        public IActionResult CreateLink(CreateLinkViewModel viewModel)
         {
+            if (!ModelState.IsValid) return View(viewModel);
 
-            return this.RedirectToAction(nameof(this.Index));
+            var evt = new BlogLinkCreated
+            {
+                BlogId = Guid.NewGuid(),
+                UserName = User.Identity.Name,
+                Title = viewModel.Title,
+                Description = viewModel.Description,
+            };
+            _eventStore.Save(evt);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpDelete]
+        public IActionResult Delete(Guid id)
+        {
+            var entity = _devPortalDb.Blogs.Find(id);
+            if (entity == null)
+            {
+                return NotFound("Specified id does not exist");
+            }
+            if (entity.CreatedBy != User.Identity.Name)
+            {
+                return Unauthorized();
+            }
+
+            var evt = new BlogDeleted
+            {
+                BlogId = id,
+                UserName = User.Identity.Name,
+            };
+            _eventStore.Save(evt);
+
+            return RedirectToAction(nameof(Index), routeValues: new { id });
         }
     }
 }
