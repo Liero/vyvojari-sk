@@ -1,26 +1,21 @@
-﻿<div class="panel panel-default">
+﻿<div class="welcome-cont-out">
+    <h1 class="main-head"><span class="light-text">Ahoj,</span> @User.Identity.Name<text>!</text></h1>
     <div class="row">
-        <div class="col-md-6 col-md-border">
-            <div class="panel-body">
-                <div class="media">
-                    <div class="media-left">
-                        <a avatar-for-user="@User.Identity.Name"></a> 
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">@User.Identity.Name</h4>
-                        .NET developer, technical architect
-                        <p class="m-t"><a asp-controller="Manage" asp-action="@nameof(ManageController.Index)">Improve your profile</a></p>
-                    </div>
-                </div>
+        <div class="col-md-6 board-right">
+            <a avatar-for-user="@User.Identity.Name" class="avatar pull-left"></a>
+            <div class="welcome-cont">
+                <p class="mb-1"><b>.NET developer, technical architect</b></p>
+                <a asp-controller="Manage" asp-action="@nameof(ManageController.Index)"
+                   class="blue-text mb-0">Vylepši si svoj profil »</a>
             </div>
         </div>
-        <div class="col-md-6 col-md-border">
-            <div class="panel-body">
+        <div class="col-md-6 res-mt-20">
+            <ul class="light-text">
                 @foreach (var item in DevPortal.Web.Data.SampleData.Titles.Take(4))
                 {
-                    <a>@item</a><br />
+                    <li><a href="#">@item</a></li>
                 }
-            </div>
+            </ul>
         </div>
     </div>
 </div>

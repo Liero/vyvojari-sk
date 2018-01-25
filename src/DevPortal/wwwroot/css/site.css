@@ -4,6 +4,10 @@
     background-color: #E0E0E0;
 }
 
+a {
+    color: #E0E0E0;
+}
+
 a.avatar {
     position: relative;
     height: 96px;

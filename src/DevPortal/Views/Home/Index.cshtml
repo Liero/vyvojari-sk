@@ -1,12 +1,8 @@
 ﻿@using DevPortal.Web.Models.HomeViewModels
 @model HomePageViewModel
 
-<div class="clearfix m-b-sm">
-    <a asp-controller="@ForumController.ControllerName" asp-action="@nameof(ForumController.Create)" class="btn btn-warning pull-right">Ask Question</a>
-</div>
-
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-lg-8">
         @if (!User.Identity.IsAuthenticated)
         {
             <vc:login-form model="null" />
@@ -16,30 +12,29 @@
             Html.RenderPartial("_UserInfo");
         }
 
-        <div class="btn-group btn-group-justified m-b" role="group" aria-label="...">
-            <a asp-controller="News" asp-action="Create" class="btn btn-warning">Vytvor správičku</a>
-            <a class="btn btn-info" asp-action="CreateLink" asp-controller="Blog">Napíš článok</a>
-            <a asp-controller="Forum" asp-action="Create" class="btn btn-success">Začni diskusiu</a>
-        </div>
+        <ul class="tab-content-style">
+            <li class="active"><a href="#">správičky</a></li>
+            <li><a href="#">fórum</a></li>
+            <li><a href="#">posledná aktivita</a></li>
+        </ul>
 
-        <section>
+        <section class="mt-30">
             @foreach (var newsItem in Model.LatestNews)
             {
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <h3>@newsItem.Title</h3>
-                        <p>@newsItem.Content</p>
-                        <ul class="actions list-inline">
-                            <li><button class="btn btn-default">Upvote</button></li>
-                            <li>
-                                <button class="btn btn-link">Comment</button>
-                                @if (newsItem.CommentsCount > 0)
-                                {
-                                    <span class="label label-default">@newsItem.CommentsCount</span>
-                                }
-                            </li>
-                            <li><button class="btn btn-link">Share</button></li>
-                        </ul>
+                <div class="btm-bord-content mt-30">
+                    <div class="@(newsItem.CommentsCount > 0 ? "bubble" : "bubble bubble-gray")">
+                        @newsItem.CommentsCount
+                    </div>
+                    <div>
+                        <a href="#" class="orange-text head-link">@newsItem.Title</a>
+                        <p class="mb-2">@newsItem.Content.Truncate(120)</p>
+                        <p class="gray-text font-s14 mb-0">
+                            Posted on @newsItem.Created <span class="blue-text">@newsItem.CreatedBy</span>
+                            <span class="blue-text pull-right">
+                                <a href="#" class="link mr-2">Share</a>
+                                <a href="#" class="link">Comments</a>
+                            </span>
+                        </p>
                     </div>
                 </div>
             }

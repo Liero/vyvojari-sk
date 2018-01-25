@@ -78,6 +78,7 @@ namespace DevPortal.Web.Data
                 Comments = rnd.Next(3) > 0 ? new List<NewsItemComment>() :
                    GenerateComments().Skip(i).Take(rnd.Next(10)).ToList()
             }).ToList();
+            foreach (var i in News) i.CommentsCount = i.Comments.Count;
 
             ForumPosts = Enumerable.Range(3, 20).Select(i => new ForumQuestionPostViewModel
             {

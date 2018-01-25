@@ -23,7 +23,7 @@
         <div class="panel panel-primary">
             <div class="panel-heading">@Model.NewsItem.Title</div>
             <div class="panel-body">
-                <markdown>@Model.NewsItem.Content</markdown>
+                <markdown>@Html.Raw(Model.NewsItem.Content)</markdown>
                 @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(Model.NewsItem.Tags))
                 {
                     <span class="label label-default">@tag</span>
