@@ -1,57 +1,38 @@
 ﻿@model DevPortal.Web.Models.NewsViewModels.EditNewsItemViewModel
 @{
-    ViewBag.Title = "Pridať správičku";
-}
-@section top{
-    <div class="jumbotron-news shadow">
-        <div class="container">
-            <div class="pull-left">
-                <h1>Správičky</h1>
-                <p>Novinky, udalosti, oznámenia...<br />Zdielajte s vývojármi, čo je nové!</p>
-
-            </div>
-
-            <div class="pull-right">
-                <img src="~/media/news-icon.png" class="jumbotron-icon" />
-            </div>
-        </div>
-    </div>
+    ViewBag.Title = "Upraviť správičku";
 }
 
 <div class="row">
     <div class="col-md-8">
+        <h1 class="main-head">Upraviť správičku</h1>
+
         <form action="@nameof(NewsController.Edit)" method="post">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Upraviť správičku</div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <label asp-for="@Model.Title">Názov správičky</label>
-                        <input asp-for="@Model.Title" class="form-control">
-                        <span asp-validation-for="@Model.Title"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Správička</label>
-                        <content-editor asp-for="@Model.Content" />
-                        <span asp-validation-for="@Model.Content"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="@Model.Tags">Tagy</label>
-                        <tags-editor asp-for="@Model.Tags" />
-                        <span asp-validation-for="@Model.Tags"></span>
-                    </div>
-                </div>
-                <div class="panel-footer">
-                    <div>
-                        <a asp-action="index" class="btn btn-default">Zrušiť</a>
-                        <div class="btn-group pull-right">
-                            <button asp-action="Edit" class="btn btn-success" type="submit">Uložiť</button>
-                        </div>
-                    </div>
+            <div class="form-group">
+                <label asp-for="@Model.Title">Názov správičky</label>
+                <input asp-for="@Model.Title" class="form-control">
+                <span asp-validation-for="@Model.Title"></span>
+            </div>
+            <div class="form-group">
+                <label for="message">Správička</label>
+                <content-editor asp-for="@Model.Content" />
+                <span asp-validation-for="@Model.Content"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Tags">Tagy</label>
+                <tags-editor asp-for="@Model.Tags" />
+                <span asp-validation-for="@Model.Tags"></span>
+            </div>
+
+            <div  class="pt-3">
+                <a asp-action="index" class="btn btn-secondary">Zrušiť</a>
+                <div class="btn-group pull-right">
+                    <button asp-action="Edit" class="btn btn-success" type="submit">Uložiť</button>
                 </div>
             </div>
         </form>
     </div>
-    <div class="col-md-4  p-l-0">
+    <div class="col-md-4">
         <div class="panel panel-default">
             <div class="panel-body">
                 <vc:forum-overview />

@@ -17,12 +17,13 @@
 
     <link id="favicon" href="~/favicon.ico" rel="shortcut icon">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="~/lib/bootstrap-markdown/css/bootstrap-markdown.min.css" />
-    <link rel="stylesheet" href="~/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.css" />
+    @*overriden in site.css due bootstrap4 compat: <link rel="stylesheet" href="~/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.css" />*@
     <link rel="stylesheet" href="~/css/theme.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
 </head>
 <body>
-    <header>
+    <header class="header">
         <div class="container top-header">
             <div class="search-input">
                 <input class="form-control" type="search" placeholder="Search Topics ..." aria-label="Search">
@@ -59,39 +60,39 @@
                     <form class="form-inline my-2 my-lg-0 navbar-right"
                           asp-controller="Account" asp-action="LogOff" method="post">
                         @if (User.Identity.IsAuthenticated)
-                        {
-                            @await Component.InvokeAsync(typeof(InboxBarViewComponent))
-                            @await Component.InvokeAsync(typeof(NotificationBarViewComponent))
-                            <div class="ml-3 dropdown user-account">
-                                <a data-toggle="dropdown" href="#" aria-expanded="false">
-                                    <img src="~/media/top-user-icon.png" class="mr-1">
-                                    @User.Identity.Name <i class="fa fa-sort-desc ml-1 mt-0" aria-hidden="true"></i>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a asp-controller="Manage" asp-action="@nameof(ManageController.Index)">My Account</a>
-                                    </li>
-                                    <li>
-                                        <button class="btn btn-link navbar-link">Log off</button>
-                                    </li>
-                                </ul>
-                            </div>
-                        }
-                        else
-                        {
-                            <a class="btn green-btn text-uppercase" asp-controller="Account" asp-action="@nameof(AccountController.Login)">Login</a>
-                            <a class="btn orange-btn text-uppercase" asp-controller="Account" asp-action="@nameof(AccountController.Register)">Register</a>
-                        }
+                    {
+                        @await Component.InvokeAsync(typeof(InboxBarViewComponent))
+                        @await Component.InvokeAsync(typeof(NotificationBarViewComponent))
+                        <div class="ml-3 dropdown user-account">
+                            <a data-toggle="dropdown" href="#" aria-expanded="false">
+                                <img src="~/media/top-user-icon.png" class="mr-1">
+                                @User.Identity.Name <i class="fa fa-sort-desc ml-1 mt-0" aria-hidden="true"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a asp-controller="Manage" asp-action="@nameof(ManageController.Index)">My Account</a>
+                                </li>
+                                <li>
+                                    <button class="btn btn-link navbar-link">Log off</button>
+                                </li>
+                            </ul>
+                        </div>
+                }
+                else
+                {
+                    <a class="btn green-btn text-uppercase" asp-controller="Account" asp-action="@nameof(AccountController.Login)">Login</a>
+                    <a class="btn orange-btn text-uppercase" asp-controller="Account" asp-action="@nameof(AccountController.Register)">Register</a>
+            }
 
                     </form>
                 </nav>
             </div>
 
         </div>
-
+        @RenderSection("top", required: false)
     </header>
 
-    @RenderSection("top", required: false)
+
     <section id="main" class="container">
         @RenderBody()
     </section>
@@ -99,7 +100,6 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="~/lib/marked/lib/marked.js"></script>
-    <script src="~/lib/bootstrap-markdown/js/bootstrap-markdown.js"></script>
     <script src="~/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.js"></script>
     @Html.Partial("_ValidationScriptsPartial");
     <script src="~/scripts/site.js"></script>

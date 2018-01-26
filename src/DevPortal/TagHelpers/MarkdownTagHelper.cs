@@ -8,13 +8,11 @@ using System.Threading.Tasks;
 namespace DevPortal.Web.TagHelpers
 {
     [HtmlTargetElement("p", Attributes = "markdown")]
-    [HtmlTargetElement("markdown", Attributes= "asp-for")]
+    [HtmlTargetElement("div", Attributes = "markdown")]
+    [HtmlTargetElement("markdown")]
     [OutputElementHint("p")]
     public class MarkdownTagHelper : TagHelper
     {
-        [HtmlAttributeName("asp-for")]
-        public ModelExpression For { get; set; }
-
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             if (output.TagName == "markdown")

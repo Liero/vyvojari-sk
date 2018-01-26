@@ -5,6 +5,10 @@ body {
     color: #3d3d3d;
 }
 
+.header {
+    margin-bottom: 40px;
+}
+
 .top-header {
     position: relative;
     text-align: right;
@@ -288,7 +292,6 @@ h1.main-head {
 .bottom-header {
     background: url("../media/header-background.jpg") top center no-repeat;
     padding: 20px 0px;
-    margin-bottom: 40px;
 }
 
 .menu-box {
@@ -715,58 +718,6 @@ a .remainter-bubble {
     }
 }
 
-
-/* Custom */
-a.avatar {
-    position: relative;
-    height: 96px;
-    width: 96px;
-    background: orange;
-    display: inline-block;
-}
-
-    a.avatar > * {
-        height: 96px;
-        width: 96px;
-        line-height: 96px;
-        position: absolute;
-    }
-
-    a.avatar > * {
-        color: white;
-        font-size: 36px;
-        position: absolute;
-        text-align: center;
-        vertical-align: middle;
-    }
-
-a.avatar-small {
-    height: 54px;
-    width: 54px;
-}
-
-    a.avatar-small > * {
-        height: 54px;
-        width: 54px;
-        line-height: 54px;
-        font-size: 30px;
-    }
-
-a.avatar-xsmall {
-    height: 42px;
-    width: 42px;
-}
-
-    a.avatar-xsmall > * {
-        height: 42px;
-        width: 42px;
-        line-height: 40px;
-        font-size: 24px;
-    }
-
-.truncate-h {
-    height: 6em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.field-validation-error {
+    color: #dc3545;
 }

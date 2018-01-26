@@ -62,12 +62,13 @@ namespace DevPortal.Web.TagHelpers
             {
                 var user = await _userManager.FindByNameAsync(UserName);
                 string background = GetBackgroundColor(UserName);
-                string content = $"<span style=\"background:{background}\">{UserName.Substring(0, 1).ToUpper()}</span>";
+                string content = $"<span>{UserName.Substring(0, 1).ToUpper()}</span>";
                 if (!string.IsNullOrEmpty(user?.AvatarUrl))
                 {
                     content += $"<img src=\"{user.AvatarUrl}\"/>";
                 }
                 output.Content.SetHtmlContent(content);
+                output.Attributes.Add("style", $"background:{background}");
             }
         }
 

@@ -2,47 +2,39 @@
 @{
     ViewBag.Title = Model.NewsItem.Title;
 }
-@section top{
-    <div class="jumbotron-news shadow">
-        <div class="container">
-            <div class="pull-left">
-                <h1>Správičky</h1>
-                <p>Novinky, udalosti, oznámenia...<br />Zdielajte s vývojármi, čo je nové!</p>
 
-            </div>
-
-            <div class="pull-right">
-                <img src="~/media/news-icon.png" class="jumbotron-icon" />
-            </div>
-        </div>
-    </div>
-}
 
 <div class="row">
     <div class="col-md-8">
-        <div class="panel panel-primary">
-            <div class="panel-heading">@Model.NewsItem.Title</div>
-            <div class="panel-body">
-                <markdown>@Html.Raw(Model.NewsItem.Content)</markdown>
-                @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(Model.NewsItem.Tags))
-                {
-                    <span class="label label-default">@tag</span>
-                }
-                @Html.Partial("_UserInfo", Model.NewsItem)
+        <h1 class="main-head">Správičky</h1>
 
-            </div>
-            <div class="panel-footer clearfix">
-                <form asp-action="@nameof(NewsController.Publish)" asp-route-id="@Model.NewsItem.Id" method="post">
-                    <div class="btn-group pull-right">
-                        <a class="btn btn-primary" asp-action="@nameof(NewsController.Edit)" asp-route-id="@Model.NewsItem.Id">Upraviť</a>
-                        @if (!Model.NewsItem.IsPublished)
-                        {
-                            <button class="btn btn-success">Publikovať</button>
-                        }
-                    </div>
-                </form>
-            </div>
+
+        <h3>@Model.NewsItem.Title</h3>
+        @Html.Partial("_UserInfo", Model.NewsItem)
+        <p>
+            <markdown>@Html.Raw(Model.NewsItem.Content)</markdown>
+        </p>
+
+
+        @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(Model.NewsItem.Tags))
+        {
+            <span class="badge badge-secondary">@tag</span>
+        }
+
+
+
+        <div class="clearfix">
+            <form asp-action="@nameof(NewsController.Publish)" asp-route-id="@Model.NewsItem.Id" method="post">
+                <div class="btn-group pull-right">
+                    <a class="btn btn-primary" asp-action="@nameof(NewsController.Edit)" asp-route-id="@Model.NewsItem.Id">Upraviť</a>
+                    @if (!Model.NewsItem.IsPublished)
+                    {
+                        <button class="btn btn-success">Publikovať</button>
+                    }
+                </div>
+            </form>
         </div>
+
 
 
         <div class="panel panel-default">
@@ -51,12 +43,12 @@
 
                 @if (Model.NewsItem.CommentsCount > 0)
                 {
-                <ul class="media-list">
-                    @foreach (var comment in Model.Comments)
-                    {
-                        <vc:comment model="@comment" />
-                    }
-                </ul>
+                    <ul class="media-list">
+                        @foreach (var comment in Model.Comments)
+                        {
+                            <vc:comment model="@comment" />
+                        }
+                    </ul>
                 }
                 else
                 {
@@ -64,8 +56,8 @@
                 }
 
                 <form id="addCommentForm"
-                      asp-action="@nameof(NewsController.AddComment)" 
-                      asp-route-id="@Model.NewsItem.Id" 
+                      asp-action="@nameof(NewsController.AddComment)"
+                      asp-route-id="@Model.NewsItem.Id"
                       method="post">
 
                     <input type="hidden" asp-for="@Model.AddComment.Parent" />
