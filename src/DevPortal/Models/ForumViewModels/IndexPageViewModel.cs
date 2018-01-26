@@ -9,7 +9,7 @@ namespace DevPortal.Web.Models.ForumViewModels
 {
     public class IndexPageViewModel
     {
-        public List<ForumThread> Threads { get; set; }
+        public List<ForumThreadListItemViewModel> Threads { get; set; }
 
         public string[] MostUsedTags { get; }
         public int PageNumber { get; set; }

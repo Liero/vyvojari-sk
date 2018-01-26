@@ -60,29 +60,29 @@
                     <form class="form-inline my-2 my-lg-0 navbar-right"
                           asp-controller="Account" asp-action="LogOff" method="post">
                         @if (User.Identity.IsAuthenticated)
-                    {
-                        @await Component.InvokeAsync(typeof(InboxBarViewComponent))
-                        @await Component.InvokeAsync(typeof(NotificationBarViewComponent))
-                        <div class="ml-3 dropdown user-account">
-                            <a data-toggle="dropdown" href="#" aria-expanded="false">
-                                <img src="~/media/top-user-icon.png" class="mr-1">
-                                @User.Identity.Name <i class="fa fa-sort-desc ml-1 mt-0" aria-hidden="true"></i>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a asp-controller="Manage" asp-action="@nameof(ManageController.Index)">My Account</a>
-                                </li>
-                                <li>
-                                    <button class="btn btn-link navbar-link">Log off</button>
-                                </li>
-                            </ul>
-                        </div>
-                }
-                else
-                {
-                    <a class="btn green-btn text-uppercase" asp-controller="Account" asp-action="@nameof(AccountController.Login)">Login</a>
-                    <a class="btn orange-btn text-uppercase" asp-controller="Account" asp-action="@nameof(AccountController.Register)">Register</a>
-            }
+                        {
+                            @await Component.InvokeAsync(typeof(InboxBarViewComponent))
+                            @await Component.InvokeAsync(typeof(NotificationBarViewComponent))
+                            <div class="ml-3 dropdown user-account">
+                                <a href="#" data-toggle="dropdown" aria-expanded="false" style="line-height:42px; display:inline-flex">                                
+                                    <span avatar-for-user="@User.Identity.Name" class="avatar avatar-xsmall rounded-circle mr-1" />
+                                    <span class="align-middle pl2">@User.Identity.Name <i class="fa fa-sort-desc ml-1 mt-0 align-middle" aria-hidden="true"></i></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a asp-controller="Manage" asp-action="@nameof(ManageController.Index)">My Account</a>
+                                    </li>
+                                    <li>
+                                        <button class="btn btn-link navbar-link">Log off</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a class="btn green-btn text-uppercase" asp-controller="Account" asp-action="@nameof(AccountController.Login)">Login</a>
+                            <a class="btn orange-btn text-uppercase" asp-controller="Account" asp-action="@nameof(AccountController.Register)">Register</a>
+                        }
 
                     </form>
                 </nav>

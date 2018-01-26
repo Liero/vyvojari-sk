@@ -4,16 +4,15 @@
     ViewBag.Title = "Správičky";
 }
 
-<h1 class="main-head">Správičky</h1>
-
-<div class="clearfix m-b-sm">
-    <a class="btn btn-warning pull-right" asp-action="Create">Vytvor správičku</a>
-</div>
+<h1 class="main-head">
+    Správičky
+    <a asp-action="@nameof(NewsController.Create)" class="btn btn-warning pull-right">Vytvor správičku</a>
+</h1>
 
 
 @foreach (var newsItem in Model.Items)
 {
-    <div class="b-b mt-3 media">
+    <div class="border-bottom mt-3 media">
         <a avatar-for-user="@newsItem.CreatedBy" class="d-flex mr-3 avatar" />
         <div class="media-body">
 
