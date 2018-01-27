@@ -3,88 +3,60 @@
 @{
     ViewBag.Title = "Diskusné fórum";
 }
-@section top{
-    <div class="jumbotron-forum shadow">
-        <div class="container">
-            <div class="pull-left">
-                <h1>Diskusné Fórum</h1>
-                <p>Miesto pre vaše otázky, návrhy a postrehy.</p>
-                <div class="m-t">
-                    <a class="btn btn-primary"
-                       asp-controller="Forum"
-                       asp-action="@nameof(ForumController.Create)">
-                        Nová Diskusia
-                    </a>
-                </div>
-            </div>
-
-            <div class="pull-right">
-                <img src="~/media/forum-icon.png" class="jumbotron-icon" />
-            </div>
-        </div>
-    </div>
-}
-
-<div>
-
-</div>
 
 <div class="row">
-    <div class="col-md-8">
-        <section>
-            @foreach (var thread in Model.Threads)
-            {
-                <div class="panel panel-default threads-item">
-                    <div class="author">
-                        <a avatar-for-user="@thread.CreatedBy" />
-                        <a href="#">
-                            @thread.CreatedBy
-                        </a>
-                    </div>
-                    <div class="body">
-                        <h3>
-                            <a class="h3" asp-action="@nameof(ForumController.Detail)" asp-route-id="@thread.Id">
-                                @thread.Title
-                            </a>
-                        </h3>
-                        <p>@thread.Content</p>
+    <div class="col-lg-9">
+        <h1 class="main-head">
+            Diskusné Fórum
 
-                        <div class="m-b">
-                            @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(thread.Tags))
-                            {
-                                <span class="label label-default">@tag</span>
-                            }
-                        </div>
+            <a asp-action="@nameof(ForumController.Create)" class="btn btn-warning pull-right">Pridať otázku</a>
+        </h1>
+        <section>
+            @foreach (var threadVm in Model.Threads)
+            {
+                var thread = threadVm.Thread;
+                <div class="btm-bord-content mt-30">
+                    <div class="@(thread.PostsCount > 0 ? "bubble" : "bubble bubble-gray")">
+                        @thread.PostsCount
                     </div>
-                    <div class="stats text-muted b-l">
-                        <div class="badge-comments m-a" title="Počet odpovedí">
-                            @thread.PostsCount
-                        </div>
-                        <div class="b-t" style="margin-top:20px; padding:5px">
-                            <span class="glyphicon glyphicon-eye-open"></span>
-                            Todo
-                        </div>
-                        <div class="b-t" style="padding:5px">
-                            <span class="glyphicon glyphicon-time"></span>
-                            <time for="@thread.Created" />
-                        </div>
+                    <div>
+                        <a asp-action="@nameof(ForumController.Detail)" asp-route-id="@thread.Id"
+                           class="orange-text head-link">
+                            @thread.Title
+                        </a>
+                        <p class="mb-2">@thread.Content.Truncate(150)</p>
+                        @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(thread.Tags))
+                        {
+                            <span class="badge badge-secondary">@tag</span>
+                        }
+                        <p class="gray-text font-s14 mb-0">
+                            Posted on @thread.Created <span class="blue-text">@thread.CreatedBy</span>
+                            <span class="pull-right">
+                                <a avatar-for-user="@thread.CreatedBy" class="avatar avatar-xsmall rounded-circle" />
+                                @foreach (var participantUserName in threadVm.Participants)
+                                {
+                                    <a avatar-for-user="@participantUserName" class="avatar avatar-xsmall rounded-circle" />
+                                }
+                            </span>
+                        </p>
                     </div>
                 </div>
             }
+
+            <pagination asp-for="@Model" />
+
         </section>
     </div>
 
-    <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <section>
-                    <h2>Najpoužívanejšie tagy</h2>
-                    @foreach (var tag in Model.MostUsedTags)
-                    {
-                        <div><a class="label label-default lg">@tag</a></div>
-                    }
-                </section>
-            </div>
-        </div>
+    <div class="col-md-3">
+        <aside>
+            <h3 class="main-head">Kategórie</h3>
+            @foreach (var tag in Model.MostUsedTags)
+            {
+                <div><a href="#" class="badge badge-secondary lg">@tag</a></div>
+            }
+        </aside>
     </div>
+
 </div>
+

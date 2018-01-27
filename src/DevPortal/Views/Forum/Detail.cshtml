@@ -7,54 +7,63 @@
 
 <div class="row">
     <div class="col-md-8">
-
-        <div class="panel panel-primary">
-            <div class="panel-body">
-                <h1>@Model.Thread.Title</h1>
+        <h1 class="main-head">Diskusné fórum</h1>
+        <h2 class="orange-text head-link">@Model.Thread.Title</h2>
+        @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(Model.Thread.Tags))
+        {
+            <span class="badge badge-secondary">@tag</span>
+        }
+        <div class="mt-3 media">
+            <a avatar-for-user="@Model.Thread.CreatedBy" class="d-flex mr-3 avatar" />
+            <div class="media-body">
+                <p class="gray-text font-s14 mb-0">
+                    <b>@Model.Thread.CreatedBy</b>, <time for="Model.Thread.Created" />
+                    @if (Model.Thread.LastModified > Model.Thread.Created)
+                    {
+                        <i>(edited by @Model.Thread.LastModifiedBy, <time for="@Model.Thread.LastModified" />)</i>
+                    }
+                </p>
                 <markdown>@Model.Thread.Content</markdown>
-                @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(Model.Thread.Tags))
-                {
-                    <span class="label label-default">@tag</span>
-                }
-            </div>
-            <div class="panel-footer">
-                <div class="media">
-                    <div class="media-left">
-                        <a avatar-for-user="@Model.Thread.CreatedBy" class="avatar avatar-small" />
-                    </div>
+                <div class="clearfix">
 
-                    <div class="media-body">
-                        <b>@Model.Thread.CreatedBy</b>, <time for="Model.Thread.Created" />
-                        @if (Model.Thread.LastModified > Model.Thread.Created)
+                    <span class="blue-text pull-right">
+                        <a href="#" class="link mr-2">Zdieľať</a>
+                        @if (Model.Thread.CreatedBy == User.Identity.Name)
                         {
-                             <i>(edited by @Model.Thread.LastModifiedBy, <time for="@Model.Thread.LastModified" />)</i>
+                            <a asp-action="@nameof(ForumController.Edit)" asp-route-id="@Model.Thread.Id" class="link">Upraviť</a>
                         }
-                    </div>                   
+                    </span>
                 </div>
             </div>
         </div>
+        <ul class="media-list ml-3">
+            @foreach (var post in Model.Thread.Posts)
+            {
+                <li id="@post.Id" class="media border-top mt-2 pt-2">
+                    <a avatar-for-user="@post.CreatedBy" class="d-flex mr-3 avatar avatar-xsmall rounded-circle" />
+                    <div class="media-body">
+                        <p class="gray-text font-s14 mb-0">
+                            <b>@post.CreatedBy</b>, <time for="post.Created" />
+                            @if (post.LastModified > post.Created)
+                            {
+                                <i>(edited by @post.LastModifiedBy, <time for="@post.LastModified" />)</i>
+                            }
 
-        @foreach (var answer in Model.Thread.Posts)
-        {
-            <div class="forum-post">
-                <a avatar-for-user="@Model.Thread.CreatedBy" class="avatar avatar-xsmall" />
-                <div class="panel panel-default comment-title">
-                    <div class="panel-heading">
-                        <strong>@answer.CreatedBy</strong> <time for="@answer.Created" />
+                        </p>
+                        <markdown>@Html.Raw(post.Content)</markdown>
+                        <ul class="actions list-inline">
+                            <li class="list-inline-item"><a href="#">like</a></li>
+                            <li class="list-inline-item"><a href="#">reply</a></li>
+                        </ul>
                     </div>
-                    <div class="panel-body">
-                        <markdown>@answer.Content</markdown>
-                        @if (Model.Thread.LastModified > Model.Thread.Created)
-                        {
-                            <i>(edited by @Model.Thread.LastModifiedBy, <time for="@Model.Thread.LastModified" />)</i>
-                        }
-                    </div>
-                </div>
-            </div>
-        }
-       
+                </li>
+            }
+        </ul>
 
-        <form asp-action="@nameof(ForumController.NewPost)" 
+
+
+
+        <form asp-action="@nameof(ForumController.NewPost)"
               asp-controller="Forum"
               asp-route-id="@Model.Thread.Id"
               method="post">
@@ -64,7 +73,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <content-editor asp-for="@Model.NewAnswer.Content"  />
+                        <content-editor asp-for="@Model.NewAnswer.Content" />
                         <span asp-validation-for="@Model.NewAnswer.Content"></span>
                     </div>
                 </div>
@@ -76,27 +85,32 @@
     </div>
 
     <div class="col-md-4 hidden-sm hidden-xs">
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <section>
-                    <h2>Prehľad diskusie</h2>
-                    <ul class="media-list">
-                        @foreach (var post in Model.Thread.Posts)
-                        {
-                            <li class="media">
-                                <div class="media-left">
-                                    <a avatar-for-user="@post.CreatedBy" class="avatar avatar-small" />
-                                </div>
-                                <div class="media-body">
-                                    <h4 class="media-heading">@post.CreatedBy napísal odpoveď</h4>
-                                    <time for="@post.Created" />
-                                </div>
-                            </li>
-                        }
-                    </ul>
-                </section>
+        <section>
+            <h3 class="main-head">Prehľad diskusie</h3>
+            <div class="form-cont-out mb">
+                <div class="btm-bord-content">
+                    <a href="#">
+                        <div avatar-for-user="@Model.Thread.CreatedBy" class="avatar avatar-small pull-left"></div>
+                        <div class="form-cont-inn">
+                            <p class="mb-1">@Model.Thread.Title.Truncate(25)</p>
+                            <p class="gray-text font-s14 light-text mb-0"><time for="Model.Thread.Created" /> od <span class="blue-text">@Model.Thread.CreatedBy</span></p>
+                        </div>
+                    </a>
+                </div>
+                @foreach (var post in Model.Thread.Posts.OrderBy(p => p.Created))
+                {
+                    <div class="btm-bord-content">
+                        <a href="#">
+                            <div avatar-for-user="@post.CreatedBy" class="avatar avatar-small pull-left"></div>
+                            <div class="form-cont-inn">
+                                <p class="mb-1"><strong>RE: </strong>@Model.Thread.Title.Truncate(22)</p>
+                                <p class="gray-text font-s14 light-text mb-0"><time for="post.Created" /> od <span class="blue-text">@post.CreatedBy</span></p>
+                            </div>
+                        </a>
+                    </div>
+                }
             </div>
-        </div>
+        </section>
     </div>
 </div>
 

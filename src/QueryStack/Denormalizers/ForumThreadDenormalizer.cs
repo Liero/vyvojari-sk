@@ -37,6 +37,8 @@ namespace DevPortal.QueryStack.Denormalizers
                 Content = message.Content,
                 Created = message.TimeStamp,
                 CreatedBy = message.AuthorUserName,
+                LastPosted = message.TimeStamp,
+                LastPostedBy = message.AuthorUserName,
                 Tags = string.Join(",", message.Tags)
             };
             using (var db = new DevPortalDbContext(_dbContextOptions))
@@ -80,7 +82,8 @@ namespace DevPortal.QueryStack.Denormalizers
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 ForumThread forumThread = db.ForumThreads.Find(message.ForumThreadId);
-                Trace.WriteLine("Posted ForumItem with Id " + message.ForumItemId);
+                forumThread.LastPosted = message.TimeStamp;
+                forumThread.LastPostedBy = message.AuthorUserName;
                 forumThread.Posts.Add(new ForumPost
                 {
                     Id = message.ForumItemId,

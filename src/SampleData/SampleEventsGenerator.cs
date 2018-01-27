@@ -131,8 +131,8 @@ namespace DevPortal.DesignTimeData
                     {
                         ForumItemId =  Guid.NewGuid(),
                         ForumThreadId = forumThreadCreated.ForumThreadId,
-                        AuthorUserName = UserNames.Element(i),
-                        Content = LoremIpsum.Element(i),
+                        AuthorUserName = UserNames.Element(i + j),
+                        Content = LoremIpsum.Element(j + i),
                         TimeStamp = timestamp.AddSeconds(j * 20 + 5)
                     };
                     yield return forumPostCreated;
@@ -165,6 +165,7 @@ namespace DevPortal.DesignTimeData
                     Url = "https://vyvojari.sk",
                     UserName = UserNames.Element(i),
                     Title = Titles.Element(i),
+                    Description = LoremIpsum.Element(i),
                     TimeStamp = timestamp
                 };
                 yield return created;

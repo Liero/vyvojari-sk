@@ -5,80 +5,45 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @{
     var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-    Func<object,string> UrlEncode = obj => System.Text.Encodings.Web.UrlEncoder.Default.Encode((string)obj);
+    Func<object, string> UrlEncode = obj => System.Text.Encodings.Web.UrlEncoder.Default.Encode((string)obj);
 }
 
-
-<div id="loginPanel" class="panel panel-default">
-    <div class="panel-body">
-        <h4>Log in using</h4>
+<section>
+    <div id="loginPanel" class="user-login">
+        <h1 class="main-head">Prihlásenie</h1>
         <div class="row">
-            <div class="col-md-6 col-md-border">
-                <section>
-                    <form id="loginform" asp-controller="Account" asp-action="Login" method="post">
-                        <div class="form-group">
-                            <input asp-for="@Model.UsernameOrEmail" class="form-control" placeholder="@Html.DisplayName(nameof(Model.UsernameOrEmail))" />
-                        </div>
-                        <div class="form-group">
-                            <input asp-for="@Model.Password" class="form-control" placeholder="@Html.DisplayName(nameof(Model.Password))" />
-                        </div>
-                        <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="col-md-6 board-right">
+                <form id="loginform" asp-controller="Account" asp-action="Login" method="post">
+                    <input asp-for="@Model.UsernameOrEmail" class="form-control user" type="text" placeholder="Prezývka / Email">
+                    <input asp-for="@Model.Password" class="form-control password" type="password" placeholder="Heslo">
+                    <div asp-validation-summary="All" class="text-danger"></div>
 
-                        <p>
-                            <a asp-action="@nameof(AccountController.Register)" asp-route-returnurl="@ViewData["ReturnUrl"]">Register as a new user?</a><br/>
-                            <a asp-action="@nameof(AccountController.ResetPassword)">Forgot your password?</a>
-                        </p>
-                    </form>
-                </section>
+                    <button class="btn green-btn text-uppercase font-s14" type="submit">Prihásiť sa</button>
+                    <a asp-action="@nameof(AccountController.ResetPassword)" class="light-text ml-2">Zabudnuté heslo?</a>
+                </form>
             </div>
-            <div class="col-md-6 col-md-border">
-                <form asp-action="@nameof(AccountController.ExternalLogin)" asp-controller="Account" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-                    <div>
-                        <p>
-                            @foreach (var provider in loginProviders)
-                            {
-                                <button type="submit" class="btn btn-primary"
-                                        name="provider"
-                                        value="@provider.Name"
-                                        title="Log in using your @provider.DisplayName account">@provider.Name</button>
-                            }
-                        </p>
-                    </div>
+            <div class="col-md-6 res-mt-30">
+                <form id="loginform" 
+                      asp-controller="Account" 
+                      asp-action="@nameof(AccountController.ExternalLogin)" 
+                      asp-route-returnurl="@ViewData["ReturnUrl"]" 
+                      method="post">
+                    @foreach (var provider in loginProviders)
+                    {
+                        <button class="btn text-uppercase blue-btn text-center width-high mb-2"
+                                name="provider"
+                                value="@provider.Name"
+                                type="submit">
+                            <img src="~/media/fb-icon.png" class="mr-2">prihlásit sa cez @provider.DisplayName
+                        </button>
+                    }
+
+                    <p>
+                        <a asp-action="@nameof(AccountController.Register)"
+                           asp-route-returnurl="@ViewData["ReturnUrl"]">Zaregistrovať nový účet</a>
+                    </p>
                 </form>
             </div>
         </div>
     </div>
-
-    <script>
-        (function () {
-
-            function init() {
-                var $loginform = $('#loginform');
-
-                //submit form using ajax on enter key pressed
-                $loginform.keypress(function (event) {
-                    if (event.which == 13 && !event.shiftKey) {
-                        event.preventDefault();
-                        var url = "/Account/LoginAjax";
-                        @if (ViewData["ReturnUrl"] is String) {<text>url += '?returnUrl=@UrlEncode(ViewData["ReturnUrl"])'</text>};
-                        $.post(url, $loginform.serialize())
-                            .done(function (response) {
-                                window.location.href = response.returnUrl;
-                            })
-                            .fail(function (response) {
-                                if (response.status === 401) { //unauthorized, see AccountController
-                                    $('#loginPanel').replaceWith(response.responseText);
-                                    init();
-                                }
-                                
-                            });
-                    }
-                });
-            }
-
-            if (typeof ($) !== 'undefined') init();
-            else window.addEventListener('load', init);
-        })();
-
-    </script>
-</div>
+</section>

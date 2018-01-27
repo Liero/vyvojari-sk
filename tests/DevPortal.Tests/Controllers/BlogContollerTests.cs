@@ -33,6 +33,7 @@ namespace DevPortal.Web.Controllers
                     Id = ExistingBlogId,
                     Title = "Exiting Blog Thread",
                     Description = "Some content",
+                    ExternalUrl = "http://someurl.test",
                     CreatedBy = Config.UserName,
                     Created = DateTime.Now,                   
                 });
@@ -63,6 +64,7 @@ namespace DevPortal.Web.Controllers
                 Assert.AreNotEqual(default(Guid), actualEvent.BlogId, "BlogId");
                 Assert.AreEqual(createVm.Title, actualEvent.Title, "Title");
                 Assert.AreEqual(createVm.Description, actualEvent.Description, "Description");
+                Assert.AreEqual(createVm.Link, actualEvent.Url, "Url");
                 Assert.AreEqual(Config.UserName, actualEvent.UserName);
             });
         }

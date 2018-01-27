@@ -1,4 +1,13 @@
 ﻿@model Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpression
 
 
-<textarea id="@Model.Name" name="@Model.Name" class="form-control" rows="20" data-provide="markdown">@Model.Model</textarea>
+<textarea id="@Model.Name"
+          name="@Model.Name"
+          class="form-control"
+          rows="10"
+          data-provide="markdown">@Html.Raw(@Model.Model)
+</textarea>
+
+<div aria-labelledby="@Model.Name">
+
+</div>

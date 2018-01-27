@@ -3,61 +3,35 @@
     ViewBag.Title = "Blogy";
 }
 
-<div class="clearfix m-b-sm">
-    <div class="btn-group pull-right">
-        @*<a class="btn btn-warning " asp-action="Create">Vytvor blog post</a>*@
-        <a class="btn btn-warning " asp-action="CreateLink">Vytvor odkaz na blog</a>
-    </div>
-</div>
+<h1 class="main-head">
+    Blogy
+    <a class="btn btn-warning pull-right" asp-action="CreateLink">Pridať odkaz na blog</a>
+</h1>
 
 @foreach (var blog in Model.Blogs)
 {
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <h3>
-                <a class="h3" href="@blog.ExternalUrl" target="_blank">
-                    @blog.Title
-                    @*@if (newsItem.IsExternalLink)*@
-                    {
-                    <i class="glyphicon glyphicon-new-window"></i>
-                    }
-                </a>
+    <div class="border-bottom mt-3 media">
+        <a avatar-for-user="@blog.CreatedBy" class="d-flex mr-3 avatar" />
+        <div class="media-body">
+            <h3><a class="orange-text head-link" href="@blog.ExternalUrl">@blog.Title</a></h3>
+            <span class="gray-text font-s14">
+                Pridané @blog.Created užívateľom <span class="blue-text">@blog.CreatedBy</span>
+            </span>
+            <p><markdown>@blog.Description</markdown></p>
+            <a href="@blog.ExternalUrl" class="gray-text">@blog.ExternalUrl</a>
+
+            <div class="mb-0">
 
 
                 @if (User.Identity.Name == blog.CreatedBy)
                 {
-                    <button class="btn btn-default pull-right">Delete</button>
+                    <form asp-action="@nameof(BlogController.Delete)" asp-route-id="@blog.Id" class="d-inline pull-right">
+                        <a href="javascript:void" data-action="delete">Zmazať</a>
+                    </form>
                 }
-            </h3>
-            <p><markdown>@blog.Description</markdown></p>
-
-            <div class="media">
-                <div class="media-left">
-                    <a avatar-for-user="@blog.CreatedBy" class="avatar avatar-small" />
-                </div>
-                <div class="media-body">
-                    <b>@blog.CreatedBy</b>, <time for="blog.Created" />
-                </div>
             </div>
-
-
         </div>
     </div>
 }
 
-<div class="text-center">
-    <nav aria-label="pagination">
-        <ul class="pagination">
-            <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-            <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">2 <span class="sr-only">2</span></a></li>
-            <li><a href="#">3 <span class="sr-only">3</span></a></li>
-            <li><a href="#">4 <span class="sr-only">4</span></a></li>
-            <li><a href="#">5 <span class="sr-only">5</span></a></li>
-            <li><a href="#">6 <span class="sr-only">6</span></a></li>
-            <li class="disabled"><a href="#">... <span class="sr-only">...</span></a></li>
-            <li><a href="#">58 <span class="sr-only">(current)</span></a></li>
-            <li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
-        </ul>
-    </nav>
-</div>
+<pagination asp-for="@Model" />

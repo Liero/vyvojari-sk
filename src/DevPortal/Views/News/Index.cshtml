@@ -4,86 +4,45 @@
     ViewBag.Title = "Správičky";
 }
 
-@section top{
-    <div class="jumbotron-news shadow">
-        <div class="container">
-            <div class="pull-left">
-                <h1>Správičky</h1>
-                <p>Novinky, udalosti, oznámenia...<br />Majte prehľad o tom, čo je nové vo svete vývojárov!</p>
-
-            </div>
-
-            <div class="pull-right">
-                <img src="~/media/news-icon.png" class="jumbotron-icon" />
-            </div>
-        </div>
-    </div>
-}
-
-<div class="clearfix m-b-sm">
-    <a class="btn btn-warning pull-right" asp-action="Create">Vytvor správičku</a>
-</div>
+<h1 class="main-head">
+    Správičky
+    <a asp-action="@nameof(NewsController.Create)" class="btn btn-warning pull-right">Vytvor správičku</a>
+</h1>
 
 
 @foreach (var newsItem in Model.Items)
 {
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <h3><a asp-action="@nameof(NewsController.Detail)" asp-route-id="@newsItem.Id">@newsItem.Title</a></h3>
-            <p><markdown>@newsItem.Content</markdown></p>
+    <div class="border-bottom mt-3 media">
+        <a avatar-for-user="@newsItem.CreatedBy" class="d-flex mr-3 avatar" />
+        <div class="media-body">
+
+            <h3><a class="orange-text head-link" asp-action="@nameof(NewsController.Detail)" asp-route-id="@newsItem.Id">@newsItem.Title</a></h3>
+            @Html.Partial("_UserInfo", newsItem)
+            <p><markdown>@newsItem.Content.Truncate(500)</markdown></p>
             <p>
                 @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(newsItem.Tags))
                 {
-                    <span class="label label-default">@tag</span>
+                    <span class="badge badge-dark">@tag</span>
                 }
-
-                @Html.Partial("_UserInfo", newsItem)
             </p>
-            <ul class="actions list-inline">
-                <li><button class="btn btn-default">Upvote</button></li>
-                <li>
-                    <button class="btn btn-link" data-action="show-comments">
-                        Comment
-                        @if (newsItem.CommentsCount > 0)
-                        {
-                            <span class="label label-default">@newsItem.CommentsCount</span>
-                        }
-                    </button>
 
-                </li>
-                <li><button class="btn btn-link">Share</button></li>
-            </ul>
-        </div>
-
-        <div class="panel-footer @(newsItem.Comments.Count == 0 ? "collapse" : "")">
-            @if (newsItem.CommentsCount > Model.MaxCommentsPerItem)
-            {
-                <a href="javascript:void()">view previous comments</a>
-            }
-            <ul class="media-list">
-                @foreach (var comment in newsItem.Comments.Take(Model.MaxCommentsPerItem))
+            <div class="@(newsItem.Comments.Count == 0 ? "collapse" : "")">
+                Kometáre:
+                @if (newsItem.CommentsCount > Model.MaxCommentsPerItem)
                 {
-                    <li class="media">
-                        <div class="media-left">
-                            <a class="avatar avatar-small" avatar-for-user="@comment.CreatedBy" />
-                        </div>
-                        <div class="media-body">
-                            <div class="text-justify"><strong><a href="#">@comment.CreatedBy</a></strong><markdown>@comment.Content</markdown></div>
-                            <ul class="actions list-inline">
-                                @if (User.Identity.IsAuthenticated)
-                                {
-                                    <li><a href="#">like</a></li>
-                                    <li><a href="#">reply</a></li>
-                                }
-                                <li><a href="#">share</a></li>
-                            </ul>
-                        </div>
-                        <div class="media-right">
-                            <time for="@comment.Created"></time>
-                        </div>
-                    </li>
+                    <a href="javascript:void()">Zobraz predchádzajúce komentáre</a>
                 }
-            </ul>
+
+                <ul class="media-list">
+                    @foreach (var comment in newsItem.Comments.Take(Model.MaxCommentsPerItem))
+                    {
+                        <vc:comment model="Model.CreateCommentVm(comment)" />
+                    }
+                </ul>
+
+
+
+            </div>
 
             @if (User.Identity.IsAuthenticated)
             {
@@ -95,7 +54,8 @@
                     </form>
                 </div>
             }
-
         </div>
     </div>
 }
+
+<pagination asp-for="@Model" />

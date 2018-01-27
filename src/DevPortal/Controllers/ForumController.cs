@@ -33,18 +33,30 @@ namespace DevPortal.Web.Controllers
         public async Task<ActionResult> Index(int pageNumber = 1)
         {
             int pageIndex = pageNumber - 1;
-            int pageSize = 20;
+            const int editorsCount = 5;
 
             IndexPageViewModel viewModel = new IndexPageViewModel
             {
                 PageNumber = pageNumber,
+                TotalCount = await _devPortalDb.ForumThreads.CountAsync()
             };
 
-            viewModel.Threads = _devPortalDb.ForumThreads
-                .OrderBy(i => i.Created)
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize)
-                .ToList();
+            viewModel.Threads = await _devPortalDb.ForumThreads
+                .AsNoTracking()
+                .OrderByDescending(i => i.Created)
+                .Skip(pageIndex * viewModel.PageSize)
+                .Take(viewModel.PageSize)
+                .Select(t => new ForumThreadListItemViewModel
+                {
+                    Thread = t,
+                    Participants = t.Posts
+                                   .OrderByDescending(p => p.Created)
+                                   .Select(p => p.CreatedBy)
+                                   .Distinct()
+                                   .Take(editorsCount)
+                                   .ToArray()
+                })
+                .ToListAsync();
 
             return View(viewModel);
         }
@@ -53,6 +65,7 @@ namespace DevPortal.Web.Controllers
         public async Task<ActionResult> Detail(Guid id, NewAnswerViewModel answer = null)
         {
             var forumThread = await _devPortalDb.ForumThreads
+                .AsNoTracking()
                 .Include(f =>f.Posts)
                 .FirstOrDefaultAsync(i => i.Id == id);
 

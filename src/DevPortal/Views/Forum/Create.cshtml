@@ -1,53 +1,49 @@
 ﻿@model DevPortal.Web.Models.ForumViewModels.CreateForumThreadViewModel
 @{
-    ViewBag.Title = "Nový príspevok";
+    ViewBag.Title = "Nová otázka";
 }
 
 <div class="row">
     <div class="col-md-8">
-        <form asp-action="@nameof(ForumController.Create)" asp-controller="Forum" method="post">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Nový príspevok
-                </div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <label>Názov</label>
-                        <input type="text" class="form-control" aria-label="Definujte názov témy alebo otázku"
-                               asp-for="Title">
-                        <span asp-validation-for="Content"></span>
+        <h1 class="main-head">Nová otázka</h1>
+        <form asp-action="@nameof(ForumController.Create)" method="post">
 
-                    </div>
-                    <div class="form-group">
-                        <content-editor asp-for="Content" />
-                        <span asp-validation-for="Content"></span>
-                    </div>
+            <div class="form-group">
+                <label asp-for="@Model.Title">Názov</label>
+                <input type="text" class="form-control" aria-label="Definujte názov témy alebo otázku"
+                       asp-for="@Model.Title">
+                <span asp-validation-for="@Model.Title"></span>
 
-                    <div class="form-group">
-                        <label for="tags">Tagy</label>
-                        <tags-editor asp-for="Tags" />
-                        <span asp-validation-for="Tags"></span>
-                    </div>
-                </div>
-                <div class="panel-footer">
-                    <button class="btn btn-success">Odoslať</button>
+            </div>
+            <div class="form-group">
+                <content-editor asp-for="@Model.Content" />
+                <span asp-validation-for="@Model.Content"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="tags">Tagy</label>
+                <tags-editor asp-for="@Model.Tags" />
+                <span asp-validation-for="@Model.Tags"></span>
+            </div>
+
+            <div class="pt-3">
+                <a asp-action="index" class="btn btn-secondary">Zrušiť</a>
+                <div class="pull-right">
+                    <button asp-action="Create" class="btn btn-success" type="submit">Odoslať</button>
                 </div>
             </div>
+
         </form>
     </div>
 
     <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <section>
-                    <h2>Najpoužívanejšie tagy</h2>
-                    @foreach (var tag in DevPortal.Web.Data.SampleData.Tags)
-                    {
-                        <div><a class="label label-default lg">@tag</a></div>
-                    }
-                </section>
-            </div>
-        </div>
+        <section>
+            <h3 class="main-head light-text">Najpoužívanejšie tagy</h3>
+            @foreach (var tag in DevPortal.Web.Data.SampleData.Tags)
+            {
+                <div><a class="badge badge-secondary">@tag</a></div>
+            }
+        </section>
     </div>
 </div>
 

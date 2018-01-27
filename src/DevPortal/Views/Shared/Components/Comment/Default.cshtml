@@ -1,20 +1,15 @@
 ﻿@model DevPortal.Web.Models.SharedViewModels.CommentViewModel
 
-<li id="@Model.Id" class="media">
-    <div class="media-left">
-        <a class="avatar avatar-small" avatar-for-user="@Model.UserName">
-            <img class="media-object media-object-small" src="~/media/userpicture.jpg" alt="...">
-        </a>
-    </div>
+<li id="@Model.Id" class="media mb-1 b-t pt-2">
+    <a avatar-for-user="@Model.UserName" class="d-flex mr-3 avatar avatar-xsmall rounded-circle" />
     <div class="media-body">
         <div class="text-justify">
             <strong><a href="#">@(Model.UserName ?? "Anonym")</a></strong>
-            <markdown>@Model.Message</markdown>
+            <div class="comment" markdown>@Model.Message</div>
         </div>
         <ul class="actions list-inline">
-            <li><a href="#">like</a></li>
-            <li><a href="#">reply</a></li>
-            <li><a href="#">share</a></li>
+            <li class="list-inline-item"><a href="#">like</a></li>
+            <li class="list-inline-item"><a href="#">reply</a></li>
         </ul>
     </div>
     <div class="media-right">

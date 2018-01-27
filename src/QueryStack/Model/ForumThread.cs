@@ -19,6 +19,12 @@ namespace DevPortal.QueryStack.Model
         public string CreatedBy { get; set; }
         public DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
+
+        /// <summary>
+        /// Time when thread was created or last post was addedd
+        /// </summary>
+        public DateTime LastPosted { get; set; }
+        public string LastPostedBy { get; set; }
         public virtual ICollection<ForumPost> Posts { get; set; }
         public int PostsCount { get; set; }
     }   

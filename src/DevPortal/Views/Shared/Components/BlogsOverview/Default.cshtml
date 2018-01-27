@@ -1,19 +1,21 @@
-﻿<section>
-    <h3>Blogy <small>a články</small></h3>
-    <ul class="media-list">
-        @foreach (var forumPost in DevPortal.Web.Data.SampleData.Instance.ForumPosts.Take(10))
+﻿@model ICollection<DevPortal.QueryStack.Model.Blog>
+
+<aside class="mb-5">
+    <h3 class="main-head">Blogy <small>a články</small></h3>
+    <div class="form-cont-out">
+        @foreach (var blogPost in Model)
         {
-            <li class="media">
-                <div class="media-left">
-                    <a href="#">
-                        <img class="media-object media-object-small" src="@Url.Content(forumPost.Avatar)" alt="...">
-                    </a>
+
+            <div class="btm-bord-content">
+                <a avatar-for-user="@blogPost.CreatedBy" class="avatar avatar-small pull-left" />
+                <div class="form-cont-inn">
+                    <a href="@blogPost.ExternalUrl" class="mb-1">@blogPost.Title.Truncate(50)</a>
+                    <p class="gray-text font-s14 light-text mb-0">
+                        <time for="@blogPost.Created" /> od <span class="blue-text">@blogPost.CreatedBy</span>
+                    </p>
                 </div>
-                <div class="media-body">
-                    <h4 class="media-heading">@forumPost.Title</h4>
-                    @forumPost.Created od <strong>@forumPost.UserName</strong>
-                </div>
-            </li>
+            </div>
         }
-    </ul>
-</section>
+        <a asp-controller="Blog" class="blue-text font-s14">Viac »</a>
+    </div>
+</aside>

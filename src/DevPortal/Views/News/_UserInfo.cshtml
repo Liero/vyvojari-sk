@@ -1,23 +1,17 @@
 ﻿@model DevPortal.QueryStack.Model.NewsItem
-<div class="media">
-    <div class="media-left">
-        <a avatar-for-user="@Model.CreatedBy" class="avatar avatar-small" />
-    </div>
 
+<p class="gray-text font-s14 mb-0">
     @if (Model.IsPublished)
     {
-        <div class="media-body">
-            <b>@Model.CreatedBy</b>, <time for="Model.Published" />
-            @if (Model.LastModified > Model.Published)
-            {
-                <i>(edited by @Model.LastModifiedBy, <time for="@Model.LastModified" />)</i>
-            }
-        </div>
+        <text><b>@Model.CreatedBy</b>, <time for="Model.Published" />
+        @if (Model.LastModified > Model.Published)
+        {
+            <i>(edited by @Model.LastModifiedBy, <time for="@Model.LastModified" />)</i>
+        }
+        </text>
     }
     else
     {
-        <div class="media-body">
-            <b>@Model.CreatedBy</b> <span class="label label-warning">Unpublished</span>
-        </div>
+        <text><b>@Model.CreatedBy</b> <span class="badge badge-warning">Unpublished</span></text>
     }
-</div>
+</p>
