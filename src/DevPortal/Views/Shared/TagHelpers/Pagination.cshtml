@@ -1,0 +1,28 @@
+﻿@model IPagination
+@{
+    var startPage = Math.Max(1, Model.PageNumber - 2);
+    var endPage = Math.Min(startPage + 7, Model.PagesCount);
+    var routeData = ViewContext.RouteData.Values.ToDictionary(q => q.Key, q => q.Value.ToString());
+}
+<nav aria-label="pagination" class="mt-3">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+            <a asp-all-route-data="@routeData" 
+               asp-route-pageNumber="@(Model.PageNumber-1)"
+               class="page-link" tabindex="-1">Previous</a>
+        </li>
+        @for (int i = startPage; i <= endPage; i++)
+        {
+            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                <a asp-all-route-data="@routeData" 
+                   asp-route-pageNumber="@i" class="page-link">@i</a>
+            </li>
+        }
+
+        <li class="page-item @(Model.PageNumber == Model.PagesCount ? "disabled" : "")">
+            <a asp-all-route-data="@routeData" 
+               asp-route-pageNumber="@(Model.PageNumber+1)" 
+               class="page-link">Next</a>
+        </li>
+    </ul>
+</nav>

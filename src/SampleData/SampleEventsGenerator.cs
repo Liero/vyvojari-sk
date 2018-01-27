@@ -165,6 +165,7 @@ namespace DevPortal.DesignTimeData
                     Url = "https://vyvojari.sk",
                     UserName = UserNames.Element(i),
                     Title = Titles.Element(i),
+                    Description = LoremIpsum.Element(i),
                     TimeStamp = timestamp
                 };
                 yield return created;

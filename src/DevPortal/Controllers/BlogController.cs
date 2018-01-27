@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack;
 using DevPortal.CommandStack.Events;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,21 +28,22 @@ namespace DevPortal.Web.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Index(int pageNumber = 1)
+        public async Task<IActionResult> Index(int pageNumber = 1)
         {
             int pageIndex = pageNumber - 1;
             int pageSize = 20;
 
-            IndexPageViewModel viewModel = new IndexPageViewModel
+            var viewModel = new IndexPageViewModel
             {
                 PageNumber = pageNumber,
+                PagesCount = (int)Math.Ceiling(await _devPortalDb.Blogs.CountAsync() / (double)pageSize)
             };
 
-            viewModel.Blogs = _devPortalDb.Blogs
-                .OrderBy(i => i.Created)
+            viewModel.Blogs = await _devPortalDb.Blogs
+                .OrderByDescending(i => i.Created)
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
 
             return View(viewModel);
         }
@@ -75,6 +77,7 @@ namespace DevPortal.Web.Controllers
                 BlogId = Guid.NewGuid(),
                 UserName = User.Identity.Name,
                 Title = viewModel.Title,
+                Url = viewModel.Link,
                 Description = viewModel.Description,
             };
             _eventStore.Save(evt);

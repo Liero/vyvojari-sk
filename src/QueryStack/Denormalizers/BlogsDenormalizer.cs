@@ -25,6 +25,7 @@ namespace DevPortal.QueryStack.Denormalizers
             {
                 Id = message.BlogId,
                 Title = message.Title,
+                ExternalUrl = message.Url,
                 Description = message.Description,
                 Created = message.TimeStamp,
                 CreatedBy = message.UserName,

@@ -107,32 +107,3 @@
     max-width: inherit;
 }
 
-/* Custom pagination style*/
-.pagination li a {
-    background-color: #fcbb5d;
-    border-color: #ec971f;
-    color: #FFFFFF;
-}
-
-.pagination > li > a:hover,
-.pagination > li > a :focus {
-    background-color: #ec971f;
-    border-color: #d58512;
-    color: #FFFFFF;
-}
-
-.pagination li.active a,
-.pagination > li.active > a:hover,
-.pagination > li.active > a :focus {
-    background-color: #ec971f;
-    border-color: #d58512;
-    color: #FFFFFF;
-}
-
-.pagination li.disabled a,
-.pagination > .disabled > a:focus,
-.pagination > .disabled > a:hover {
-    background-color: #f0ad4e;
-    border-color: #eea236;
-    color: #FFFFFF;
-}
