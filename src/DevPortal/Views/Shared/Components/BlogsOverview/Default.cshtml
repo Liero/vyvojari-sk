@@ -1,14 +1,18 @@
-﻿<aside class="mb-5">
+﻿@model ICollection<DevPortal.QueryStack.Model.Blog>
+
+<aside class="mb-5">
     <h3 class="main-head">Blogy <small>a články</small></h3>
     <div class="form-cont-out">
-        @foreach (var blogPost in DevPortal.Web.Data.SampleData.Instance.BlogPosts.Take(10))
+        @foreach (var blogPost in Model)
         {
 
             <div class="btm-bord-content">
-                <a avatar-for-user="@blogPost.UserName" class="avatar avatar-small pull-left" />
+                <a avatar-for-user="@blogPost.CreatedBy" class="avatar avatar-small pull-left" />
                 <div class="form-cont-inn">
-                    <p class="mb-1">@blogPost.Title</p>
-                    <p class="gray-text font-s14 light-text mb-0"><time for="@blogPost.Created" /> od <span class="blue-text">@blogPost.UserName</span></p>
+                    <a href="@blogPost.ExternalUrl" class="mb-1">@blogPost.Title.Truncate(50)</a>
+                    <p class="gray-text font-s14 light-text mb-0">
+                        <time for="@blogPost.Created" /> od <span class="blue-text">@blogPost.CreatedBy</span>
+                    </p>
                 </div>
             </div>
         }

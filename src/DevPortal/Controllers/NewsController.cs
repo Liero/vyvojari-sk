@@ -30,10 +30,9 @@ namespace DevPortal.Web.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Index(int pageNumber = 1, int maxCommentsPerItem = 3)
+        public async Task<IActionResult> Index(int pageNumber = 1, int maxCommentsPerItem = 3)
         {
             int pageIndex = pageNumber - 1;
-            int pageSize = 20;
 
             IndexPageViewModel viewModel = new IndexPageViewModel
             {
@@ -41,7 +40,9 @@ namespace DevPortal.Web.Controllers
                 MaxCommentsPerItem = maxCommentsPerItem,
             };
 
-            IQueryable<NewsItem> query = _devPortalDb.NewsItems.Include(i => i.Comments);
+            IQueryable<NewsItem> query = _devPortalDb.NewsItems
+                .AsNoTracking()
+                .Include(i => i.Comments);
 
             if (!User.Identity.IsAuthenticated)
             {
@@ -52,14 +53,14 @@ namespace DevPortal.Web.Controllers
                 query = query.Where(newsItem => newsItem.IsPublished || newsItem.CreatedBy == User.Identity.Name);
             }
 
-            viewModel.Items = query
+            viewModel.Items = await query
                 .OrderBy(i => i.IsPublished)
-                .ThenByDescending(i => i.Published)
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize)
-                .ToList();
+                .ThenByDescending(i => i.Created)
+                .Skip(pageIndex * viewModel.PageSize)
+                .Take(viewModel.PageSize)
+                .ToListAsync();
 
-            viewModel.PageCount = _devPortalDb.NewsItems.Count();
+            viewModel.TotalCount = await query.CountAsync();
 
             return View(viewModel);
         }

@@ -33,19 +33,19 @@ namespace DevPortal.Web.Controllers
         public async Task<ActionResult> Index(int pageNumber = 1)
         {
             int pageIndex = pageNumber - 1;
-            const int pageSize = 20;
             const int editorsCount = 5;
 
             IndexPageViewModel viewModel = new IndexPageViewModel
             {
                 PageNumber = pageNumber,
+                TotalCount = await _devPortalDb.ForumThreads.CountAsync()
             };
 
             viewModel.Threads = await _devPortalDb.ForumThreads
                 .AsNoTracking()
-                .OrderBy(i => i.Created)
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize)
+                .OrderByDescending(i => i.Created)
+                .Skip(pageIndex * viewModel.PageSize)
+                .Take(viewModel.PageSize)
                 .Select(t => new ForumThreadListItemViewModel
                 {
                     Thread = t,

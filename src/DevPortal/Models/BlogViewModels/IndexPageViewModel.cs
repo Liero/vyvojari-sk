@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace DevPortal.Web.Models.BlogViewModels
 {
-    public class IndexPageViewModel: IPagination
+    public class IndexPageViewModel: PaginationViewModelBase
     {
         public List<Blog> Blogs { get; set; }
-        public int PageNumber { get; set; }
-        public int PagesCount { get; set; }
     }
 }

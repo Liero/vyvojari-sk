@@ -1,14 +1,29 @@
-﻿<aside class="mb-5">
+﻿@model ICollection<DevPortal.QueryStack.Model.ForumThread>
+
+<aside class="mb-5">
     <h3 class="main-head">Diskusia<small>, posledné príspevky</small></h3>
     <div class="form-cont-out mb">
-        @foreach (var forumPost in DevPortal.Web.Data.SampleData.Instance.ForumPosts.Take(10))
+        @foreach (var item in Model)
         {
-
             <div class="btm-bord-content">
-                <a avatar-for-user="@forumPost.UserName" class="avatar avatar-small pull-left" />
+                <a avatar-for-user="@item.CreatedBy" class="avatar avatar-small pull-left" />
                 <div class="form-cont-inn">
-                    <p class="mb-1">@forumPost.Title</p>
-                    <p class="gray-text font-s14 light-text mb-0"><time for="@forumPost.Created" /> od <span class="blue-text">@forumPost.UserName</span></p>
+                    <a asp-controller="Forum" 
+                       asp-action="@nameof(ForumController.Detail)"
+                       asp-route-id="@item.Id"
+                       class="mb-1" title="@item.Title">
+                        @if (item.PostsCount > 0)
+                        {
+                            <strong>RE: </strong>
+                        }
+                        @item.Title.Truncate(50)
+                    </a>
+                    <p class="gray-text font-s14 light-text mb-0 clearfix">
+                        <time for="@item.LastPosted" /> od <span class="blue-text">@item.LastPostedBy</span>
+                        <span class="pull-right">
+                            @item.PostsCount odpovedí
+                        </span>
+                    </p>
                 </div>
             </div>
         }

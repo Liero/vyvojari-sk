@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 
 namespace DevPortal.Web.Models.NewsViewModels
 {
-    public class IndexPageViewModel
+    public class IndexPageViewModel : PaginationViewModelBase
     {
         public List<NewsItem> Items { get; set; }
-        public int PageNumber { get; set; }
-        public int PageCount { get; set; }
         public int MaxCommentsPerItem { get; set; }
 
         public AddCommentViewModel AddComment { get; set; }

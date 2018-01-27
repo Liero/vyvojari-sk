@@ -31,18 +31,17 @@ namespace DevPortal.Web.Controllers
         public async Task<IActionResult> Index(int pageNumber = 1)
         {
             int pageIndex = pageNumber - 1;
-            int pageSize = 20;
 
             var viewModel = new IndexPageViewModel
             {
                 PageNumber = pageNumber,
-                PagesCount = (int)Math.Ceiling(await _devPortalDb.Blogs.CountAsync() / (double)pageSize)
+                TotalCount = await _devPortalDb.Blogs.CountAsync(),
             };
 
             viewModel.Blogs = await _devPortalDb.Blogs
                 .OrderByDescending(i => i.Created)
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize)
+                .Skip(pageIndex * viewModel.PageSize)
+                .Take(viewModel.PageSize)
                 .ToListAsync();
 
             return View(viewModel);

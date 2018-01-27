@@ -31,7 +31,7 @@ namespace DevPortal.Web.TagHelpers
         }
 
         [HtmlAttributeName("asp-for")]
-        public IPagination For { get; set; }
+        public PaginationViewModelBase For { get; set; }
 
         [ViewContext]
         public ViewContext ViewContext

@@ -27,7 +27,7 @@
             </p>
 
             <div class="@(newsItem.Comments.Count == 0 ? "collapse" : "")">
-                Kometáre: 
+                Kometáre:
                 @if (newsItem.CommentsCount > Model.MaxCommentsPerItem)
                 {
                     <a href="javascript:void()">Zobraz predchádzajúce komentáre</a>
@@ -57,3 +57,5 @@
         </div>
     </div>
 }
+
+<pagination asp-for="@Model" />

@@ -1,4 +1,4 @@
-﻿@model IPagination
+﻿@model PaginationViewModelBase
 @{
     var startPage = Math.Max(1, Model.PageNumber - 2);
     var endPage = Math.Min(startPage + 7, Model.PagesCount);

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DevPortal.QueryStack;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +10,21 @@ namespace DevPortal.Web.ViewComponents
 {
     public class ForumOverviewViewComponent : ViewComponent
     {
+        private readonly DevPortalDbContext _dbContext;
+
+        public ForumOverviewViewComponent(DevPortalDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            await Task.FromResult(0);
-            return View();
+            var items = await _dbContext.ForumThreads
+                .AsNoTracking()
+                .OrderByDescending(b => b.LastModified)
+                .Take(10)
+                .ToListAsync();
+
+            return View(items);
         }
     }
 }
