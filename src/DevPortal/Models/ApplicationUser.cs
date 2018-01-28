@@ -8,6 +8,9 @@ namespace DevPortal.Web.Models
 {
     public class ApplicationUser : IdentityUser
     {
+        public string About { get; set; }
+
         public string AvatarUrl { get; set; }
+        public string ShortDescription { get; set; }
     }
 }

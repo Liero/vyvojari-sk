@@ -3,7 +3,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-} 
+}
 
 .avatar {
     position: relative;
@@ -18,14 +18,13 @@
         width: 96px;
         line-height: 96px;
         position: absolute;
-    }
-
-    .avatar > * {
         color: white;
-        font-size: 36px;
-        position: absolute;
         text-align: center;
         vertical-align: middle;
+    }
+
+    .avatar.rounded-circle > * {
+        border-radius: 50%;
     }
 
 .avatar-small {
@@ -52,13 +51,20 @@
         font-size: 24px;
     }
 
+.cover {
+    background-size: cover;
+}
+
+.rounder-circle > .cover {
+    border-radius:
+}
 
 .shadow {
     box-shadow: 0 0 20px silver;
 }
 
 .main-head > a.btn {
-    text-transform:none;
+    text-transform: none;
     position: relative;
     top: -10px;
 }
@@ -92,18 +98,18 @@
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     cursor: text;
 }
-.bootstrap-tagsinput.focus {
-    border-color: #80bdff;
-   
-}
-.bootstrap-tagsinput input {
-    border: none;
-    box-shadow: none;
-    outline: none;
-    background-color: transparent;
-    padding: 0 6px;
-    margin: 0;
-    width: auto;
-    max-width: inherit;
-}
 
+    .bootstrap-tagsinput.focus {
+        border-color: #80bdff;
+    }
+
+    .bootstrap-tagsinput input {
+        border: none;
+        box-shadow: none;
+        outline: none;
+        background-color: transparent;
+        padding: 0 6px;
+        margin: 0;
+        width: auto;
+        max-width: inherit;
+    }

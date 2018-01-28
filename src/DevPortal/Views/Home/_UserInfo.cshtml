@@ -1,10 +1,17 @@
-﻿<div class="welcome-cont-out">
+﻿@inject UserManager<ApplicationUser> userManager
+@{
+    var applicationUser = await userManager.GetUserAsync(User);
+}
+<div class="welcome-cont-out">
     <h1 class="main-head"><span class="light-text">Ahoj,</span> @User.Identity.Name<text>!</text></h1>
     <div class="row">
         <div class="col-md-6 board-right">
             <a avatar-for-user="@User.Identity.Name" class="avatar pull-left"></a>
             <div class="welcome-cont">
-                <p class="mb-1"><b>.NET developer, technical architect</b></p>
+                @if (!string.IsNullOrEmpty(applicationUser?.ShortDescription))
+                {
+                    <p class="mb-1"><b>@applicationUser?.ShortDescription</b></p>
+                }
                 <a asp-controller="Manage" asp-action="@nameof(ManageController.Index)"
                    class="blue-text mb-0">Vylepši si svoj profil »</a>
             </div>

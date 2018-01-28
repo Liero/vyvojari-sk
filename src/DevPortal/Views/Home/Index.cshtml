@@ -27,7 +27,8 @@
                             @newsItem.CommentsCount
                         </div>
                         <div>
-                            <a href="#" class="orange-text head-link">@newsItem.Title</a>
+                            <a asp-controller="News" asp-action="@nameof(NewsController.Detail)" asp-route-id="@newsItem.Id"
+                               class="orange-text head-link">@newsItem.Title</a>
                             <p class="mb-2">@newsItem.Content.Truncate(120)</p>
                             <p class="gray-text font-s14 mb-0">
                                 Posted on @newsItem.Created <span class="blue-text">@newsItem.CreatedBy</span>

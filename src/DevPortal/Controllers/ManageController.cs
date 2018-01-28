@@ -64,6 +64,8 @@ namespace DevPortal.Web.Controllers
             {
                 Username = user.UserName,
                 Email = user.Email,
+                ShortDescription = user.ShortDescription,
+                AboutMe = user.About,
                 PhoneNumber = user.PhoneNumber,
                 IsEmailConfirmed = user.EmailConfirmed,
                 StatusMessage = StatusMessage,
@@ -120,6 +122,18 @@ namespace DevPortal.Web.Controllers
                 });
                 profileChanged = true;
             }
+
+            if (model.ShortDescription != user.ShortDescription)
+            {
+                user.ShortDescription = model.ShortDescription;
+                profileChanged = true;
+            }
+            if (model.AboutMe != user.About)
+            {
+                user.About = model.AboutMe;
+                profileChanged = true;
+            }
+
 
             if (profileChanged)
             {

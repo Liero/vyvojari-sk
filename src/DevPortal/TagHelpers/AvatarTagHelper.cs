@@ -15,14 +15,13 @@ namespace DevPortal.Web.TagHelpers
     [HtmlTargetElement("span", Attributes = "avatar-for-user")]
     [HtmlTargetElement("div", Attributes = "avatar-for-user")]
     [HtmlTargetElement("avatar", Attributes = "username")]
-    [OutputElementHint("a")]
     public class AvatarTagHelper : TagHelper
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IActionContextAccessor _actionContextAccesor;
         private static readonly string[] Colors = new[]{
-            "#6E398D","#C31A7F","#424F9B","#1D96BB","#8CBD3F","#FDC70F","#EC6224","#C31A7F"
+            "#6E398D","#C31A7F","#424F9B","#1D96BB","#8CBD3F","#FDC70F","#EC6224"
         };
 
         public AvatarTagHelper(
@@ -39,11 +38,14 @@ namespace DevPortal.Web.TagHelpers
         public string AvatarForUser { get; set; }
 
         [HtmlAttributeName("username")]
-        public string UserName { get => AvatarForUser; set => AvatarForUser = value; }
+        public string UserName { get => AvatarForUser ?? "?"; set => AvatarForUser = value; }
 
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
+            var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccesor.ActionContext);
+            var user = await _userManager.FindByNameAsync(UserName);
+
             output.TagMode = TagMode.StartTagAndEndTag;
             if (context.TagName == "avatar")
             {
@@ -52,26 +54,21 @@ namespace DevPortal.Web.TagHelpers
             if (!output.Attributes.ContainsName("class"))
             {
                 output.Attributes.Add("class", "avatar");
+            }           
+            if (!output.Attributes.ContainsName("title"))
+            {
+                output.Attributes.Add("title", UserName + "\n" + user?.ShortDescription);
             }
             output.Attributes.RemoveAll("avatar-for-user");
 
-            if (string.IsNullOrWhiteSpace(UserName))
-            {
-                var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccesor.ActionContext);
-                output.Content.SetHtmlContent($"<img src=\"{urlHelper.Content("~/media/noface.jpg")}\" />");
-            }
-            else
-            {
-                var user = await _userManager.FindByNameAsync(UserName);
-                string background = GetBackgroundColor(UserName);
-                string content = $"<span>{UserName.Substring(0, 1).ToUpper()}</span>";
-                if (!string.IsNullOrEmpty(user?.AvatarUrl))
-                {
-                    content += $"<img src=\"{user.AvatarUrl}\"/>";
-                }
-                output.Content.SetHtmlContent(content);
-                output.Attributes.Add("style", $"background:{background}");
-            }
+            string background = GetBackgroundColor(UserName);
+            string content = $"<span>{UserName.Substring(0, 1).ToUpper()}</span>"
+                + $"<span class=\"cover\" style=\"background-image:url('{user?.AvatarUrl}')\"></span>";
+            
+
+            output.Content.SetHtmlContent(content);
+            output.Attributes.Add("style", $"background:{background}");
+
         }
 
         private string GetBackgroundColor(string userName)
