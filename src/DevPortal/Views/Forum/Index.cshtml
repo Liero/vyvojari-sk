@@ -12,36 +12,7 @@
             <a asp-action="@nameof(ForumController.Create)" class="btn btn-warning pull-right">Pridať otázku</a>
         </h1>
         <section>
-            @foreach (var threadVm in Model.Threads)
-            {
-                var thread = threadVm.Thread;
-                <div class="btm-bord-content mt-30">
-                    <div class="@(thread.PostsCount > 0 ? "bubble" : "bubble bubble-gray")">
-                        @thread.PostsCount
-                    </div>
-                    <div>
-                        <a asp-action="@nameof(ForumController.Detail)" asp-route-id="@thread.Id"
-                           class="orange-text head-link">
-                            @thread.Title
-                        </a>
-                        <p class="mb-2">@thread.Content.Truncate(150)</p>
-                        @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(thread.Tags))
-                        {
-                            <span class="badge badge-secondary">@tag</span>
-                        }
-                        <p class="gray-text font-s14 mb-0">
-                            Posted on @thread.Created <span class="blue-text">@thread.CreatedBy</span>
-                            <span class="pull-right">
-                                <a avatar-for-user="@thread.CreatedBy" class="avatar avatar-xsmall rounded-circle" />
-                                @foreach (var participantUserName in threadVm.Participants)
-                                {
-                                    <a avatar-for-user="@participantUserName" class="avatar avatar-xsmall rounded-circle" />
-                                }
-                            </span>
-                        </p>
-                    </div>
-                </div>
-            }
+            @Html.Partial("_ForumThreadsList", Model.Threads)
 
             <pagination asp-for="@Model" />
 

@@ -33,7 +33,6 @@ namespace DevPortal.Web.Controllers
         public async Task<ActionResult> Index(int pageNumber = 1)
         {
             int pageIndex = pageNumber - 1;
-            const int editorsCount = 5;
 
             IndexPageViewModel viewModel = new IndexPageViewModel
             {
@@ -46,16 +45,7 @@ namespace DevPortal.Web.Controllers
                 .OrderByDescending(i => i.Created)
                 .Skip(pageIndex * viewModel.PageSize)
                 .Take(viewModel.PageSize)
-                .Select(t => new ForumThreadListItemViewModel
-                {
-                    Thread = t,
-                    Participants = t.Posts
-                                   .OrderByDescending(p => p.Created)
-                                   .Select(p => p.CreatedBy)
-                                   .Distinct()
-                                   .Take(editorsCount)
-                                   .ToArray()
-                })
+                .SelectViewModels()
                 .ToListAsync();
 
             return View(viewModel);
@@ -66,7 +56,7 @@ namespace DevPortal.Web.Controllers
         {
             var forumThread = await _devPortalDb.ForumThreads
                 .AsNoTracking()
-                .Include(f =>f.Posts)
+                .Include(f => f.Posts)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (forumThread == null) return NotFound();
@@ -179,7 +169,7 @@ namespace DevPortal.Web.Controllers
 
         [HttpPost]
         public async Task<ActionResult> NewPost(
-            Guid id, 
+            Guid id,
             [Bind(Prefix = nameof(ForumDetailViewModel.NewAnswer))] NewAnswerViewModel viewModel)
         {
             if (!ModelState.IsValid) return await Detail(id, viewModel);
@@ -218,7 +208,7 @@ namespace DevPortal.Web.Controllers
         {
             var evt = new ForumItemDeleted
             {
-                ForumThreadId = id, 
+                ForumThreadId = id,
                 ForumItemId = forumPostId,
                 UserName = User.Identity.Name,
             };
