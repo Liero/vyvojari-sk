@@ -39,6 +39,12 @@ namespace DevPortal.Web.Controllers
                     .OrderByDescending(i => i.Created)
                     .SelectViewModels()
                     .Take(10)
+                    .ToListAsync(),
+
+                LastestActivity = await _dbContext.Activities
+                    .AsNoTracking()
+                    .OrderByDescending(i => i.TimeStamp)
+                    .Take(100)
                     .ToListAsync()
             };
             return View(viewModel);

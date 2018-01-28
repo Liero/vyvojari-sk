@@ -1,4 +1,7 @@
 ﻿@using DevPortal.Web.Models.HomeViewModels
+@using DevPortal.CommandStack.Events
+@using DevPortal.QueryStack.Model
+
 @model HomePageViewModel
 
 <div class="row">
@@ -13,12 +16,12 @@
         }
 
         <ul class="nav tab-content-style" id="tablist" role="tablist">
-            <li id="news-tab"><a href="#news" class="active"  data-toggle="tab" role="tab">správičky</a></li>
+            <li id="news-tab"><a href="#news" class="active" data-toggle="tab" role="tab">správičky</a></li>
             <li id="forum-tab"><a href="#forum" data-toggle="tab" role="tab">fórum</a></li>
             <li id="activity-tab"><a href="#activity" data-toggle="tab" role="tab">posledná aktivita</a></li>
         </ul>
 
-        <div class="tab-content mt-30"  id="tablistContent">
+        <div class="tab-content mt-30" id="tablistContent">
             <section id="news" class="tab-pane fade show active" role="tabpanel" aria-labelledby="news-tab">
                 @foreach (var newsItem in Model.LatestNews)
                 {
@@ -42,10 +45,54 @@
                 }
             </section>
             <section id="forum" class="tab-pane fade" role="tabpanel" aria-labelledby="forum-tab">
-                @Html.Partial("../Forum/_ForumThreadsList", Model.LatestForumThreads)               
+                @Html.Partial("../Forum/_ForumThreadsList", Model.LatestForumThreads)
             </section>
             <section id="activity" class="tab-pane fade" role="tabpanel" aria-labelledby="activity-tab">
-                <h1>Forum</h1>
+                <ul class="media-list">
+                    @foreach (var activity in Model.LastestActivity)
+                    {
+                        <li class="media  border-bottom mb-2 pb-2">
+                            <a class="avatar avatar-xsmall mr-2" avatar-for-user="@activity.UserName" />
+                            <div class="media-body">
+                                @{
+                                    string UserFriendlyAction(string action)
+                                    {
+                                        switch (action)
+                                        {
+                                            case nameof(NewsItemPublished): return "publikoval správičku";
+                                            case nameof(NewsItemCommented): return "komentoval správičku";
+                                            case nameof(ForumThreadCreated): return "položil otázku";
+                                            case nameof(ForumItemPosted): return "reagoval na otázku";
+                                            case nameof(BlogLinkCreated): return "vložil odkaz na blog";
+                                            default: return action;
+                                        }
+                                    }
+                                    string ControllerForEntity(string entityName)
+                                    {
+                                        switch (entityName)
+                                        {
+                                            case nameof(ForumThread): return "Forum";
+                                            case nameof(NewsItem): return "News";
+                                            case nameof(ForumThreadCreated): return "Blog";
+                                            default: return null;
+                                        }
+                                    }
+                                }
+                                <div>
+                                    <a href="#">@activity.UserName</a>
+                                    @UserFriendlyAction(activity.Action)
+                                    <span class="gray-text pull-right"><time for="@activity.TimeStamp" /></span>
+                                </div>
+                                <a class="orange-text"
+                                   asp-action="Detail"
+                                   asp-route-id="@activity.ContentId"
+                                   asp-controller="@ControllerForEntity(activity.ContentType)">
+                                    @activity.ContentTitle.Truncate(50)
+                                </a>
+                            </div>
+                        </li>
+                    }
+                </ul>
             </section>
         </div>
     </div>
@@ -54,5 +101,3 @@
         <vc:blogs-overview />
     </div>
 </div>
-
-<a href="~/fileupload.html">Test file upload</a>

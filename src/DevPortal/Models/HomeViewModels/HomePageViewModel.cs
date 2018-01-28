@@ -12,5 +12,6 @@ namespace DevPortal.Web.Models.HomeViewModels
     {
         public List<NewsItem> LatestNews { get; set; }
         public List<ForumThreadListItemViewModel> LatestForumThreads { get; set; }
+        public List<Activity> LastestActivity { get; set; }
     }
 }

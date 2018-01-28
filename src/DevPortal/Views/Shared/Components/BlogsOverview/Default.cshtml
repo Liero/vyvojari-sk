@@ -2,7 +2,7 @@
 
 <aside class="mb-5">
     <h3 class="main-head">Blogy <small>a články</small></h3>
-    <div class="form-cont-out">
+    <url class="media-list">
         @foreach (var blogPost in Model)
         {
 
@@ -11,11 +11,10 @@
                 <div class="form-cont-inn">
                     <a href="@blogPost.ExternalUrl" class="mb-1">@blogPost.Title.Truncate(50)</a>
                     <p class="gray-text font-s14 light-text mb-0">
-                        <time for="@blogPost.Created" /> od <span class="blue-text">@blogPost.CreatedBy</span>
-                    </p>
+                    <time for="@blogPost.Created" /> od <span class="blue-text">@blogPost.CreatedBy</span></p>
                 </div>
             </div>
         }
         <a asp-controller="Blog" class="blue-text font-s14">Viac »</a>
-    </div>
+    </url>
 </aside>
