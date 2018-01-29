@@ -67,21 +67,23 @@ namespace DevPortal.QueryStack.Denormalizers
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
-                SaveActivity<Blog>(message.BlogId, message.Title, message.UserName, message, db);
+                SaveActivity<Blog>(message.BlogId, message.Title, message.UserName, message, db, message.Url);
             }
         }
 
 
-        private void SaveActivity<TContentType>(Guid contentId, string title, string userName, DomainEvent message, DevPortalDbContext db)
+        private void SaveActivity<TContentType>(Guid contentId, string title, string userName, DomainEvent message, DevPortalDbContext db, string externalUrl = null)
         {
             db.Activities.Add(new Activity
             {
                 ActivityId = message.Id,
                 ContentId = contentId,
+                ContentType = typeof(TContentType).Name,
                 TimeStamp = message.TimeStamp,
                 ContentTitle = title,
                 Action = message.GetType().Name,
                 UserName = userName,
+                ExternalUrl = externalUrl,
             });
             db.SaveChanges();
         }

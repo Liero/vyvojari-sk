@@ -12,7 +12,7 @@
             <a asp-action="@nameof(ForumController.Create)" class="btn btn-warning pull-right">Pridať otázku</a>
         </h1>
         <section>
-            @Html.Partial("_ForumThreadsList", Model.Threads)
+            @Html.Partial("_ForumThreadsList.cshtml", Model.Threads)
 
             <pagination asp-for="@Model" />
 

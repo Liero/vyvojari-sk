@@ -45,7 +45,7 @@
                 }
             </section>
             <section id="forum" class="tab-pane fade" role="tabpanel" aria-labelledby="forum-tab">
-                @Html.Partial("../Forum/_ForumThreadsList", Model.LatestForumThreads)
+                @Html.Partial("../Forum/_ForumThreadsList.cshtml", Model.LatestForumThreads)
             </section>
             <section id="activity" class="tab-pane fade" role="tabpanel" aria-labelledby="activity-tab">
                 <ul class="media-list">
@@ -73,7 +73,7 @@
                                         {
                                             case nameof(ForumThread): return "Forum";
                                             case nameof(NewsItem): return "News";
-                                            case nameof(ForumThreadCreated): return "Blog";
+                                            case nameof(Blog): return "Blog";
                                             default: return null;
                                         }
                                     }
@@ -83,12 +83,19 @@
                                     @UserFriendlyAction(activity.Action)
                                     <span class="gray-text pull-right"><time for="@activity.TimeStamp" /></span>
                                 </div>
-                                <a class="orange-text"
-                                   asp-action="Detail"
-                                   asp-route-id="@activity.ContentId"
-                                   asp-controller="@ControllerForEntity(activity.ContentType)">
-                                    @activity.ContentTitle.Truncate(50)
-                                </a>
+                                @if (activity.ExternalUrl != null)
+                                {
+                                    <a class="orange-text" href="@activity.ExternalUrl">@activity.ContentTitle.Truncate(50)</a>
+                                }
+                                else
+                                {
+                                    <a class="orange-text"
+                                       asp-action="Detail"
+                                       asp-route-id="@activity.ContentId"
+                                       asp-controller="@ControllerForEntity(activity.ContentType)">
+                                        @activity.ContentTitle.Truncate(50)
+                                    </a>
+                                }
                             </div>
                         </li>
                     }

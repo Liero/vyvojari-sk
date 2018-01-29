@@ -13,5 +13,6 @@ namespace DevPortal.QueryStack.Model
         public string Action { get; set; }
         public string UserName { get; set; }
         public DateTime TimeStamp { get; set; }
+        public string ExternalUrl { get; internal set; }
     }
 }
