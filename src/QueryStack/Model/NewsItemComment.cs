@@ -4,11 +4,8 @@ using System.Text;
 
 namespace DevPortal.QueryStack.Model
 {
-    public class NewsItemComment
+    public class NewsItemComment : ContentBase
     {
-        public Guid Id { get; set; }
-        public string Content { get; set; }
-        public DateTime Created { get; set; }
-        public string CreatedBy { get; set; }
+      
     }
 }

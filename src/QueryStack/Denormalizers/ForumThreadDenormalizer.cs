@@ -10,7 +10,7 @@ using System.Text;
 
 namespace DevPortal.QueryStack.Denormalizers
 {
-    public class ForumThreadDenormalizer :
+    public class ForumThreadDenormalizer : ContentDenormalizerBase<ForumThread>,
         IHandleMessages<ForumThreadCreated>,
         IHandleMessages<ForumThreadEdited>,
         IHandleMessages<ForumThreadDeleted>,
@@ -30,17 +30,13 @@ namespace DevPortal.QueryStack.Denormalizers
 
         public void Handle(ForumThreadCreated message)
         {
-            var entity = new ForumThread
-            {
-                Id = message.ForumThreadId,
-                Title = message.Title,
-                Content = message.Content,
-                Created = message.TimeStamp,
-                CreatedBy = message.AuthorUserName,
-                LastPosted = message.TimeStamp,
-                LastPostedBy = message.AuthorUserName,
-                Tags = string.Join(",", message.Tags)
-            };
+            //generic content mapping
+            ForumThread entity = base.MapCreated(message);
+
+            //specific for ForumThread
+            entity.LastPosted = message.TimeStamp;
+            entity.LastPostedBy = message.AuthorUserName;
+         
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 db.ForumThreads.Add(entity);
@@ -52,12 +48,10 @@ namespace DevPortal.QueryStack.Denormalizers
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
-                ForumThread entity = db.ForumThreads.Find(message.ForumThreadId);
-                entity.Title = message.Title;
-                entity.Content = message.Content;
-                entity.Tags = string.Join(",", message.Tags);
-                entity.LastModified = message.TimeStamp;
-                entity.LastModifiedBy = message.EditorUserName;
+                ForumThread entity = db.ForumThreads
+                    .Include(f => f.Tags)
+                    .FirstOrDefault(f => f.Id == message.ForumThreadId);
+                MapEdited(message, entity);
                 db.SaveChanges();
             }
         }

@@ -20,9 +20,10 @@
             @Html.Partial("_UserInfo", newsItem)
             <p><markdown>@newsItem.Content.Truncate(500)</markdown></p>
             <p>
-                @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(newsItem.Tags))
+                
+                @foreach (var tag in newsItem.Tags)
                 {
-                    <span class="badge badge-dark">@tag</span>
+                    <span class="badge badge-dark">@tag.Name</span>
                 }
             </p>
 

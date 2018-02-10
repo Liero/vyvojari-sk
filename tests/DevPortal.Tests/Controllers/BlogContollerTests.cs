@@ -12,7 +12,6 @@ using System.Security.Claims;
 using System.Text;
 using DevPortal.QueryStack.Model;
 using System.Threading.Tasks;
-using DevPortal.Web.Models.BlogViewModels;
 
 namespace DevPortal.Web.Controllers
 {

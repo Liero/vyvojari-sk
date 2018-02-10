@@ -22,9 +22,9 @@
                     }
                 </span>
                 <div>
-                    @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(thread.Tags))
+                    @foreach (var tag in thread.Tags)
                     {
-                        <span class="badge badge-secondary">@tag</span>
+                        <span class="badge badge-secondary">@tag.Name</span>
                     }
                     <p class="gray-text font-s14 mb-0">
                         Posted on @thread.Created <span class="blue-text">@thread.CreatedBy</span>

@@ -1,5 +1,6 @@
 ﻿using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack;
+using DevPortal.QueryStack.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
@@ -64,6 +66,16 @@ namespace DevPortal.Web.Controllers
         protected EventStoreListener<T> ListenInEventStoreFor<T>() where T : DomainEvent
         {
             return new EventStoreListener<T>(EventStoreMock);
+        }
+
+        protected ICollection<Tag> CreateTags(Guid contentId, params string[] tags)
+        {
+            return tags
+                .Select(t => new Tag
+                {
+                    ContentId = contentId,
+                    Name = t
+                }).ToList();
         }
     }
 }

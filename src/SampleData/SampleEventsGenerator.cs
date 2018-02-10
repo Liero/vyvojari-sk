@@ -80,7 +80,7 @@ namespace DevPortal.DesignTimeData
                     {
                         yield return new NewsItemCommented
                         {
-                            UserName = UserNames.Element(i + j),
+                            UserName = UserNames.Element(i + j + 3),
                             Content = LoremIpsum.Element(i + j),
                             NewsItemId = created.NewsItemId,
                             CommentId = Guid.NewGuid(),
@@ -94,7 +94,7 @@ namespace DevPortal.DesignTimeData
         public IEnumerable<DomainEvent> Forum(int count)
         {
             var rnd = new Random();
-            for (int i = 0; i < count; i++)
+            for (int i = 3; i < count + 3; i++)
             {
                 int backIndex = count - 1 - i;
                 DateTime timestamp = DateTime.Now.AddMinutes(-(backIndex * 100) ^ 2 + 1);
@@ -131,7 +131,7 @@ namespace DevPortal.DesignTimeData
                     {
                         ForumItemId =  Guid.NewGuid(),
                         ForumThreadId = forumThreadCreated.ForumThreadId,
-                        AuthorUserName = UserNames.Element(i + j),
+                        AuthorUserName = UserNames.Element(i + j + 1),
                         Content = LoremIpsum.Element(j + i),
                         TimeStamp = timestamp.AddSeconds(j * 20 + 5)
                     };
@@ -143,7 +143,7 @@ namespace DevPortal.DesignTimeData
                         {
                             ForumItemId = forumPostCreated.ForumItemId,
                             ForumThreadId = forumThreadCreated.ForumThreadId,
-                            EditorUserName = UserNames.Element(i),
+                            EditorUserName = UserNames.Element(i + j + 2),
                             Content = LoremIpsum.Element(i + 3),
                             TimeStamp = forumPostCreated.TimeStamp.AddSeconds(j)
                         };
@@ -154,7 +154,7 @@ namespace DevPortal.DesignTimeData
 
         public IEnumerable<DomainEvent> Blog(int count)
         {
-            for (int i = 0; i < count; i++)
+            for (int i = 5; i < count + 5; i++)
             {
                 int backIndex = count - 1 - i;
                 DateTime timestamp = DateTime.Now.AddMinutes(-(backIndex * 100) ^ 2 + 1);

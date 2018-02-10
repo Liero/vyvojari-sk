@@ -5,6 +5,7 @@
     <VersionPrefix>0.1.5</VersionPrefix>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
+    <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
     <AssemblyName>DevPortal</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>DevPortal</PackageId>

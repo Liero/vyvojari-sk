@@ -11,11 +11,11 @@ namespace DevPortal.Web.Models.ForumViewModels
     {
         public List<ForumThreadListItemViewModel> Threads { get; set; }
 
-        public string[] MostUsedTags { get; }
+        public string[] MostUsedTags { get; set; }
 
         public IndexPageViewModel()
         {
-            MostUsedTags = SampleData.Tags;
+            MostUsedTags = new[] { "" };
         }
     }
 

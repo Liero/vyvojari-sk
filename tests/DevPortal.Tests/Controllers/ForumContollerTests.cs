@@ -35,7 +35,7 @@ namespace DevPortal.Web.Controllers
                     Content = "Some content",
                     CreatedBy = Config.UserName,
                     Created = DateTime.Now,
-                    Tags = "ABC,DEF",
+                    Tags = CreateTags(ExistingThreadId, "ABC", "DEF"),
                     Posts = new List<ForumPost>
                     {
                         new ForumPost

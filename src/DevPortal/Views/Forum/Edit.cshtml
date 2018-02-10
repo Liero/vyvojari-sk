@@ -1,4 +1,5 @@
-﻿@model DevPortal.Web.Models.ForumViewModels.EditForumThreadViewModel
+﻿@using DevPortal.QueryStack.Model
+@model DevPortal.Web.Models.ForumViewModels.EditForumThreadViewModel
 @{
     ViewBag.Title = "Editovať otázku";
 }
@@ -35,10 +36,7 @@
     <div class="col-md-4">
         <section>
             <h3 class="main-head light-text">Najpoužívanejšie tagy</h3>
-            @foreach (var tag in DevPortal.Web.Data.SampleData.Tags)
-            {
-                <div><a class="badge badge-secondary">@tag</a></div>
-            }
+            <vc:most-used-tags entity-type="@typeof(ForumThread)" />
         </section>
     </div>
 </div>

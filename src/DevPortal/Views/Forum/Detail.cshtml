@@ -9,9 +9,9 @@
     <div class="col-md-8">
         <h1 class="main-head">Diskusné fórum</h1>
         <h2 class="orange-text head-link">@Model.Thread.Title</h2>
-        @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(Model.Thread.Tags))
+        @foreach (var tag in Model.Thread.Tags)
         {
-            <span class="badge badge-secondary">@tag</span>
+            <span class="badge badge-secondary">@tag.Name</span>
         }
         <div class="mt-3 media">
             <a avatar-for-user="@Model.Thread.CreatedBy" class="d-flex mr-3 avatar" />

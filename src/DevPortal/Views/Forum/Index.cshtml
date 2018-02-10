@@ -1,4 +1,5 @@
-﻿@model DevPortal.Web.Models.ForumViewModels.IndexPageViewModel
+﻿@using DevPortal.QueryStack.Model
+@model DevPortal.Web.Models.ForumViewModels.IndexPageViewModel
 
 @{
     ViewBag.Title = "Diskusné fórum";
@@ -22,10 +23,7 @@
     <div class="col-md-3">
         <aside>
             <h3 class="main-head">Kategórie</h3>
-            @foreach (var tag in Model.MostUsedTags)
-            {
-                <div><a href="#" class="badge badge-secondary lg">@tag</a></div>
-            }
+            <vc:most-used-tags entity-type="@typeof(ForumThread)" />
         </aside>
     </div>
 

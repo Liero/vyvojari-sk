@@ -1,6 +1,10 @@
 ﻿@inject UserManager<ApplicationUser> userManager
+@inject DevPortal.QueryStack.DevPortalDbContext dbContext
 @{
     var applicationUser = await userManager.GetUserAsync(User);
+    var activities = dbContext.Activities.Where(c => c.UserName == User.Identity.Name)
+        .Take(4)
+        .ToArray();
 }
 <div class="welcome-cont-out">
     <h1 class="main-head"><span class="light-text">Ahoj,</span> @User.Identity.Name<text>!</text></h1>
@@ -18,9 +22,9 @@
         </div>
         <div class="col-md-6 res-mt-20">
             <ul class="light-text">
-                @foreach (var item in DevPortal.Web.Data.SampleData.Titles.Take(4))
+                @foreach (var activity in activities)
                 {
-                    <li><a href="#">@item</a></li>
+                    <li><a href="#">@activity.ContentTitle</a></li>
                 }
             </ul>
         </div>

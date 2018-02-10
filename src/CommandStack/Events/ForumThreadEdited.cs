@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DevPortal.CommandStack.Events
 {
-    public class ForumThreadEdited : DomainEvent
+    public class ForumThreadEdited : DomainEvent, IContentEdited
     {
         public Guid ForumThreadId { get; set; }
         public string EditorUserName { get; set; }
@@ -14,5 +14,7 @@ namespace DevPortal.CommandStack.Events
         public string[] Tags { get; set; }
 
         public string Reason { get; set; }
+
+        Guid IContentEvt.ContentId => ForumThreadId;
     }
 }

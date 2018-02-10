@@ -18,10 +18,20 @@ namespace DevPortal.QueryStack
         public DbSet<ForumPost> ForumPosts { get; set; }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Activity> Activities { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+
+        public DbSet<ContentBase> Contents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<GenericContent>(entity =>
+            {
+                entity.HasMany(e => e.Tags)
+                    .WithOne()
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
             modelBuilder.Entity<NewsItem>(entity =>
             {
@@ -35,6 +45,15 @@ namespace DevPortal.QueryStack
                 entity.HasMany(e => e.Posts)
                     .WithOne(e => e.Thread)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Tag>(entity =>
+            {
+                entity.HasKey(e => new
+                {
+                    e.ContentId,
+                    e.Name,
+                });
             });
         }
     }

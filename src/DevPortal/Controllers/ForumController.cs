@@ -34,10 +34,11 @@ namespace DevPortal.Web.Controllers
         {
             int pageIndex = pageNumber - 1;
 
+
             IndexPageViewModel viewModel = new IndexPageViewModel
             {
                 PageNumber = pageNumber,
-                TotalCount = await _devPortalDb.ForumThreads.CountAsync()
+                TotalCount = await _devPortalDb.ForumThreads.CountAsync(),
             };
 
             viewModel.Threads = await _devPortalDb.ForumThreads
@@ -111,7 +112,7 @@ namespace DevPortal.Web.Controllers
                 Id = entity.Id,
                 Content = entity.Content,
                 Title = entity.Title,
-                Tags = entity.Tags
+                Tags = TagsConverter.ArrayToString(entity.Tags.Select(t => t.Name))
             };
 
             return View(viewModel);

@@ -1,4 +1,5 @@
-﻿@model DevPortal.Web.Models.NewsViewModels.CreateNewsItemViewModel
+﻿@using DevPortal.QueryStack.Model
+@model DevPortal.Web.Models.NewsViewModels.CreateNewsItemViewModel
 @{
     ViewBag.Title = "Pridať správičku";
 }
@@ -38,10 +39,7 @@
 
         <section>
             <h3 class="main-head light-text">Najpoužívanejšie tagy</h3>
-            @foreach (var tag in DevPortal.Web.Data.SampleData.Tags)
-            {
-                <div><a class="badge badge-secondary">@tag</a></div>
-            }
+            <vc:most-used-tags entity-type="@typeof(NewsItem)" />
         </section>
 
     </div>

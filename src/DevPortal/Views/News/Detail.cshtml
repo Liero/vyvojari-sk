@@ -16,9 +16,9 @@
         </p>
 
 
-        @foreach (var tag in DevPortal.Web.AppCode.TagsConverter.StringToArray(Model.NewsItem.Tags))
+        @foreach (var tag in Model.NewsItem.Tags)
         {
-            <span class="badge badge-secondary">@tag</span>
+            <span class="badge badge-secondary">@tag.Name</span>
         }
 
 

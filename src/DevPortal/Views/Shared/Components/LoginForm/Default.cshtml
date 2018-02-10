@@ -39,7 +39,7 @@
                     }
 
                     <p>
-                        <a asp-action="@nameof(AccountController.Register)"
+                        <a asp-action="@nameof(AccountController.Register)" asp-controller="Account"
                            asp-route-returnurl="@ViewData["ReturnUrl"]">Zaregistrovať nový účet</a>
                     </p>
                 </form>

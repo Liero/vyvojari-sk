@@ -4,11 +4,12 @@ using DevPortal.QueryStack.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DevPortal.QueryStack.Denormalizers
 {
-    public class NewsItemDenormalizer :
+    public class NewsItemDenormalizer : ContentDenormalizerBase<NewsItem>,
         IHandleMessages<NewsItemCreated>,
         IHandleMessages<NewsItemEdited>,
         IHandleMessages<NewsItemPublished>,
@@ -23,15 +24,7 @@ namespace DevPortal.QueryStack.Denormalizers
 
         public void Handle(NewsItemCreated message)
         {
-            var newsItem = new NewsItem
-            {
-                Id = message.NewsItemId,
-                Title = message.Title,
-                Content = message.Content,
-                Created = message.TimeStamp,
-                CreatedBy = message.AuthorUserName,
-                Tags = string.Join(",", message.Tags)
-            };
+            var newsItem = base.MapCreated(message);
             using(var db = new DevPortalDbContext(_dbContextOptions))
             {
                 db.NewsItems.Add(newsItem);
@@ -43,12 +36,11 @@ namespace DevPortal.QueryStack.Denormalizers
         {
             using(var db = new DevPortalDbContext(_dbContextOptions))
             {
-                NewsItem newsItem = db.NewsItems.Find(message.NewsItemId);
-                newsItem.Title = message.Title;
-                newsItem.Content = message.Content;
-                newsItem.Tags = string.Join(",", message.Tags);
-                newsItem.LastModified = message.TimeStamp;
-                newsItem.LastModifiedBy = message.EditorUserName;
+                NewsItem newsItem = db.NewsItems
+                    .Include(i => i.Tags)
+                    .First(i => i.Id == message.NewsItemId);
+
+                base.MapEdited(message, newsItem);
                 db.SaveChanges();
             }
         }
@@ -69,10 +61,7 @@ namespace DevPortal.QueryStack.Denormalizers
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 NewsItem newsItem = db.NewsItems.Find(message.NewsItemId);
-                if (newsItem.Comments == null)
-                {
-                    newsItem.Comments = new List<NewsItemComment>();
-                }
+
                 newsItem.Comments.Add(new NewsItemComment
                 {
                     Id = message.CommentId,

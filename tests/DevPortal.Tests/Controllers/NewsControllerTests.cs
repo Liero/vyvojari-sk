@@ -1,5 +1,6 @@
 ﻿using DevPortal.CommandStack.Events;
 using DevPortal.CommandStack.Infrastructure;
+using DevPortal.QueryStack;
 using DevPortal.Web.Models.NewsViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,17 @@ namespace DevPortal.Web.Controllers
     [TestClass]
     public class NewsControllerTests : ControllerTestsBase<NewsController>
     {
+        public readonly Guid ExistingNewsItemId = new Guid("00000000-0000-0000-0000-000000000001");
+
+        [TestInitialize]
+        public void Init()
+        {
+            using (var dbContext = (DevPortalDbContext)ServiceProvider.GetService(typeof(DevPortalDbContext)))
+            {
+                dbContext.NewsItems.Add(new QueryStack.Model.NewsItem { Id = ExistingNewsItemId });
+                dbContext.SaveChanges();
+            }
+        }
 
         [TestMethod]
         public void NewsController_Create_Produces_NewsItemCreated_Event()
@@ -52,9 +64,6 @@ namespace DevPortal.Web.Controllers
         [TestMethod]
         public void NewsController_Edit_Produces_NewsItemEdited_Event()
         {
-            //setup
-            var id = Data.SampleData.Instance.News[0].Id;
-
             var vm = new EditNewsItemViewModel
             {
                 Title = "TitleEdited",
@@ -69,13 +78,13 @@ namespace DevPortal.Web.Controllers
             NewsController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.Edit(id, vm);
+            IActionResult actionResult = controller.Edit(ExistingNewsItemId, vm);
 
             //assert
             void NewsItemEdited(DomainEvent savedEvent)
             {
                 NewsItemEdited actualEvent = (NewsItemEdited)savedEvent;
-                Assert.AreEqual(id, actualEvent.NewsItemId, nameof(actualEvent.NewsItemId));
+                Assert.AreEqual(ExistingNewsItemId, actualEvent.NewsItemId, nameof(actualEvent.NewsItemId));
                 Assert.AreEqual(vm.Title, actualEvent.Title, "Title");
                 Assert.AreEqual(vm.Content, actualEvent.Content, "Content");
                 Assert.AreEqual(3, actualEvent.Tags.Length, "Tags Count");
@@ -89,8 +98,6 @@ namespace DevPortal.Web.Controllers
         public void NewsController_Publish_Produces_NewsItemPublished_Event()
         {
             //setup
-            var id = Data.SampleData.Instance.News[0].Id;
-
             EventStoreMock
                 .Setup(es => es.Save(It.IsAny<NewsItemPublished>()))
                 .Callback<DomainEvent>(NewsItemPublished);
@@ -98,13 +105,13 @@ namespace DevPortal.Web.Controllers
             NewsController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.Publish(id);
+            IActionResult actionResult = controller.Publish(ExistingNewsItemId);
 
             //assert
             void NewsItemPublished(DomainEvent savedEvent)
             {
                 NewsItemPublished actualEvent = (NewsItemPublished)savedEvent;
-                Assert.AreEqual(id, actualEvent.NewsItemId, nameof(actualEvent.NewsItemId));
+                Assert.AreEqual(ExistingNewsItemId, actualEvent.NewsItemId, nameof(actualEvent.NewsItemId));
             }
 
             EventStoreMock.Verify(es => es.Save(It.IsAny<NewsItemPublished>()), Times.Once);
@@ -114,7 +121,6 @@ namespace DevPortal.Web.Controllers
         public void NewsController_AddComment_Produces_NewsItemCommented_Event()
         {
             //setup
-            var id = Data.SampleData.Instance.News[0].Id;
             string comment = "expected comment";
 
             EventStoreMock
@@ -124,7 +130,7 @@ namespace DevPortal.Web.Controllers
             NewsController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.AddComment(id, new AddCommentViewModel
+            IActionResult actionResult = controller.AddComment(ExistingNewsItemId, new AddCommentViewModel
             {
                 Message = comment 
             });
@@ -133,7 +139,7 @@ namespace DevPortal.Web.Controllers
             void NewsItemCommented(DomainEvent savedEvent)
             {
                 NewsItemCommented actualEvent = (NewsItemCommented)savedEvent;
-                Assert.AreEqual(id, actualEvent.NewsItemId, nameof(actualEvent.NewsItemId));
+                Assert.AreEqual(ExistingNewsItemId, actualEvent.NewsItemId, nameof(actualEvent.NewsItemId));
                 Assert.AreEqual(comment, actualEvent.Content, nameof(actualEvent.Content));
                 Assert.AreNotEqual(default(Guid), actualEvent.CommentId, nameof(actualEvent.CommentId));
             }

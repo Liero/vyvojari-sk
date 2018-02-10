@@ -13,6 +13,7 @@ using DevPortal.Web.Models.SharedViewModels;
 using DevPortal.QueryStack.Model;
 using Microsoft.AspNetCore.Authorization;
 
+
 namespace DevPortal.Web.Controllers
 {
     [Authorize]
@@ -114,7 +115,7 @@ namespace DevPortal.Web.Controllers
             var viewModel = new EditNewsItemViewModel
             {
                 Id = newsItem.Id,
-                Tags = newsItem.Tags,
+                Tags = AppCode.TagsConverter.ArrayToString(newsItem.Tags),
                 Content = newsItem.Content,
                 Title = newsItem.Title,
             };
