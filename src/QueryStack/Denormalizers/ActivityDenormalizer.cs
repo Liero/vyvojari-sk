@@ -59,7 +59,7 @@ namespace DevPortal.QueryStack.Denormalizers
             {
                 //this introduces dependency on another view. Consider Refactoring using events
                 var newsItem = db.ForumThreads.AsNoTracking().First(i => i.Id == message.ForumThreadId);
-                SaveActivity<ForumThread>(message.ForumThreadId, newsItem.Title, newsItem.CreatedBy, message, db);
+                SaveActivity<ForumThread>(message.ForumThreadId, newsItem.Title, message.AuthorUserName, message, db);
             }
         }
 
