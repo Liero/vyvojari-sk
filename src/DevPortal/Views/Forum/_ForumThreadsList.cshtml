@@ -1,8 +1,7 @@
-﻿@model ICollection<DevPortal.Web.Models.ForumViewModels.ForumThreadListItemViewModel>
+﻿@model ICollection<DevPortal.QueryStack.Model.ForumThread>
 
-@foreach (var threadVm in Model)
+@foreach (var thread in Model)
 {
-    var thread = threadVm.Thread;
     <div class="btm-bord-content mt-30">
         <div class="@(thread.PostsCount > 0 ? "bubble" : "bubble bubble-gray")">
             @thread.PostsCount
@@ -16,7 +15,7 @@
             <div>
                 <span class="pull-right">
                     <a avatar-for-user="@thread.CreatedBy" class="avatar avatar-xsmall rounded-circle" />
-                    @foreach (var participantUserName in threadVm.Participants)
+                    @foreach (var participantUserName in thread.ParticipantsCsv.Split(',').TakeLast(5))
                     {
                         <a avatar-for-user="@participantUserName" class="avatar avatar-xsmall rounded-circle" />
                     }

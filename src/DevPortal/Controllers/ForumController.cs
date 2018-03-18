@@ -46,7 +46,6 @@ namespace DevPortal.Web.Controllers
                 .OrderByDescending(i => i.Created)
                 .Skip(pageIndex * viewModel.PageSize)
                 .Take(viewModel.PageSize)
-                .SelectViewModels()
                 .ToListAsync();
 
             return View(viewModel);

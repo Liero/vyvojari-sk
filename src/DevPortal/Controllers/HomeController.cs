@@ -37,8 +37,8 @@ namespace DevPortal.Web.Controllers
                 LatestForumThreads = await _dbContext.ForumThreads
                     .AsNoTracking()
                     .OrderByDescending(i => i.Created)
-                    .SelectViewModels()
                     .Take(10)
+                
                     .ToListAsync(),
 
                 LastestActivity = await _dbContext.Activities

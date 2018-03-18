@@ -27,7 +27,9 @@
     <PackageReference Include="CommonMark.NET" Version="0.15.1" />
     <PackageReference Include="Humanizer.Core.sk" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.0-preview1-final" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.2" />
+    <PackageReference Include="Rebus.SqlServer" Version="4.0.0" />
 
   </ItemGroup>
 

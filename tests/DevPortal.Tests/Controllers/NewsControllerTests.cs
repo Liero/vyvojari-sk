@@ -19,8 +19,9 @@ namespace DevPortal.Web.Controllers
         public readonly Guid ExistingNewsItemId = new Guid("00000000-0000-0000-0000-000000000001");
 
         [TestInitialize]
-        public void Init()
+        public override  void Init()
         {
+            base.Init();
             using (var dbContext = (DevPortalDbContext)ServiceProvider.GetService(typeof(DevPortalDbContext)))
             {
                 dbContext.NewsItems.Add(new QueryStack.Model.NewsItem { Id = ExistingNewsItemId });
