@@ -1,4 +1,5 @@
-﻿using DevPortal.Web.Models;
+﻿using DevPortal.Web.AppCode.Extensions;
+using DevPortal.Web.Models;
 using DevPortal.Web.Models.AccountViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -65,6 +66,7 @@ namespace DevPortal.Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [ServiceFilter(typeof(ValidateReCaptchaAttribute))]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;

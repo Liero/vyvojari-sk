@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using DevPortal.Web.AppCode.Config;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using DevPortal.Web.AppCode.Extensions;
 
 namespace DevPortal.Web
 {
@@ -73,6 +74,9 @@ namespace DevPortal.Web
 
             services.Configure<Imgur>(Configuration.GetSection("Imgur"));
             services.AddSingleton<IImageStore, ImgurImageStore>();
+
+            services.Configure<ReCaptcha>(Configuration.GetSection("ReCaptcha"));
+            services.AddSingleton<ValidateReCaptchaAttribute>();
 
             services.AddEventSourcing();
         }
