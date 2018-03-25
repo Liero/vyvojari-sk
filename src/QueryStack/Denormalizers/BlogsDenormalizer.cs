@@ -1,10 +1,11 @@
 ﻿using DevPortal.CommandStack.Events;
-using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack.Model;
 using Microsoft.EntityFrameworkCore;
+using Rebus.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DevPortal.QueryStack.Denormalizers
 {
@@ -19,7 +20,7 @@ namespace DevPortal.QueryStack.Denormalizers
             this._dbContextOptions = dbContextOptions;
         }
 
-        public void Handle(BlogLinkCreated message)
+        public async Task Handle(BlogLinkCreated message)
         {
             var entity = new Blog
             {
@@ -33,11 +34,11 @@ namespace DevPortal.QueryStack.Denormalizers
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 db.Blogs.Add(entity);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
 
-        //public void Handle(BlogEdited message)
+        //public async Task Handle(BlogEdited message)
         //{
         //    using (var db = new DevPortalDbContext(_dbContextOptions))
         //    {
@@ -47,18 +48,18 @@ namespace DevPortal.QueryStack.Denormalizers
         //        entity.Tags = string.Join(",", message.Tags);
         //        entity.LastModified = message.TimeStamp;
         //        entity.LastModifiedBy = message.EditorUserName;
-        //        db.SaveChanges();
+        //        await db.SaveChangesAsync();
         //    }
         //}
 
-        public void Handle(BlogDeleted message)
+        public async Task Handle(BlogDeleted message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 var entity = new Blog { Id = message.Id };
                 db.Blogs.Attach(entity);
                 db.Blogs.Remove(entity);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
 

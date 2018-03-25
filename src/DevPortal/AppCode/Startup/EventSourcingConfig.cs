@@ -1,35 +1,54 @@
 ﻿using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack.Denormalizers;
 using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Rebus.Bus;
+using Rebus.Routing.TypeBased;
+using Rebus.ServiceProvider;
+using Rebus.Transport.InMem;
+
 
 namespace DevPortal.Web.AppCode.Startup
 {
     public static class EventSourcingConfig
     {
-        public static void AddEventSourcing(this IServiceCollection services)
+        public static void AddInMemoryEventSourcing(this IServiceCollection services)
         {
-            services.AddSingleton<IEventDispatcher>(serviceProvider =>
-            {
-                
-                var eventDispatcher = new InMemoryBus(type =>
-                    ActivatorUtilities.CreateInstance(serviceProvider, type));
-                RegisterHandlers(eventDispatcher);
-                return eventDispatcher;
-            });
-            services.AddSingleton<IEventStore, InMemoryEventStore>();
+
+            services.AddRebus(configure => configure
+              .Logging(l => l.Trace())
+              .Transport(t => t.UseInMemoryTransport(new InMemNetwork(), "Messages"))
+              .Routing(r => r.TypeBased().MapAssemblyOf<DomainEvent>("Messages")));
+
+
+            services.AddSingleton<IEventDispatcher, RebusEventDispatcher>();
+            services.AutoRegisterHandlersFromAssemblyOf<ActivityDenormalizer>();
+            services.AddSingleton<IEventStore, SqlEventStore>();
+            //services.AddSingleton<IEventDispatcher>(serviceProvider =>
+            //{
+
+            //    var eventDispatcher = new InMemoryBus(type =>
+            //        ActivatorUtilities.CreateInstance(serviceProvider, type));
+            //    RegisterHandlers(eventDispatcher);
+            //    return eventDispatcher;
+            //});
+            //services.AddSingleton<IEventStore, InMemoryEventStore>();
         }
 
-        private static void RegisterHandlers(IEventDispatcher eventDispatcher)
+        public static void AddSqlEventSourcing(this IServiceCollection services)
         {
-            //eventDispatcher.RegisterHandler<NewsItemDenormalizer>();
-            //eventDispatcher.RegisterHandler<BlogDenormalizer>();
-            //eventDispatcher.RegisterHandler<ForumThreadDenormalizer>();
+            AddInMemoryEventSourcing(services);
+        }
 
+
+
+        public static void RegisterHandlers(this IEventDispatcher eventDispatcher)
+        {
             foreach (var denormalizer in AllDenormalizers)
             {
                 eventDispatcher.RegisterHandler(denormalizer);

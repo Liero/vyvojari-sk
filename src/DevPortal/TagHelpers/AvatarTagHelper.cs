@@ -78,10 +78,15 @@ namespace DevPortal.Web.TagHelpers
             }
             else if (avatarUrl == null)
             {
+                //in case there is no username and avatar url - can happed if you are logged out
                 avatarUrl =  "/media/noface.jpg";
             }
-            content.AppendLine($"<span class=\"cover\" style=\"background-image:url('{avatarUrl}')\"></span>");
-          
+
+            if (!string.IsNullOrEmpty(avatarUrl)) //must check in order to avoid request to current page (empty url)
+            {
+                content.AppendLine($"<span class=\"cover\" style=\"background-image:url('{avatarUrl}')\"></span>");
+            }
+
             output.Content.SetHtmlContent(content.ToString());
             output.Attributes.Add("style", $"background:{background}");
 

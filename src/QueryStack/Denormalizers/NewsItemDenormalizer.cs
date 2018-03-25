@@ -1,11 +1,12 @@
 ﻿using DevPortal.CommandStack.Events;
-using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack.Model;
 using Microsoft.EntityFrameworkCore;
+using Rebus.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DevPortal.QueryStack.Denormalizers
 {
@@ -22,17 +23,17 @@ namespace DevPortal.QueryStack.Denormalizers
             this._dbContextOptions = dbContextOptions;
         }
 
-        public void Handle(NewsItemCreated message)
+        public async Task Handle(NewsItemCreated message)
         {
             var newsItem = base.MapCreated(message);
             using(var db = new DevPortalDbContext(_dbContextOptions))
             {
                 db.NewsItems.Add(newsItem);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
 
-        public void Handle(NewsItemEdited message)
+        public async Task Handle(NewsItemEdited message)
         {
             using(var db = new DevPortalDbContext(_dbContextOptions))
             {
@@ -41,22 +42,22 @@ namespace DevPortal.QueryStack.Denormalizers
                     .First(i => i.Id == message.NewsItemId);
 
                 base.MapEdited(message, newsItem);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
 
-        public void Handle(NewsItemPublished message)
+        public async Task Handle(NewsItemPublished message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 NewsItem newsItem = db.NewsItems.Find(message.NewsItemId);
                 newsItem.Published = message.TimeStamp;
                 newsItem.IsPublished = true;
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
 
-        public void Handle(NewsItemCommented message)
+        public async Task Handle(NewsItemCommented message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
@@ -70,7 +71,7 @@ namespace DevPortal.QueryStack.Denormalizers
                     CreatedBy = message.UserName,
                 });
                 newsItem.CommentsCount++;
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
     }

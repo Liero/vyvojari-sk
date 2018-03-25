@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Rebus.Handlers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DevPortal.CommandStack.Infrastructure
 {
@@ -19,9 +21,9 @@ namespace DevPortal.CommandStack.Infrastructure
 
         public void RegisterHandler(Type type) => _handlers.Add(type);
 
-        public void Dispatch(DomainEvent @event) => DeliverMessageToRegisteredHandlers(@event);
+        public Task Dispatch(DomainEvent @event) => DeliverMessageToRegisteredHandlers(@event);
 
-        private void DeliverMessageToRegisteredHandlers<T>(T message) where T : class
+        private async Task DeliverMessageToRegisteredHandlers<T>(T message) where T : class
         {
             Type messageType = message.GetType();
             var openInterface = typeof(IHandleMessages<>);
@@ -34,9 +36,10 @@ namespace DevPortal.CommandStack.Infrastructure
             foreach (Type h in handlersToNotify)
             {
                 var handlerInstance = activator(h);
-                closedInterface.GetTypeInfo()
-                    .GetMethod(nameof(IHandleMessages<T>.Handle))
-                    .Invoke(handlerInstance, new[] { message });
+
+                var handlerMethod = closedInterface.GetTypeInfo().GetMethod(nameof(IHandleMessages<T>.Handle));
+                var task = (Task)handlerMethod.Invoke(handlerInstance, new[] { message });
+                await task;
                 //dynamic handlerInstance = h.Value;
                 //handlerInstance.Handle((dynamic)message);
             }

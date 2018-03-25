@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DevPortal.QueryStack
@@ -26,25 +27,27 @@ namespace DevPortal.QueryStack
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<ContentBase>(entity => {
+                entity.ToTable("ContentBase");
+            });
+
             modelBuilder.Entity<GenericContent>(entity =>
             {
                 entity.HasMany(e => e.Tags)
                     .WithOne()
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .HasForeignKey(e => e.ContentId);
             });
 
             modelBuilder.Entity<NewsItem>(entity =>
             {
                 entity.HasMany(e => e.Comments)
-                    .WithOne()
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .WithOne();
             });
 
             modelBuilder.Entity<ForumThread>(entity =>
             {
                 entity.HasMany(e => e.Posts)
-                    .WithOne(e => e.Thread)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .WithOne(e => e.Thread);
             });
 
             modelBuilder.Entity<Tag>(entity =>
@@ -55,6 +58,13 @@ namespace DevPortal.QueryStack
                     e.Name,
                 });
             });
+
+            //todo: remove in EF 2.1
+            modelBuilder.Entity<TagsUsage>(t => t.HasKey(e => e.Name));
         }
+
+
+        protected DbSet<TagsUsage> TagsUsage { get; set; }
+        public IQueryable<TagsUsage> TagsUsageView => TagsUsage;
     }
 }

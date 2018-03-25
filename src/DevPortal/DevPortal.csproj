@@ -1,24 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <AssemblyTitle>DevPortal.Web</AssemblyTitle>
     <VersionPrefix>0.1.5</VersionPrefix>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
-    <AssemblyName>DevPortal</AssemblyName>
-    <OutputType>Exe</OutputType>
-    <PackageId>DevPortal</PackageId>
     <UserSecretsId>aspnet-DevPortal.Web-20161230052130</UserSecretsId>
-    <RuntimeFrameworkVersion>2.0.0</RuntimeFrameworkVersion>
     <RootNamespace>DevPortal.Web</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Update="wwwroot\**\*;Views\**\*">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-  </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="NuGet.CommandLine" Version="4.1.0" />
     <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="2.0.0" />
@@ -26,9 +15,10 @@
   <ItemGroup>
     <PackageReference Include="CommonMark.NET" Version="0.15.1" />
     <PackageReference Include="Humanizer.Core.sk" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.2" />
+    <PackageReference Include="Rebus" Version="4.2.1" />
+    <PackageReference Include="Rebus.ServiceProvider" Version="4.0.1" />
     <PackageReference Include="Rebus.SqlServer" Version="4.0.0" />
 
   </ItemGroup>
@@ -38,9 +28,5 @@
     <ProjectReference Include="..\QueryStack\QueryStack.csproj" />
     <ProjectReference Include="..\SampleData\DesignTimeData.csproj" />
   </ItemGroup>
-
-  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
-    <!--<Exec Command="bower install" />-->
-  </Target>
 
 </Project>

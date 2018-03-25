@@ -1,12 +1,13 @@
 ﻿using DevPortal.CommandStack.Events;
-using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack.Model;
 using Microsoft.EntityFrameworkCore;
+using Rebus.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DevPortal.QueryStack.Denormalizers
 {
@@ -28,7 +29,7 @@ namespace DevPortal.QueryStack.Denormalizers
 
         #region ForumThread
 
-        public void Handle(ForumThreadCreated message)
+        public async Task Handle(ForumThreadCreated message)
         {
             //generic content mapping
             ForumThread entity = base.MapCreated(message);
@@ -40,11 +41,11 @@ namespace DevPortal.QueryStack.Denormalizers
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 db.ForumThreads.Add(entity);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
 
-        public void Handle(ForumThreadEdited message)
+        public async Task Handle(ForumThreadEdited message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
@@ -52,18 +53,18 @@ namespace DevPortal.QueryStack.Denormalizers
                     .Include(f => f.Tags)
                     .FirstOrDefault(f => f.Id == message.ForumThreadId);
                 MapEdited(message, entity);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
 
-        public void Handle(ForumThreadDeleted message)
+        public async Task Handle(ForumThreadDeleted message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 var entity = new ForumThread { Id = message.Id };
                 db.ForumThreads.Attach(entity);
                 db.ForumThreads.Remove(entity);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
 
@@ -71,13 +72,16 @@ namespace DevPortal.QueryStack.Denormalizers
 
         #region ForumItems
 
-        public void Handle(ForumItemPosted message)
+        public async Task Handle(ForumItemPosted message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 ForumThread forumThread = db.ForumThreads.Find(message.ForumThreadId);
                 forumThread.LastPosted = message.TimeStamp;
                 forumThread.LastPostedBy = message.AuthorUserName;
+
+                SetParticipantsCsv(message, forumThread);
+
                 forumThread.Posts.Add(new ForumPost
                 {
                     Id = message.ForumItemId,
@@ -86,11 +90,19 @@ namespace DevPortal.QueryStack.Denormalizers
                     CreatedBy = message.AuthorUserName,
                 });
                 forumThread.PostsCount++;
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
 
-        public void Handle(ForumItemEdited message)
+        private static void SetParticipantsCsv(ForumItemPosted message, ForumThread forumThread)
+        {
+            var participants = forumThread.ParticipantsCsv.Split(',').ToList();
+            participants.Remove(message.AuthorUserName);
+            participants.Add(message.AuthorUserName);
+            forumThread.ParticipantsCsv = string.Join(",", participants);
+        }
+
+        public async Task Handle(ForumItemEdited message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
@@ -102,18 +114,18 @@ namespace DevPortal.QueryStack.Denormalizers
                 post.Content = message.Content;
                 post.LastModified = message.TimeStamp;
                 post.LastModifiedBy = message.EditorUserName;
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
 
-        public void Handle(ForumItemDeleted message)
+        public async Task Handle(ForumItemDeleted message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 var entity = new ForumThread { Id = message.Id };
                 db.ForumThreads.Attach(entity);
                 db.ForumThreads.RemoveRange(entity);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
         }
 

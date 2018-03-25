@@ -2,10 +2,12 @@
 using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack.Model;
 using Microsoft.EntityFrameworkCore;
+using Rebus.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DevPortal.QueryStack.Denormalizers
 {
@@ -23,56 +25,56 @@ namespace DevPortal.QueryStack.Denormalizers
             this._dbContextOptions = dbContextOptions;
         }
 
-        public void Handle(NewsItemPublished message)
+        public async Task Handle(NewsItemPublished message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 //this introduces dependency on another view. Consider Refactoring using events
                 var newsItem = db.NewsItems.AsNoTracking().First(i => i.Id == message.NewsItemId);                   
-                SaveActivity<NewsItem>(message.NewsItemId, newsItem.Title, newsItem.CreatedBy, message, db);
+                await SaveActivity<NewsItem>(message.NewsItemId, newsItem.Title, newsItem.CreatedBy, message, db);
             }
           
         }
 
 
-        public void Handle(NewsItemCommented message)
+        public async Task Handle(NewsItemCommented message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 //this introduces dependency on another view. Consider Refactoring using events
                 var newsItem = db.NewsItems.AsNoTracking().First(i => i.Id == message.NewsItemId);
-                SaveActivity<NewsItem>(message.NewsItemId, newsItem.Title, newsItem.CreatedBy, message, db);
+                await SaveActivity<NewsItem>(message.NewsItemId, newsItem.Title, newsItem.CreatedBy, message, db);
             }
         }
 
-        public void Handle(ForumThreadCreated message)
+        public async Task Handle(ForumThreadCreated message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
-                SaveActivity<ForumThread>(message.ForumThreadId, message.Title, message.AuthorUserName, message, db);
+                await SaveActivity<ForumThread>(message.ForumThreadId, message.Title, message.AuthorUserName, message, db);
             }
         }
 
-        public void Handle(ForumItemPosted message)
+        public async Task Handle(ForumItemPosted message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 //this introduces dependency on another view. Consider Refactoring using events
                 var newsItem = db.ForumThreads.AsNoTracking().First(i => i.Id == message.ForumThreadId);
-                SaveActivity<ForumThread>(message.ForumThreadId, newsItem.Title, message.AuthorUserName, message, db);
+                await SaveActivity<ForumThread>(message.ForumThreadId, newsItem.Title, message.AuthorUserName, message, db);
             }
         }
 
-        public void Handle(BlogLinkCreated message)
+        public async Task Handle(BlogLinkCreated message)
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
-                SaveActivity<Blog>(message.BlogId, message.Title, message.UserName, message, db, message.Url);
+                await SaveActivity<Blog>(message.BlogId, message.Title, message.UserName, message, db, message.Url);
             }
         }
 
 
-        private void SaveActivity<TContentType>(Guid contentId, string title, string userName, DomainEvent message, DevPortalDbContext db, string externalUrl = null)
+        private Task SaveActivity<TContentType>(Guid contentId, string title, string userName, DomainEvent message, DevPortalDbContext db, string externalUrl = null)
         {
             db.Activities.Add(new Activity
             {
@@ -85,7 +87,7 @@ namespace DevPortal.QueryStack.Denormalizers
                 UserName = userName,
                 ExternalUrl = externalUrl,
             });
-            db.SaveChanges();
+            return db.SaveChangesAsync();
         }
     }
 }

@@ -7,7 +7,9 @@
             @thread.PostsCount
         </div>
         <div>
-            <a asp-action="@nameof(ForumController.Detail)" asp-route-id="@thread.Id"
+            <a asp-action="@nameof(ForumController.Detail)"
+               asp-controller="Forum"
+               asp-route-id="@thread.Id"
                class="orange-text head-link">
                 @thread.Title
             </a>

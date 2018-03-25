@@ -15,10 +15,12 @@ using DevPortal.Web.Services;
 using DevPortal.Web.AppCode.Startup;
 using DevPortal.QueryStack;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.Facebook;
 using DevPortal.Web.AppCode.Config;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using DevPortal.Web.AppCode.Extensions;
+using DevPortal.CommandStack.Infrastructure;
+using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DevPortal.Web
 {
@@ -26,33 +28,32 @@ namespace DevPortal.Web
     {
         private IHostingEnvironment _env;
 
-        public static IConfigurationRoot Configuration { get; private set; }
+        public static IConfiguration Configuration { get; private set; }
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IHostingEnvironment env, IConfiguration configuration)
         {
             this._env = env;
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-            builder.AddEnvironmentVariables();
-            if (env.IsDevelopment())
-            {
-                builder.AddUserSecrets<Startup>();
-            }
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseInMemoryDatabase("ApplicationDbContext"), ServiceLifetime.Transient);
+            bool useInMemoryDatabase = Configuration.GetValue<bool>("UseInMemoryDatabase");
 
-            services.AddDbContext<DevPortalDbContext>(options =>
-                options.UseInMemoryDatabase("DevPortalDbContext"), ServiceLifetime.Transient);
+            void AddDbContext<T>(ServiceLifetime lifetime) where T : DbContext
+            {
+                services.AddDbContext<T>(options =>
+                {
+                    if (useInMemoryDatabase) options.UseInMemoryDatabase(typeof(T).Name);
+                    else options.UseSqlServer(Configuration.GetConnectionString(typeof(T).Name));
+                }, lifetime, ServiceLifetime.Singleton);
+            }
 
-            //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            AddDbContext<ApplicationDbContext>(ServiceLifetime.Transient);
+            AddDbContext<DevPortalDbContext>(ServiceLifetime.Transient);
+            AddDbContext<EventsDbContext>(ServiceLifetime.Transient);
+
+            services.AddSingleton<Func<ApplicationDbContext>>(sp => () => sp.GetService<ApplicationDbContext>());
 
             services.AddIdentity<ApplicationUser, IdentityRole>(ConfigureIdentity)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -68,7 +69,11 @@ namespace DevPortal.Web
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
-            services.AddMvc().AddMvcOptions(opt => opt.Filters.Add<GlobalExceptionFilter>());
+            services.AddMvc().AddMvcOptions(options =>
+            {
+                options.Filters.Add<GlobalExceptionFilter>();
+                options.Filters.Add(new RequireHttpsAttribute());
+            });
 
             services.AddTransient<IEmailSender, EmailSender>();
 
@@ -77,14 +82,21 @@ namespace DevPortal.Web
 
             services.Configure<ReCaptcha>(Configuration.GetSection("ReCaptcha"));
             services.AddSingleton<ValidateReCaptchaAttribute>();
-
-            services.AddEventSourcing();
+            if (useInMemoryDatabase)
+            {
+                services.AddInMemoryEventSourcing();
+            }
+            else
+            {
+                services.AddSqlEventSourcing();
+            }
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
 
+            app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
             if (!env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();
@@ -93,6 +105,9 @@ namespace DevPortal.Web
             {
                 app.UseBrowserLink();
             }
+
+            app.UseRebus();
+            //app.ApplicationServices.GetService<IEventDispatcher>().RegisterHandlers();
 
             app.UseAuthentication();
             app.UseMvcWithDefaultRoute();

@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace DevPortal.CommandStack.Infrastructure
 {
     public interface IEventDispatcher
     {
         void RegisterHandler(Type t);
-        void Dispatch(DomainEvent @event);
+        Task Dispatch(DomainEvent @event);
     }
 
     public static class EventDispatcherExtentsions

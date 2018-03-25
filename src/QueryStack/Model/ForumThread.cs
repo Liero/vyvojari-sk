@@ -19,5 +19,7 @@ namespace DevPortal.QueryStack.Model
         public string LastPostedBy { get; set; }
         public virtual ICollection<ForumPost> Posts { get; set; }
         public int PostsCount { get; set; }
+
+        public string ParticipantsCsv { get; set; } = "";
     }   
 }
