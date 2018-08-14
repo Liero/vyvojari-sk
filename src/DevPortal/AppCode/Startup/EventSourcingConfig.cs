@@ -11,7 +11,10 @@ using Rebus.Bus;
 using Rebus.Routing.TypeBased;
 using Rebus.ServiceProvider;
 using Rebus.Transport.InMem;
-
+using Rebus.Pipeline;
+using Rebus.Pipeline.Receive;
+using Rebus.Activation;
+using DevPortal.Web.AppCode.Extensions;
 
 namespace DevPortal.Web.AppCode.Startup
 {
@@ -19,11 +22,26 @@ namespace DevPortal.Web.AppCode.Startup
     {
         public static void AddInMemoryEventSourcing(this IServiceCollection services)
         {
-
             services.AddRebus(configure => configure
               .Logging(l => l.Trace())
               .Transport(t => t.UseInMemoryTransport(new InMemNetwork(), "Messages"))
-              .Routing(r => r.TypeBased().MapAssemblyOf<DomainEvent>("Messages")));
+              .Routing(r => r.TypeBased().MapAssemblyOf<DomainEvent>("Messages"))
+              .Options(configurer =>
+                {
+                    configurer.Decorate<IPipeline>(c =>
+                    {
+                        var pipeline = c.Get<IPipeline>();
+                        var step = new MyActivateHandlersStep(c.Get<IHandlerActivator>());
+                        return new PipelineStepInjector(pipeline).OnReceive(step, PipelineRelativePosition.Before, typeof(ActivateHandlersStep));
+                    });
+                    configurer.Decorate<IPipeline>(c =>
+                    {
+                        var pipeline = c.Get<IPipeline>();
+                        return new PipelineStepRemover(pipeline).RemoveIncomingStep(s => s.GetType() == typeof(ActivateHandlersStep));
+                    });
+                })
+              );
+
 
 
             services.AddSingleton<IEventDispatcher, RebusEventDispatcher>();
