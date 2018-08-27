@@ -1,9 +1,11 @@
 ﻿using DevPortal.CommandStack.Events;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Rebus.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DevPortal.CommandStack.Infrastructure
 {
@@ -24,11 +26,13 @@ namespace DevPortal.CommandStack.Infrastructure
             {
                 testEventsHandled++;
                 Assert.AreEqual(testEvent, message);
+                return Task.CompletedTask;
             };
             handler.HandleAnotherEventCallback = message =>
             {
                 anotherEventsHandled++;
                 Assert.AreEqual(anotherEvent, message);
+                return Task.CompletedTask;
             };
 
             InMemoryBus eventDispatcher = new InMemoryBus(t => handler);
@@ -47,11 +51,12 @@ namespace DevPortal.CommandStack.Infrastructure
 
     internal class EventHandlerStub : IHandleMessages<TestEvent>, IHandleMessages<AnotherEvent>
     {
-        public Action<TestEvent> HandleTestEventCallback { private get; set; }
-        public Action<AnotherEvent> HandleAnotherEventCallback { private get; set; }
+        public Func<TestEvent, Task> HandleTestEventCallback { private get; set; }
+        public Func<AnotherEvent, Task> HandleAnotherEventCallback { private get; set; }
 
-        void IHandleMessages<AnotherEvent>.Handle(AnotherEvent message) => HandleAnotherEventCallback?.Invoke(message);
-        void IHandleMessages<TestEvent>.Handle(TestEvent message) => HandleTestEventCallback?.Invoke(message);
+
+        Task IHandleMessages<AnotherEvent>.Handle(AnotherEvent message) => HandleAnotherEventCallback?.Invoke(message);
+        Task IHandleMessages<TestEvent>.Handle(TestEvent message) => HandleTestEventCallback?.Invoke(message);
     }
 
 }

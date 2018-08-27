@@ -34,14 +34,14 @@ namespace DevPortal.Web.Controllers
                     Description = "Some content",
                     ExternalUrl = "http://someurl.test",
                     CreatedBy = Config.UserName,
-                    Created = DateTime.Now,                   
+                    Created = DateTime.UtcNow,                   
                 });
                 dbContext.SaveChanges();
             }
         }
 
         [TestMethod]
-        public void BlogController_CreateLink_Produces_BlogLinkAdded_Event()
+        public async Task BlogController_CreateLink_Produces_BlogLinkAdded_Event()
         {
             //setup
             var expectedEvent = ListenInEventStoreFor<BlogLinkCreated>();
@@ -55,7 +55,7 @@ namespace DevPortal.Web.Controllers
             BlogController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.CreateLink(createVm);
+            IActionResult actionResult = await controller.CreateLink(createVm);
 
             //assert
             expectedEvent.VerifySavedOnce(actualEvent =>
@@ -70,7 +70,7 @@ namespace DevPortal.Web.Controllers
 
        
         [TestMethod]
-        public void BlogController_DeleteBlog_Produces_BlogDeleted_Event()
+        public async Task BlogController_DeleteBlog_Produces_BlogDeleted_Event()
         {
             //setup
             var expectedEvent = ListenInEventStoreFor<BlogDeleted>();
@@ -78,7 +78,7 @@ namespace DevPortal.Web.Controllers
             BlogController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.Delete(ExistingBlogId);
+            IActionResult actionResult = await controller.Delete(ExistingBlogId);
 
             //assert
             expectedEvent.VerifySavedOnce(actualEvent =>

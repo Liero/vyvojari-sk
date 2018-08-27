@@ -23,6 +23,7 @@ namespace DevPortal.QueryStack
 
         public DbSet<ContentBase> Contents { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

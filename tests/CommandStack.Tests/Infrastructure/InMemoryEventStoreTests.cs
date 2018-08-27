@@ -14,19 +14,19 @@ namespace DevPortal.CommandStack.Infrastructure
         {
             //setup
             IEventStore eventStore = new InMemoryEventStore(new Mock<IEventDispatcher>().Object);
-            Guid testEventId = Guid.NewGuid();
+            var testEvent = new TestEvent
+            {
+                TestEventId = Guid.NewGuid()
+            };
 
             //action
-            eventStore.Save(new TestEvent
-            {
-                TestEventId = testEventId
-            });
+            eventStore.Save(testEvent);
 
-            var evt = eventStore.Find<TestEvent>(i => i.TestEventId == testEventId)
+            var evt = eventStore.Find<TestEvent>(i => i.Id == testEvent.Id)
                 .Single();
 
-            Assert.IsTrue(evt.TimeStamp > DateTime.Now.AddSeconds(-1), "TimeStamp");
-            Assert.AreEqual(evt.TestEventId, testEventId);
+            Assert.IsTrue(evt.TimeStamp > DateTime.UtcNow.AddSeconds(-1), "TimeStamp");
+            Assert.AreEqual(evt.TestEventId, testEvent.TestEventId);
         }
 
         [TestMethod]

@@ -42,23 +42,23 @@ namespace DevPortal.Web.TagHelpers
 
         private string FormatTime(DateTime time)
         {
-            var now = DateTime.Now;
-            if ((now - Time).TotalSeconds < 5) return "just now";
-            if (now.Date == Time.Date)
+            var now = DateTime.UtcNow;
+            if ((now - time).TotalSeconds < 5) return "just now";
+            if (now.Date == time.Date)
             {
-                return (now - Time).Humanize();
+                return (now - time).Humanize();
             }
-            else if (now.Date == Time.Date.AddDays(1))
+            else if (now.Date == time.Date.AddDays(1))
             {
                 return "yesterday";
             }
-            else if (now.Year == Time.Year)
+            else if (now.Year == time.Year)
             {
-                return Time.ToString("{0:MMM} {0:d}");
+                return time.ToString("{0:MMM} {0:d}");
             }
             else
             {
-                return Time.ToLongDateString();
+                return time.ToLongDateString();
             }
         }
     }

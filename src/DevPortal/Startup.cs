@@ -21,6 +21,7 @@ using DevPortal.Web.AppCode.Extensions;
 using DevPortal.CommandStack.Infrastructure;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Mvc;
+using DevPortal.Web.AppCode.EventSourcing;
 
 namespace DevPortal.Web
 {

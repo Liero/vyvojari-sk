@@ -1,6 +1,7 @@
 ﻿using DevPortal.Web.AppCode.Config;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
@@ -17,10 +18,12 @@ namespace DevPortal.Web.AppCode.Extensions
         private const string RecaptchaResponseTokenKey = "g-recaptcha-response";
         private const string ApiVerificationEndpoint = "https://www.google.com/recaptcha/api/siteverify";
         private readonly IOptions<ReCaptcha> _reCaptchaOptions;
+        private readonly ILoggerFactory _loggerFactory;
 
-        public ValidateReCaptchaAttribute(IOptions<ReCaptcha> reCaptchaOptions)
+        public ValidateReCaptchaAttribute(IOptions<ReCaptcha> reCaptchaOptions, ILoggerFactory loggerFactory)
         {
             _reCaptchaOptions = reCaptchaOptions ?? throw new ArgumentNullException(nameof(reCaptchaOptions));
+            _loggerFactory = loggerFactory;
         }
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -69,6 +72,9 @@ namespace DevPortal.Web.AppCode.Extensions
                 else if (!reCaptchaResponse.success)
                 {
                     AddModelError(context, "Invalid reCaptcha");
+
+                    _loggerFactory.CreateLogger<ValidateReCaptchaAttribute>().LogInformation(
+                        "Recaptcha validation failed: {response}", json);
                 }
             }
         }

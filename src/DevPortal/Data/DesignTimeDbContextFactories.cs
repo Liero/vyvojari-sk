@@ -24,7 +24,7 @@ namespace DevPortal.Web.Data
                 .AddUserSecrets<ApplicationDbContextDesignTimeFactory>()
                 .Build();
 
-            var connectionString = configuration.GetConnectionString(nameof(ApplicationDbContext));
+            var connectionString = configuration.GetConnectionString(typeof(T).Name);
 
             var builder = new DbContextOptionsBuilder<T>();
             builder.UseSqlServer(connectionString);
