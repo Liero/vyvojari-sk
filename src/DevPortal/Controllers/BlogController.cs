@@ -10,6 +10,8 @@ using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack;
 using DevPortal.CommandStack.Events;
 using Microsoft.EntityFrameworkCore;
+using DevPortal.Web.AppCode.EventSourcing;
+using DevPortal.QueryStack.Denormalizers;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -67,7 +69,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateLink(CreateLinkViewModel viewModel)
+        public async Task<IActionResult> CreateLink(CreateLinkViewModel viewModel)
         {
             if (!ModelState.IsValid) return View(viewModel);
 
@@ -79,13 +81,13 @@ namespace DevPortal.Web.Controllers
                 Url = viewModel.Link,
                 Description = viewModel.Description,
             };
-            _eventStore.Save(evt);
+            await _eventStore.SaveAndWaitForHandler(evt, typeof(BlogDenormalizer));
 
             return RedirectToAction(nameof(Index));
         }
 
         [HttpDelete]
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var entity = _devPortalDb.Blogs.Find(id);
             if (entity == null)
@@ -102,7 +104,7 @@ namespace DevPortal.Web.Controllers
                 BlogId = id,
                 UserName = User.Identity.Name,
             };
-            _eventStore.Save(evt);
+            await _eventStore.SaveAndWaitForHandler(evt, typeof(BlogDenormalizer));
 
             return RedirectToAction(nameof(Index), routeValues: new { id });
         }

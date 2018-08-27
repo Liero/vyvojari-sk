@@ -15,14 +15,15 @@ using Rebus.Pipeline;
 using Rebus.Pipeline.Receive;
 using Rebus.Activation;
 using DevPortal.Web.AppCode.Extensions;
+using Rebus.Logging;
 
-namespace DevPortal.Web.AppCode.Startup
+namespace DevPortal.Web.AppCode.EventSourcing
 {
     public static class EventSourcingConfig
     {
         public static void AddInMemoryEventSourcing(this IServiceCollection services)
         {
-            services.AddRebus(configure => configure
+            services.AddRebus((configure, sp) => configure
               .Logging(l => l.Trace())
               .Transport(t => t.UseInMemoryTransport(new InMemNetwork(), "Messages"))
               .Routing(r => r.TypeBased().MapAssemblyOf<DomainEvent>("Messages"))
@@ -31,13 +32,14 @@ namespace DevPortal.Web.AppCode.Startup
                     configurer.Decorate<IPipeline>(c =>
                     {
                         var pipeline = c.Get<IPipeline>();
-                        var step = new MyActivateHandlersStep(c.Get<IHandlerActivator>());
-                        return new PipelineStepInjector(pipeline).OnReceive(step, PipelineRelativePosition.Before, typeof(ActivateHandlersStep));
+                        var handlerNotifications = sp.GetRequiredService<IHandlerNotifications>();
+                        var step = new MyDispatchIncomingMessageStep(handlerNotifications, c.Get<IRebusLoggerFactory>());
+                        return new PipelineStepInjector(pipeline).OnReceive(step, PipelineRelativePosition.Before, typeof(DispatchIncomingMessageStep));
                     });
                     configurer.Decorate<IPipeline>(c =>
                     {
                         var pipeline = c.Get<IPipeline>();
-                        return new PipelineStepRemover(pipeline).RemoveIncomingStep(s => s.GetType() == typeof(ActivateHandlersStep));
+                        return new PipelineStepRemover(pipeline).RemoveIncomingStep(s => s.GetType() == typeof(DispatchIncomingMessageStep));
                     });
                 })
               );
@@ -47,6 +49,12 @@ namespace DevPortal.Web.AppCode.Startup
             services.AddSingleton<IEventDispatcher, RebusEventDispatcher>();
             services.AutoRegisterHandlersFromAssemblyOf<ActivityDenormalizer>();
             services.AddSingleton<IEventStore, SqlEventStore>();
+            services.AddSingleton<IHandlerNotifications, HandlerNotififications>(sp =>
+            {
+                var handlerNotification = ActivatorUtilities.CreateInstance<HandlerNotififications>(sp);
+                EventStoreExtensions.HandlerNotificationAccessor = () => handlerNotification;
+                return handlerNotification;
+            });
             //services.AddSingleton<IEventDispatcher>(serviceProvider =>
             //{
 
@@ -73,7 +81,7 @@ namespace DevPortal.Web.AppCode.Startup
             }
         }
 
-        private static IEnumerable<Type> AllDenormalizers => Assembly.GetAssembly(typeof(NewsItemDenormalizer))
+        public static IEnumerable<Type> AllDenormalizers => Assembly.GetAssembly(typeof(NewsItemDenormalizer))
                 .GetExportedTypes()
                 .Where(t => t.Name.EndsWith("Denormalizer"));
 

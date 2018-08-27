@@ -1,7 +1,9 @@
 ﻿using DevPortal.CommandStack.Events;
 using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack;
+using DevPortal.QueryStack.Denormalizers;
 using DevPortal.Web.AppCode;
+using DevPortal.Web.AppCode.EventSourcing;
 using DevPortal.Web.AppCode.Extensions;
 using DevPortal.Web.Data;
 using DevPortal.Web.Models.ForumViewModels;
@@ -52,7 +54,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpGet, AllowAnonymous]
-        public async Task<ActionResult> Detail(Guid id, NewAnswerViewModel answer = null)
+        public async Task<IActionResult> Detail(Guid id, NewAnswerViewModel answer = null)
         {
             var forumThread = await _devPortalDb.ForumThreads
                 .AsNoTracking()
@@ -69,14 +71,14 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult Create()
+        public IActionResult Create()
         {
             var viewModel = new CreateForumThreadViewModel();
             return View(viewModel);
         }
 
         [HttpPost]
-        public ActionResult Create(CreateForumThreadViewModel viewModel)
+        public async Task<IActionResult> Create(CreateForumThreadViewModel viewModel)
         {
             if (!ModelState.IsValid) return View(viewModel);
 
@@ -88,13 +90,13 @@ namespace DevPortal.Web.Controllers
                 Content = viewModel.Content,
                 Tags = TagsConverter.StringToArray(viewModel.Tags),
             };
-            _eventStore.Save(evt);
+            await _eventStore.SaveAndWaitForHandler(evt, typeof(ForumThreadDenormalizer));
 
             return RedirectToAction(nameof(Detail), new { id = evt.ForumThreadId });
         }
 
         [HttpGet]
-        public ActionResult Edit(Guid id)
+        public IActionResult Edit(Guid id)
         {
             var entity = _devPortalDb.ForumThreads.Find(id);
             if (entity == null)
@@ -118,7 +120,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit(Guid id, EditForumThreadViewModel viewModel)
+        public async Task<IActionResult> Edit(Guid id, EditForumThreadViewModel viewModel)
         {
             if (!ModelState.IsValid) return View(viewModel);
             var entity = _devPortalDb.ForumThreads.Find(id);
@@ -139,13 +141,13 @@ namespace DevPortal.Web.Controllers
                 Content = viewModel.Content,
                 Tags = TagsConverter.StringToArray(viewModel.Tags),
             };
-            _eventStore.Save(evt);
+            await _eventStore.SaveAndWaitForHandler(evt, typeof(ForumThreadDenormalizer));
 
             return RedirectToAction(nameof(Detail), new { id });
         }
 
         [HttpDelete]
-        public ActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var entity = _devPortalDb.ForumThreads.Find(id);
             if (entity == null)
@@ -162,13 +164,13 @@ namespace DevPortal.Web.Controllers
                 ForumThreadId = id,
                 UserName = User.Identity.Name,
             };
-            _eventStore.Save(evt);
+            await _eventStore.SaveAndWaitForHandler(evt, typeof(ForumThreadDenormalizer));
 
             return RedirectToAction(nameof(Index), routeValues: new { id });
         }
 
         [HttpPost]
-        public async Task<ActionResult> NewPost(
+        public async Task<IActionResult> NewPost(
             Guid id,
             [Bind(Prefix = nameof(ForumDetailViewModel.NewAnswer))] NewAnswerViewModel viewModel)
         {
@@ -181,13 +183,13 @@ namespace DevPortal.Web.Controllers
                 AuthorUserName = User.Identity.Name,
                 Content = viewModel.Content,
             };
-            _eventStore.Save(evt);
+            await _eventStore.SaveAndWaitForHandler(evt, typeof(ForumThreadDenormalizer));
 
             return RedirectToAction(nameof(Detail), ControllerName, new { id }, fragment: evt.ForumItemId.ToString());
         }
 
         [HttpPost]
-        public IActionResult EditPost(Guid id, EditAnswerViewModel viewModel)
+        public async Task<IActionResult> EditPost(Guid id, EditAnswerViewModel viewModel)
         {
             if (!ModelState.IsValid) return View(viewModel);
 
@@ -198,13 +200,13 @@ namespace DevPortal.Web.Controllers
                 AuthorUserName = User.Identity.Name,
                 Content = viewModel.Content,
             };
-            _eventStore.Save(evt);
+            await _eventStore.SaveAndWaitForHandler(evt, typeof(ForumThreadDenormalizer));
 
             return RedirectToAction(nameof(Detail), ControllerName, new { id }, fragment: evt.ForumItemId.ToString());
         }
 
         [HttpDelete("Forum/{id}/Posts/{forumPostId}")]
-        public IActionResult DeletePost(Guid id, Guid forumPostId)
+        public async Task<IActionResult> DeletePost(Guid id, Guid forumPostId)
         {
             var evt = new ForumItemDeleted
             {
@@ -212,7 +214,8 @@ namespace DevPortal.Web.Controllers
                 ForumItemId = forumPostId,
                 UserName = User.Identity.Name,
             };
-            _eventStore.Save(evt);
+            await _eventStore.SaveAndWaitForHandler(evt, typeof(ForumThreadDenormalizer));
+
             return RedirectToAction(nameof(Index));
         }
     }

@@ -12,7 +12,7 @@ namespace DevPortal.Web.AppCode.Extensions
     {
         public static string DisplayAge(this IHtmlHelper html, DateTime date)
         {
-            var age = DateTime.Now - date;
+            var age = DateTime.UtcNow - date.ToUniversalTime();
             if (age.TotalMinutes < 1) return $"{ age.Minutes} s";
             if (age.TotalHours < 1) return $"{age.Minutes} min";
             if (age.TotalDays < 1) return $"{age.Hours} h";

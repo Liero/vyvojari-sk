@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DevPortal.Web.Controllers
 {
@@ -30,7 +31,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [TestMethod]
-        public void NewsController_Create_Produces_NewsItemCreated_Event()
+        public async Task NewsController_Create_Produces_NewsItemCreated_Event()
         {
             //setup
             var createVm = new CreateNewsItemViewModel
@@ -47,7 +48,7 @@ namespace DevPortal.Web.Controllers
             NewsController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.Create(createVm);
+            IActionResult actionResult = await controller.Create(createVm);
 
             //assert
             void NewsItemCreated(DomainEvent savedEvent)
@@ -63,7 +64,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [TestMethod]
-        public void NewsController_Edit_Produces_NewsItemEdited_Event()
+        public async Task NewsController_Edit_Produces_NewsItemEdited_Event()
         {
             var vm = new EditNewsItemViewModel
             {
@@ -79,7 +80,7 @@ namespace DevPortal.Web.Controllers
             NewsController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.Edit(ExistingNewsItemId, vm);
+            IActionResult actionResult = await controller.Edit(ExistingNewsItemId, vm);
 
             //assert
             void NewsItemEdited(DomainEvent savedEvent)
@@ -96,7 +97,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [TestMethod]
-        public void NewsController_Publish_Produces_NewsItemPublished_Event()
+        public async Task NewsController_Publish_Produces_NewsItemPublished_Event()
         {
             //setup
             EventStoreMock
@@ -106,7 +107,7 @@ namespace DevPortal.Web.Controllers
             NewsController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.Publish(ExistingNewsItemId);
+            IActionResult actionResult = await controller.Publish(ExistingNewsItemId);
 
             //assert
             void NewsItemPublished(DomainEvent savedEvent)
@@ -119,7 +120,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [TestMethod]
-        public void NewsController_AddComment_Produces_NewsItemCommented_Event()
+        public async Task NewsController_AddComment_Produces_NewsItemCommented_Event()
         {
             //setup
             string comment = "expected comment";
@@ -131,7 +132,7 @@ namespace DevPortal.Web.Controllers
             NewsController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.AddComment(ExistingNewsItemId, new AddCommentViewModel
+            IActionResult actionResult = await controller.AddComment(ExistingNewsItemId, new AddCommentViewModel
             {
                 Message = comment 
             });

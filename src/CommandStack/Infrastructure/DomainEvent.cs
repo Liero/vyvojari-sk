@@ -16,12 +16,12 @@ namespace DevPortal.CommandStack.Infrastructure
         /// <summary>
         /// Gets or sets the event Id
         /// </summary>
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Get or set the time at which the event occurred
         /// </summary>
-        public DateTime TimeStamp { get; internal set; }
+        public DateTime TimeStamp { get; set; }
 
         /// <summary>
         /// Gets or sets the TimelineId
@@ -34,7 +34,7 @@ namespace DevPortal.CommandStack.Infrastructure
         public DomainEvent()
         {
             this.Id = Guid.NewGuid();
-            this.TimeStamp = DateTime.Now;
+            this.TimeStamp = DateTime.UtcNow;
         }
     }
 }

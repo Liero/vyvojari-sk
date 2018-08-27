@@ -12,7 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using DevPortal.Web.Models.SharedViewModels;
 using DevPortal.QueryStack.Model;
 using Microsoft.AspNetCore.Authorization;
-
+using DevPortal.Web.AppCode.EventSourcing;
+using DevPortal.QueryStack.Denormalizers;
 
 namespace DevPortal.Web.Controllers
 {
@@ -90,7 +91,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateNewsItemViewModel viewModel)
+        public async Task<IActionResult> Create(CreateNewsItemViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -104,7 +105,8 @@ namespace DevPortal.Web.Controllers
                 Content = viewModel.Content,
                 Tags = AppCode.TagsConverter.StringToArray(viewModel.Tags)
             };
-            _eventStore.Save(evt);
+
+            await _eventStore.SaveAndWaitForHandler(evt, typeof(NewsItemDenormalizer));
 
             return RedirectToAction(nameof(Detail), new { id = evt.NewsItemId });
         }
@@ -123,7 +125,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Guid id, EditNewsItemViewModel viewModel)
+        public async Task<IActionResult> Edit(Guid id, EditNewsItemViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -138,13 +140,14 @@ namespace DevPortal.Web.Controllers
                 Content = viewModel.Content,
                 Tags = AppCode.TagsConverter.StringToArray(viewModel.Tags),
             };
-            _eventStore.Save(evt);
+
+            await _eventStore.SaveAndWaitForHandler(evt, typeof(NewsItemDenormalizer));
 
             return RedirectToAction(nameof(Detail), new { id = id });
         }
 
         [HttpPost]
-        public IActionResult AddComment(
+        public async Task<IActionResult> AddComment(
             Guid id,
             [Bind(Prefix = nameof(DetailPageViewModel.AddComment))] AddCommentViewModel comment)
         {
@@ -161,18 +164,20 @@ namespace DevPortal.Web.Controllers
                 UserName = User.Identity.Name,
                 Content = comment.Message
             };
-            _eventStore.Save(evt);
+            await _eventStore.SaveAndWaitForHandler(evt, typeof(NewsItemDenormalizer));
+
             return RedirectToAction(nameof(Detail), ControllerName, new { id = id }, fragment: evt.CommentId.ToString());
         }
 
         [HttpPost]
-        public IActionResult Publish(Guid id)
+        public async Task<IActionResult> Publish(Guid id)
         {
             var evt = new NewsItemPublished
             {
                 NewsItemId = id,
             };
-            _eventStore.Save(evt);
+            await _eventStore.SaveAndWaitForHandler(evt, typeof(NewsItemDenormalizer));
+
             return RedirectToAction(nameof(Detail), new { id = id });
         }
     }

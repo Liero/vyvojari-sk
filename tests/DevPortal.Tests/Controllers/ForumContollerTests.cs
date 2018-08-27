@@ -34,7 +34,7 @@ namespace DevPortal.Web.Controllers
                     Title = "Exiting Forum Thread",
                     Content = "Some content",
                     CreatedBy = Config.UserName,
-                    Created = DateTime.Now,
+                    Created = DateTime.UtcNow,
                     Tags = CreateTags(ExistingThreadId, "ABC", "DEF"),
                     Posts = new List<ForumPost>
                     {
@@ -43,7 +43,7 @@ namespace DevPortal.Web.Controllers
                             Id = ExistingPostId,
                             Content = "Some Answer",
                             CreatedBy = Config.UserName,
-                            Created = DateTime.Now,
+                            Created = DateTime.UtcNow,
                         }
                     },
                 });
@@ -52,7 +52,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [TestMethod]
-        public void ForumController_CreateThread_Produces_ForumThreadCreated_Event()
+        public async Task ForumController_CreateThread_Produces_ForumThreadCreated_Event()
         {
             //setup
             var expectedEvent = ListenInEventStoreFor<ForumThreadCreated>();
@@ -66,7 +66,7 @@ namespace DevPortal.Web.Controllers
             ForumController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.Create(createVm);
+            IActionResult actionResult = await controller.Create(createVm);
 
             //assert
             expectedEvent.VerifySavedOnce(actualEvent =>
@@ -80,7 +80,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [TestMethod]
-        public void ForumController_EditThread_Produces_ForumThreadEdited_Event()
+        public async Task ForumController_EditThread_Produces_ForumThreadEdited_Event()
         {
             //setup
             var expectedEvent = ListenInEventStoreFor<ForumThreadEdited>();
@@ -95,7 +95,7 @@ namespace DevPortal.Web.Controllers
             ForumController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.Edit(ExistingThreadId, editVm);
+            IActionResult actionResult = await controller.Edit(ExistingThreadId, editVm);
 
             //assert
             expectedEvent.VerifySavedOnce(actualEvent =>
@@ -109,7 +109,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [TestMethod]
-        public void ForumController_DeleteThread_Produces_ForumThreadDeleted_Event()
+        public async Task ForumController_DeleteThread_Produces_ForumThreadDeleted_Event()
         {
             //setup
             var expectedEvent = ListenInEventStoreFor<ForumThreadDeleted>();
@@ -117,7 +117,7 @@ namespace DevPortal.Web.Controllers
             ForumController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.Delete(ExistingThreadId);
+            IActionResult actionResult = await controller.Delete(ExistingThreadId);
 
             //assert
             expectedEvent.VerifySavedOnce(actualEvent =>
@@ -149,7 +149,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [TestMethod]
-        public void ForumController_EditPost_Produces_ForumItemEdited_Event()
+        public async Task ForumController_EditPost_Produces_ForumItemEdited_Event()
         {
             //setup
             var expectedEvent = ListenInEventStoreFor<ForumItemPosted>();
@@ -162,7 +162,7 @@ namespace DevPortal.Web.Controllers
             ForumController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.EditPost(ExistingThreadId, editAnwserVm);
+            IActionResult actionResult = await controller.EditPost(ExistingThreadId, editAnwserVm);
 
             //assert
             expectedEvent.VerifySavedOnce(actualEvent =>
@@ -175,14 +175,14 @@ namespace DevPortal.Web.Controllers
         }
 
         [TestMethod]
-        public void ForumController_DeletePost_Produces_ForumItemEdited_Event()
+        public async Task ForumController_DeletePost_Produces_ForumItemEdited_Event()
         {
             //setup
             var expectedEvent = ListenInEventStoreFor<ForumItemDeleted>();
             ForumController controller = CreateAuthenticatedController(Config.UserName);
 
             //action
-            IActionResult actionResult = controller.DeletePost(ExistingThreadId, ExistingPostId);
+            IActionResult actionResult = await controller.DeletePost(ExistingThreadId, ExistingPostId);
 
             //assert
             expectedEvent.VerifySavedOnce(actualEvent =>

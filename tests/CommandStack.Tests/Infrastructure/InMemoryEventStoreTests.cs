@@ -25,7 +25,7 @@ namespace DevPortal.CommandStack.Infrastructure
             var evt = eventStore.Find<TestEvent>(i => i.Id == testEvent.Id)
                 .Single();
 
-            Assert.IsTrue(evt.TimeStamp > DateTime.Now.AddSeconds(-1), "TimeStamp");
+            Assert.IsTrue(evt.TimeStamp > DateTime.UtcNow.AddSeconds(-1), "TimeStamp");
             Assert.AreEqual(evt.TestEventId, testEvent.TestEventId);
         }
 
