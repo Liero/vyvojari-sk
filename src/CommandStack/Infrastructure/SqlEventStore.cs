@@ -104,10 +104,10 @@ namespace DevPortal.CommandStack.Infrastructure
         private readonly IEventDispatcher _eventDispatcher;
         private readonly EventsDbContext _dbContext;
 
-        public SqlEventStore(IEventDispatcher eventDispatcher, EventsDbContext dbContext)
+        public SqlEventStore(IEventDispatcher eventDispatcher, DbContextOptions<EventsDbContext> dbContextOptions)
         {
             _eventDispatcher = eventDispatcher;
-            _dbContext = dbContext;
+            _dbContext = new EventsDbContext(dbContextOptions);
         }
 
         public IEnumerable<T> Find<T>(Func<EventWrapper, bool> filter) where T : DomainEvent

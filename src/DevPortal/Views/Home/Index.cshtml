@@ -12,7 +12,7 @@
         }
         else
         {
-            Html.RenderPartial("_UserInfo");
+            <partial name="_UserInfo" />
         }
 
         <ul class="nav tab-content-style" id="tablist" role="tablist">
@@ -45,7 +45,7 @@
                 }
             </section>
             <section id="forum" class="tab-pane fade" role="tabpanel" aria-labelledby="forum-tab">
-                @Html.Partial("../Forum/_ForumThreadsList.cshtml", Model.LatestForumThreads)
+                <partial name="../Forum/_ForumThreadsList.cshtml" model="Model.LatestForumThreads" />
             </section>
             <section id="activity" class="tab-pane fade" role="tabpanel" aria-labelledby="activity-tab">
                 <ul class="media-list">

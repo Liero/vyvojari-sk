@@ -13,3 +13,12 @@ or check latest (unstable) version: https://vyvojari-sk-test.azurewebsites.net/
  
  master: ![master branch](https://liero.visualstudio.com/_apis/public/build/definitions/74a5ef1e-20a5-4685-b777-a493748a0680/3/badge)
 
+ ## How to build and run?
+
+  - Create database using Package Management Console
+
+    ```
+	Update-Database -Context EventsDbContext
+	Update-Database -Context ApplicationDbContext
+	Update-Database -Context DevPortalDbContext
+	```

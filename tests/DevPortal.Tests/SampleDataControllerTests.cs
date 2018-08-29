@@ -11,13 +11,14 @@ using System.Text;
 namespace DevPortal.Web
 {
     [TestClass]
-    public class Foo
+    public class SampleDataControllerTests
     {
         [TestMethod]
-        public void Test()
+        public void SampleDataController_GetDenormalizers()
         {
-            var denormalizer = SampleDataController.GetDenormalizers(new NewsItemPublished());
-
+            var denormalizers = SampleDataController.GetDenormalizers(typeof(NewsItemPublished));
+            CollectionAssert.Contains(denormalizers, typeof(NewsItemDenormalizer));
+            CollectionAssert.Contains(denormalizers, typeof(ActivityDenormalizer));
         }
     }
 }

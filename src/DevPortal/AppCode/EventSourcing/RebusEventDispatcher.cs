@@ -1,14 +1,12 @@
 ﻿
-using DevPortal.CommandStack.Infrastructure;
-using Rebus.Activation;
-using Rebus.Bus;
-using Rebus.Handlers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevPortal.CommandStack.Infrastructure;
+using Rebus.Bus;
+using Rebus.Handlers;
 
-namespace DevPortal.Web.AppCode
+namespace DevPortal.Web.AppCode.EventSourcing
 {
     public class RebusEventDispatcher : IEventDispatcher
     {

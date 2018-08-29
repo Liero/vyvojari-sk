@@ -1,10 +1,22 @@
-﻿@inject UserManager<ApplicationUser> userManager
+﻿@using DevPortal.QueryStack.Model;
+@inject UserManager<ApplicationUser> userManager
 @inject DevPortal.QueryStack.DevPortalDbContext dbContext
 @{
     var applicationUser = await userManager.GetUserAsync(User);
     var activities = dbContext.Activities.Where(c => c.UserName == User.Identity.Name)
         .Take(4)
         .ToArray();
+
+    void GetUrl(Activity activity)
+    {
+        switch (activity.ContentType)
+        {
+            //case nameof(Blog):
+            //    return Url.Action(nameof(BlogController., "Blog")
+            default:
+                break;
+        }
+    }
 }
 <div class="welcome-cont-out">
     <h1 class="main-head"><span class="light-text">Ahoj,</span> @User.Identity.Name<text>!</text></h1>

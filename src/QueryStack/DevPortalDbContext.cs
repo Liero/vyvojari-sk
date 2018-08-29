@@ -59,13 +59,6 @@ namespace DevPortal.QueryStack
                     e.Name,
                 });
             });
-
-            //todo: remove in EF 2.1
-            modelBuilder.Entity<TagsUsage>(t => t.HasKey(e => e.Name));
         }
-
-
-        protected DbSet<TagsUsage> TagsUsage { get; set; }
-        public IQueryable<TagsUsage> TagsUsageView => TagsUsage;
     }
 }

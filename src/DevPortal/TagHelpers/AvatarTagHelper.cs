@@ -20,7 +20,7 @@ namespace DevPortal.Web.TagHelpers
     [HtmlTargetElement("avatar", Attributes = "username")]
     public class AvatarTagHelper : TagHelper
     {
-        private readonly Func<ApplicationDbContext> _dbContextFactory;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IActionContextAccessor _actionContextAccesor;
         private static readonly string[] Colors = new[]{
@@ -28,11 +28,11 @@ namespace DevPortal.Web.TagHelpers
         };
 
         public AvatarTagHelper(
-            Func<ApplicationDbContext> dbContextFactory,
+            ApplicationDbContext dbContext,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccesor)
         {
-            _dbContextFactory = dbContextFactory;
+            _dbContext = dbContext;
             _urlHelperFactory = urlHelperFactory;
             _actionContextAccesor = actionContextAccesor;
         }
@@ -99,10 +99,8 @@ namespace DevPortal.Web.TagHelpers
             {
                 if (_avatars == null)
                 {
-                    using (var dbContext = _dbContextFactory())
-                    {
-                        _avatars = dbContext.Users.ToDictionary(u => u.UserName, u => u.AvatarUrl);
-                    }
+                    _avatars = _dbContext.Users.ToDictionary(u => u.UserName, u => u.AvatarUrl);
+                    
                     if (!_avatars.TryGetValue(UserName, out string avatarUrl))
                     {
                         _avatars[UserName] = null;
@@ -113,14 +111,11 @@ namespace DevPortal.Web.TagHelpers
                 {
                     if (!_avatars.TryGetValue(UserName, out string avatarUrl))
                     {
-                        using (var dbContext = _dbContextFactory())
-                        {
-                            avatarUrl = dbContext.Users.Where(u => u.UserName == UserName)
-                                .Select(u => u.AvatarUrl)
-                                .FirstOrDefault();
+                        avatarUrl = _dbContext.Users.Where(u => u.UserName == UserName)
+                            .Select(u => u.AvatarUrl)
+                            .FirstOrDefault();
 
-                            _avatars[userName] = avatarUrl;
-                        }
+                        _avatars[userName] = avatarUrl;
                     }
                     return avatarUrl;
                 }

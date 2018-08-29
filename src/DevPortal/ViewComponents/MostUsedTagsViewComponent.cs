@@ -23,10 +23,11 @@ namespace DevPortal.Web.ViewComponents
         public async Task<IViewComponentResult> InvokeAsync()
         {
             //todo: group by does not translate to SQL in EF Core 2. Either wait for 2.1, or replace with custom SQL or View
-            var tags = await _dbContext.TagsUsageView
-                .OrderByDescending(tag => tag.Count)
+            var tags = await _dbContext.Tags
+                .GroupBy(t => t.Name)
+                .OrderByDescending(g => g.Count())
+                .Select(g => g.Key)
                 .Take(20)
-                .Select(tag => tag.Name)
                 .ToListAsync();
          
             return View(tags);

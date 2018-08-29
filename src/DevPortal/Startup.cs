@@ -50,11 +50,9 @@ namespace DevPortal.Web
                 }, lifetime, ServiceLifetime.Singleton);
             }
 
-            AddDbContext<ApplicationDbContext>(ServiceLifetime.Transient);
-            AddDbContext<DevPortalDbContext>(ServiceLifetime.Transient);
-            AddDbContext<EventsDbContext>(ServiceLifetime.Transient);
-
-            services.AddSingleton<Func<ApplicationDbContext>>(sp => () => sp.GetService<ApplicationDbContext>());
+            AddDbContext<ApplicationDbContext>(ServiceLifetime.Scoped);
+            AddDbContext<DevPortalDbContext>(ServiceLifetime.Scoped);
+            AddDbContext<EventsDbContext>(ServiceLifetime.Scoped);
 
             services.AddIdentity<ApplicationUser, IdentityRole>(ConfigureIdentity)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -74,7 +72,7 @@ namespace DevPortal.Web
             {
                 options.Filters.Add<GlobalExceptionFilter>();
                 options.Filters.Add(new RequireHttpsAttribute());
-            });
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddTransient<IEmailSender, EmailSender>();
 
@@ -102,13 +100,8 @@ namespace DevPortal.Web
             {
                 app.UseDeveloperExceptionPage();
             }
-            if (env.IsDevelopment())
-            {
-                app.UseBrowserLink();
-            }
 
             app.UseRebus();
-            //app.ApplicationServices.GetService<IEventDispatcher>().RegisterHandlers();
 
             app.UseAuthentication();
             app.UseMvcWithDefaultRoute();

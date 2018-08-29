@@ -42,6 +42,8 @@ namespace DevPortal.Web.TagHelpers
 
         private string FormatTime(DateTime time)
         {
+            var result = Humanizer.DateHumanizeExtensions.Humanize(time.ToUniversalTime());
+            return result;
             var now = DateTime.UtcNow;
             if ((now - time).TotalSeconds < 5) return "just now";
             if (now.Date == time.Date)

@@ -45,6 +45,7 @@ namespace DevPortal.Web.Controllers
 
             viewModel.Threads = await _devPortalDb.ForumThreads
                 .AsNoTracking()
+                .Include(t => t.Tags)
                 .OrderByDescending(i => i.Created)
                 .Skip(pageIndex * viewModel.PageSize)
                 .Take(viewModel.PageSize)
@@ -53,12 +54,15 @@ namespace DevPortal.Web.Controllers
             return View(viewModel);
         }
 
+        /// <param name="answer">see POST NewPost action that is invoked from Detail page</param>
         [HttpGet, AllowAnonymous]
-        public async Task<IActionResult> Detail(Guid id, NewAnswerViewModel answer = null)
+        public async Task<IActionResult> Detail(Guid id, 
+            NewAnswerViewModel answer = null)
         {
             var forumThread = await _devPortalDb.ForumThreads
                 .AsNoTracking()
                 .Include(f => f.Posts)
+                .Include(f => f.Tags)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (forumThread == null) return NotFound();
