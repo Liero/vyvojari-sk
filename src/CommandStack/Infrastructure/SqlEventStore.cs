@@ -75,6 +75,8 @@ namespace DevPortal.CommandStack.Infrastructure
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.AddDateTimeUtcConversion();
+
             modelBuilder.Entity<EventWrapper>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -131,7 +133,7 @@ namespace DevPortal.CommandStack.Infrastructure
 
         public void Dispose()
         {
-            _dbContext.SaveChanges();
+            _dbContext.Dispose();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DevPortal.Web.Models;
+﻿using DevPortal.CommandStack.Infrastructure;
+using DevPortal.Web.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,6 +19,7 @@ namespace DevPortal.Web.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.AddDateTimeUtcConversion();
         }
     }
 }

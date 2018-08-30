@@ -1,5 +1,7 @@
-﻿using DevPortal.QueryStack.Model;
+﻿using DevPortal.CommandStack.Infrastructure;
+using DevPortal.QueryStack.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +29,8 @@ namespace DevPortal.QueryStack
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.AddDateTimeUtcConversion();
 
             modelBuilder.Entity<ContentBase>(entity => {
                 entity.ToTable("ContentBase");

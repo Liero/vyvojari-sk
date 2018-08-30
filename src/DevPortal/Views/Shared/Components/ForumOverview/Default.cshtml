@@ -6,7 +6,7 @@
         @foreach (var item in Model)
         {
             <div class="btm-bord-content">
-                <a avatar-for-user="@item.CreatedBy" class="avatar avatar-small pull-left" />
+                <a avatar-for-user="@item.LastPostedBy" class="avatar avatar-small pull-left" />
                 <div class="form-cont-inn">
                     <a asp-controller="Forum" 
                        asp-action="@nameof(ForumController.Detail)"
