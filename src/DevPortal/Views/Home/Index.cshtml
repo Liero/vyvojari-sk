@@ -1,6 +1,4 @@
 ﻿@using DevPortal.Web.Models.HomeViewModels
-@using DevPortal.CommandStack.Events
-@using DevPortal.QueryStack.Model
 
 @model HomePageViewModel
 
@@ -54,33 +52,9 @@
                         <li class="media  border-bottom mb-2 pb-2">
                             <a class="avatar avatar-xsmall mr-2" avatar-for-user="@activity.UserName" />
                             <div class="media-body">
-                                @{
-                                    string UserFriendlyAction(string action)
-                                    {
-                                        switch (action)
-                                        {
-                                            case nameof(NewsItemPublished): return "publikoval správičku";
-                                            case nameof(NewsItemCommented): return "komentoval správičku";
-                                            case nameof(ForumThreadCreated): return "položil otázku";
-                                            case nameof(ForumItemPosted): return "reagoval na otázku";
-                                            case nameof(BlogLinkCreated): return "vložil odkaz na blog";
-                                            default: return action;
-                                        }
-                                    }
-                                    string ControllerForEntity(string entityName)
-                                    {
-                                        switch (entityName)
-                                        {
-                                            case nameof(ForumThread): return "Forum";
-                                            case nameof(NewsItem): return "News";
-                                            case nameof(Blog): return "Blog";
-                                            default: return null;
-                                        }
-                                    }
-                                }
                                 <div>
                                     <a href="#">@activity.UserName</a>
-                                    @UserFriendlyAction(activity.Action)
+                                    @ActivityViewModel.GetUserFriendlyTitle(activity)
                                     <span class="gray-text pull-right"><time for="@activity.TimeStamp" /></span>
                                 </div>
                                 @if (activity.ExternalUrl != null)
@@ -92,7 +66,8 @@
                                     <a class="orange-text"
                                        asp-action="Detail"
                                        asp-route-id="@activity.ContentId"
-                                       asp-controller="@ControllerForEntity(activity.ContentType)">
+                                       asp-fragment="@activity.Fragment"
+                                       asp-controller="@ActivityViewModel.GetAssociatedControllerName(activity)">
                                         @activity.ContentTitle.Truncate(50)
                                     </a>
                                 }

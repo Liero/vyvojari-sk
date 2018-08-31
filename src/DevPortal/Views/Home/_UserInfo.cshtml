@@ -1,22 +1,18 @@
-﻿@using DevPortal.QueryStack.Model;
+﻿@using Microsoft.EntityFrameworkCore;
+@using DevPortal.Web.Models.HomeViewModels
+
 @inject UserManager<ApplicationUser> userManager
+
 @inject DevPortal.QueryStack.DevPortalDbContext dbContext
 @{
     var applicationUser = await userManager.GetUserAsync(User);
-    var activities = dbContext.Activities.Where(c => c.UserName == User.Identity.Name)
-        .Take(4)
-        .ToArray();
-
-    void GetUrl(Activity activity)
-    {
-        switch (activity.ContentType)
-        {
-            //case nameof(Blog):
-            //    return Url.Action(nameof(BlogController., "Blog")
-            default:
-                break;
-        }
-    }
+    var activities = await dbContext.Activities.Where(c => c.UserName == User.Identity.Name)
+        .OrderByDescending(a => a.TimeStamp)
+        .Take(50) //server limit
+        .GroupBy(a => a.ContentId) //EF 2.1 will do it on client
+        .Select(g => g.First()) //select only latest activity for given node (e.g. only latest comment)
+        .Take(4) //client limit after selecting only latest activity for given node
+        .ToArrayAsync();
 }
 <div class="welcome-cont-out">
     <h1 class="main-head"><span class="light-text">Ahoj,</span> @User.Identity.Name<text>!</text></h1>
@@ -36,7 +32,14 @@
             <ul class="light-text">
                 @foreach (var activity in activities)
                 {
-                    <li><a href="#">@activity.ContentTitle</a></li>
+                    <li>
+                        <a asp-action="Detail"
+                           asp-route-id="@activity.ContentId"
+                           asp-fragment="@activity.Fragment"
+                           asp-controller="@ActivityViewModel.GetAssociatedControllerName(activity)">
+                            @activity.ContentTitle.Truncate(50)
+                        </a>
+                    </li>
                 }
             </ul>
         </div>

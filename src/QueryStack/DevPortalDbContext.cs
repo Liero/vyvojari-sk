@@ -63,6 +63,12 @@ namespace DevPortal.QueryStack
                     e.Name,
                 });
             });
+
+            modelBuilder.Entity<Activity>(entity =>
+            {
+                entity.Property(e => e.ContentType).IsRequired();
+                entity.Property(e => e.Action).IsRequired();
+            });
         }
     }
 }

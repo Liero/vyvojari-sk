@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DevPortal.QueryStack.Migrations
 {
@@ -13,13 +12,14 @@ namespace DevPortal.QueryStack.Migrations
                 columns: table => new
                 {
                     ActivityId = table.Column<Guid>(nullable: false),
-                    Action = table.Column<string>(nullable: true),
                     ContentId = table.Column<Guid>(nullable: false),
-                    ContentTitle = table.Column<string>(nullable: true),
+                    Fragment = table.Column<Guid>(nullable: true),
                     ContentType = table.Column<string>(nullable: true),
-                    ExternalUrl = table.Column<string>(nullable: true),
+                    ContentTitle = table.Column<string>(nullable: true),
+                    Action = table.Column<string>(nullable: true),
+                    UserName = table.Column<string>(nullable: true),
                     TimeStamp = table.Column<DateTime>(nullable: false),
-                    UserName = table.Column<string>(nullable: true)
+                    ExternalUrl = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -31,11 +31,11 @@ namespace DevPortal.QueryStack.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: false),
-                    CreatedBy = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(nullable: true),
                     ExternalUrl = table.Column<string>(nullable: true),
-                    Title = table.Column<string>(nullable: true)
+                    Description = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    CreatedBy = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -50,18 +50,18 @@ namespace DevPortal.QueryStack.Migrations
                     Content = table.Column<string>(nullable: true),
                     Created = table.Column<DateTime>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
-                    Discriminator = table.Column<string>(nullable: false),
                     LastModified = table.Column<DateTime>(nullable: false),
                     LastModifiedBy = table.Column<string>(nullable: true),
+                    Discriminator = table.Column<string>(nullable: false),
                     ThreadId = table.Column<Guid>(nullable: true),
+                    Title = table.Column<string>(nullable: true),
                     LastPosted = table.Column<DateTime>(nullable: true),
                     LastPostedBy = table.Column<string>(nullable: true),
-                    ParticipantsCsv = table.Column<string>(nullable: true),
                     PostsCount = table.Column<int>(nullable: true),
-                    Title = table.Column<string>(nullable: true),
-                    CommentsCount = table.Column<int>(nullable: true),
-                    IsPublished = table.Column<bool>(nullable: true),
+                    ParticipantsCsv = table.Column<string>(nullable: true),
                     Published = table.Column<DateTime>(nullable: true),
+                    IsPublished = table.Column<bool>(nullable: true),
+                    CommentsCount = table.Column<int>(nullable: true),
                     NewsItemId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -82,23 +82,11 @@ namespace DevPortal.QueryStack.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TagsUsage",
-                columns: table => new
-                {
-                    Name = table.Column<string>(nullable: false),
-                    Count = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TagsUsage", x => x.Name);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
                 {
-                    ContentId = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: false)
+                    Name = table.Column<string>(nullable: false),
+                    ContentId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -132,9 +120,6 @@ namespace DevPortal.QueryStack.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tags");
-
-            migrationBuilder.DropTable(
-                name: "TagsUsage");
 
             migrationBuilder.DropTable(
                 name: "ContentBase");

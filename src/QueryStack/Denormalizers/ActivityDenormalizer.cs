@@ -43,7 +43,8 @@ namespace DevPortal.QueryStack.Denormalizers
             {
                 //this introduces dependency on another view. Consider Refactoring using events
                 var newsItem = db.NewsItems.AsNoTracking().First(i => i.Id == message.NewsItemId);
-                await SaveActivity<NewsItem>(message.NewsItemId, newsItem.Title, newsItem.CreatedBy, message, db);
+                await SaveActivity<NewsItem>(message.NewsItemId, newsItem.Title, message.UserName, message, db,
+                    fragment: message.CommentId);
             }
         }
 
@@ -60,8 +61,9 @@ namespace DevPortal.QueryStack.Denormalizers
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
                 //this introduces dependency on another view. Consider Refactoring using events
-                var newsItem = db.ForumThreads.AsNoTracking().First(i => i.Id == message.ForumThreadId);
-                await SaveActivity<ForumThread>(message.ForumThreadId, newsItem.Title, message.AuthorUserName, message, db);
+                var thread = db.ForumThreads.AsNoTracking().First(i => i.Id == message.ForumThreadId);
+                await SaveActivity<ForumThread>(message.ForumThreadId, thread.Title, message.AuthorUserName, message, db,
+                    fragment: message.ForumItemId);
             }
         }
 
@@ -74,12 +76,20 @@ namespace DevPortal.QueryStack.Denormalizers
         }
 
 
-        private Task SaveActivity<TContentType>(Guid contentId, string title, string userName, DomainEvent message, DevPortalDbContext db, string externalUrl = null)
+        private Task SaveActivity<TContentType>(
+            Guid contentId, 
+            string title, 
+            string userName, 
+            DomainEvent message, 
+            DevPortalDbContext db,
+            string externalUrl = null,
+            Guid? fragment = null)
         {
             db.Activities.Add(new Activity
             {
                 ActivityId = message.Id,
                 ContentId = contentId,
+                Fragment = fragment,
                 ContentType = typeof(TContentType).Name,
                 TimeStamp = message.TimeStamp,
                 ContentTitle = title,
