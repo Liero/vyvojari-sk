@@ -33,6 +33,13 @@ namespace DevPortal.Web.AppCode.Extensions
         }
         private async Task DoReCaptchaValidation(ActionExecutingContext context)
         {
+            if (string.IsNullOrEmpty(_reCaptchaOptions.Value?.SiteKey))
+            {
+                _loggerFactory.CreateLogger<ValidateReCaptchaAttribute>().LogTrace(
+                        "Recaptcha validation skipped, because SiteKey is not configured");
+                return;
+            }
+
             if (!context.HttpContext.Request.HasFormContentType)
             {
                 // Get request? 

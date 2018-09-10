@@ -17,10 +17,10 @@
         <div class="media-body">
 
             <h3><a class="orange-text head-link" asp-action="@nameof(NewsController.Detail)" asp-route-id="@newsItem.Id">@newsItem.Title</a></h3>
-            @Html.Partial("_UserInfo", newsItem)
+            <partial name="_UserInfo" model=newsItem />
             <p><markdown>@newsItem.Content.Truncate(500)</markdown></p>
             <p>
-                
+
                 @foreach (var tag in newsItem.Tags)
                 {
                     <span class="badge badge-dark">@tag.Name</span>

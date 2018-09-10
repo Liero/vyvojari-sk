@@ -61,8 +61,8 @@
                           asp-controller="Account" asp-action="LogOff" method="post">
                         @if (User.Identity.IsAuthenticated)
                         {
-                            @await Component.InvokeAsync(typeof(InboxBarViewComponent))
-                            @await Component.InvokeAsync(typeof(NotificationBarViewComponent))
+                            <vc:inbox-bar />
+                            <vc:notification-bar />                         
                             <div class="ml-3 dropdown user-account">
                                 <a href="#" data-toggle="dropdown" aria-expanded="false" style="line-height:42px; display:inline-flex">                                
                                     <span avatar-for-user="@User.Identity.Name" class="avatar avatar-xsmall rounded-circle mr-1" />
@@ -101,7 +101,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="~/lib/marked/lib/marked.js"></script>
     <script src="~/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.js"></script>
-    @Html.Partial("_ValidationScriptsPartial");
+    <partial name="_ValidationScriptsPartial" />
     <script src="~/scripts/site.js"></script>
     @RenderSection("scripts", required: false)
 

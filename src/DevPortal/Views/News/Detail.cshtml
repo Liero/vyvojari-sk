@@ -10,7 +10,7 @@
 
 
         <h3>@Model.NewsItem.Title</h3>
-        @Html.Partial("_UserInfo", Model.NewsItem)
+        <partial name="_UserInfo" model="Model.NewsItem" />
         <p>
             <markdown>@Html.Raw(Model.NewsItem.Content)</markdown>
         </p>
