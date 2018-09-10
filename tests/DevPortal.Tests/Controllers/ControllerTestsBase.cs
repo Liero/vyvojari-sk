@@ -1,6 +1,7 @@
 ﻿using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack;
 using DevPortal.QueryStack.Model;
+using DevPortal.Web.AppCode.EventSourcing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,9 @@ namespace DevPortal.Web.Controllers
             Services.AddSingleton<IEventStore>(EventStoreMock.Object);
             Services.AddDbContext<DevPortalDbContext>(options =>
                 options.UseInMemoryDatabase("DevPortalDbContext"), ServiceLifetime.Transient);
+
+            Services.AddSingleton<IHandlerNotifications, Mocks.HandlerNotificationsStub>();
+            EventStoreExtensions.HandlerNotificationAccessor = () => ServiceProvider.GetRequiredService<IHandlerNotifications>();
         }
 
 
