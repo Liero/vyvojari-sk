@@ -22,6 +22,9 @@ using DevPortal.CommandStack.Infrastructure;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Mvc;
 using DevPortal.Web.AppCode.EventSourcing;
+using DevPortal.Web.AppCode.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using DevPortal.Web.AppCode.Authorization.Handlers;
 
 namespace DevPortal.Web
 {
@@ -68,6 +71,9 @@ namespace DevPortal.Web
                         options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
                     });
             }
+
+            services.AddAuthorization(Policies.Configure)
+                .AddAuthorizationHandlers(this.GetType().Assembly, ServiceLifetime.Scoped);
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();

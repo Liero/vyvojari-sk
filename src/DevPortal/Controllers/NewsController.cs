@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using DevPortal.Web.AppCode.EventSourcing;
 using DevPortal.QueryStack.Denormalizers;
 using Microsoft.Extensions.Logging;
+using DevPortal.Web.AppCode.Authorization;
 
 namespace DevPortal.Web.Controllers
 {
@@ -25,11 +26,16 @@ namespace DevPortal.Web.Controllers
 
         readonly IEventStore _eventStore;
         readonly DevPortalDbContext _devPortalDb;
+        private readonly IAuthorizationService _auth;
 
-        public NewsController(IEventStore eventStore, DevPortalDbContext devPortalDbContext)
+        public NewsController(
+            IEventStore eventStore, 
+            DevPortalDbContext devPortalDbContext,
+            IAuthorizationService auth)
         {
             _eventStore = eventStore;
             _devPortalDb = devPortalDbContext;
+            _auth = auth;
         }
 
         [AllowAnonymous]
@@ -112,9 +118,13 @@ namespace DevPortal.Web.Controllers
             return RedirectToAction(nameof(Detail), new { id = evt.NewsItemId });
         }
 
+        [Authorize(Policies.EditPolicy)]
         public IActionResult Edit(Guid id)
         {
-            NewsItem newsItem = _devPortalDb.NewsItems.Find(id);
+            NewsItem newsItem = _devPortalDb.NewsItems
+                .Include(i => i.Tags)
+                .FirstOrDefault(i => i.Id == id);
+            
             var viewModel = new EditNewsItemViewModel
             {
                 Id = newsItem.Id,
@@ -125,6 +135,7 @@ namespace DevPortal.Web.Controllers
             return View(viewModel);
         }
 
+        [Authorize(Policies.EditPolicy)]
         [HttpPost]
         public async Task<IActionResult> Edit(Guid id, EditNewsItemViewModel viewModel)
         {
@@ -173,6 +184,9 @@ namespace DevPortal.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Publish(Guid id)
         {
+            NewsItem newsItem = _devPortalDb.NewsItems.Find(id);
+            if (newsItem == null) return NotFound();
+
             var evt = new NewsItemPublished
             {
                 NewsItemId = id,
