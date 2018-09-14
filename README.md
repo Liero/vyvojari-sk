@@ -15,10 +15,16 @@ or check latest (unstable) version: https://vyvojari-sk-test.azurewebsites.net/
 
  ## How to build and run?
 
-  - Create database using Package Management Console
+  - Create database using Package Management Console or use InMemory database provider
 
     ```
 	Update-Database -Context EventsDbContext
 	Update-Database -Context ApplicationDbContext
 	Update-Database -Context DevPortalDbContext
 	```
+	or
+	```
+	dotnet ef database update --context DevPortalDbContext
+	...
+	```
+	or just configure UseInMemoryDatabase with limited functionality.

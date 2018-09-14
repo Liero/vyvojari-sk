@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevPortal.QueryStack.Migrations
 {
     [DbContext(typeof(DevPortalDbContext))]
-    [Migration("20180831075445_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20180913111048_DevPortalInitialCreate")]
+    partial class DevPortalInitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,13 +26,15 @@ namespace DevPortal.QueryStack.Migrations
                     b.Property<Guid>("ActivityId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Action");
+                    b.Property<string>("Action")
+                        .IsRequired();
 
                     b.Property<Guid>("ContentId");
 
                     b.Property<string>("ContentTitle");
 
-                    b.Property<string>("ContentType");
+                    b.Property<string>("ContentType")
+                        .IsRequired();
 
                     b.Property<string>("ExternalUrl");
 
@@ -103,19 +105,6 @@ namespace DevPortal.QueryStack.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("DevPortal.QueryStack.Model.ForumPost", b =>
-                {
-                    b.HasBaseType("DevPortal.QueryStack.Model.ContentBase");
-
-                    b.Property<Guid?>("ThreadId");
-
-                    b.HasIndex("ThreadId");
-
-                    b.ToTable("ForumPost");
-
-                    b.HasDiscriminator().HasValue("ForumPost");
-                });
-
             modelBuilder.Entity("DevPortal.QueryStack.Model.GenericContent", b =>
                 {
                     b.HasBaseType("DevPortal.QueryStack.Model.ContentBase");
@@ -127,17 +116,14 @@ namespace DevPortal.QueryStack.Migrations
                     b.HasDiscriminator().HasValue("GenericContent");
                 });
 
-            modelBuilder.Entity("DevPortal.QueryStack.Model.NewsItemComment", b =>
+            modelBuilder.Entity("DevPortal.QueryStack.Model.ChildContent", b =>
                 {
                     b.HasBaseType("DevPortal.QueryStack.Model.ContentBase");
 
-                    b.Property<Guid?>("NewsItemId");
 
-                    b.HasIndex("NewsItemId");
+                    b.ToTable("ChildContent");
 
-                    b.ToTable("NewsItemComment");
-
-                    b.HasDiscriminator().HasValue("NewsItemComment");
+                    b.HasDiscriminator().HasValue("ChildContent");
                 });
 
             modelBuilder.Entity("DevPortal.QueryStack.Model.ForumThread", b =>
@@ -172,6 +158,33 @@ namespace DevPortal.QueryStack.Migrations
                     b.HasDiscriminator().HasValue("NewsItem");
                 });
 
+            modelBuilder.Entity("DevPortal.QueryStack.Model.ForumPost", b =>
+                {
+                    b.HasBaseType("DevPortal.QueryStack.Model.ChildContent");
+
+                    b.Property<Guid?>("RootId");
+
+                    b.HasIndex("RootId");
+
+                    b.ToTable("ForumPost");
+
+                    b.HasDiscriminator().HasValue("ForumPost");
+                });
+
+            modelBuilder.Entity("DevPortal.QueryStack.Model.NewsItemComment", b =>
+                {
+                    b.HasBaseType("DevPortal.QueryStack.Model.ChildContent");
+
+                    b.Property<Guid?>("RootId")
+                        .HasColumnName("NewsItemComment_RootId");
+
+                    b.HasIndex("RootId");
+
+                    b.ToTable("NewsItemComment");
+
+                    b.HasDiscriminator().HasValue("NewsItemComment");
+                });
+
             modelBuilder.Entity("DevPortal.QueryStack.Model.Tag", b =>
                 {
                     b.HasOne("DevPortal.QueryStack.Model.GenericContent")
@@ -182,16 +195,16 @@ namespace DevPortal.QueryStack.Migrations
 
             modelBuilder.Entity("DevPortal.QueryStack.Model.ForumPost", b =>
                 {
-                    b.HasOne("DevPortal.QueryStack.Model.ForumThread", "Thread")
+                    b.HasOne("DevPortal.QueryStack.Model.ForumThread", "Root")
                         .WithMany("Posts")
-                        .HasForeignKey("ThreadId");
+                        .HasForeignKey("RootId");
                 });
 
             modelBuilder.Entity("DevPortal.QueryStack.Model.NewsItemComment", b =>
                 {
-                    b.HasOne("DevPortal.QueryStack.Model.NewsItem")
+                    b.HasOne("DevPortal.QueryStack.Model.NewsItem", "Root")
                         .WithMany("Comments")
-                        .HasForeignKey("NewsItemId");
+                        .HasForeignKey("RootId");
                 });
 #pragma warning restore 612, 618
         }

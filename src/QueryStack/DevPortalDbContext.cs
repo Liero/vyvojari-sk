@@ -43,16 +43,21 @@ namespace DevPortal.QueryStack
                     .HasForeignKey(e => e.ContentId);
             });
 
+            modelBuilder.Entity<ChildContent>(entity =>
+            {
+                entity.HasOne(e => e.Root);
+            });
+
             modelBuilder.Entity<NewsItem>(entity =>
             {
                 entity.HasMany(e => e.Comments)
-                    .WithOne();
+                    .WithOne(e => e.Root);
             });
 
             modelBuilder.Entity<ForumThread>(entity =>
             {
                 entity.HasMany(e => e.Posts)
-                    .WithOne(e => e.Thread);
+                    .WithOne(e => e.Root);
             });
 
             modelBuilder.Entity<Tag>(entity =>

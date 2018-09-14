@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DevPortal.QueryStack.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class DevPortalInitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -14,9 +14,9 @@ namespace DevPortal.QueryStack.Migrations
                     ActivityId = table.Column<Guid>(nullable: false),
                     ContentId = table.Column<Guid>(nullable: false),
                     Fragment = table.Column<Guid>(nullable: true),
-                    ContentType = table.Column<string>(nullable: true),
+                    ContentType = table.Column<string>(nullable: false),
                     ContentTitle = table.Column<string>(nullable: true),
-                    Action = table.Column<string>(nullable: true),
+                    Action = table.Column<string>(nullable: false),
                     UserName = table.Column<string>(nullable: true),
                     TimeStamp = table.Column<DateTime>(nullable: false),
                     ExternalUrl = table.Column<string>(nullable: true)
@@ -53,7 +53,6 @@ namespace DevPortal.QueryStack.Migrations
                     LastModified = table.Column<DateTime>(nullable: false),
                     LastModifiedBy = table.Column<string>(nullable: true),
                     Discriminator = table.Column<string>(nullable: false),
-                    ThreadId = table.Column<Guid>(nullable: true),
                     Title = table.Column<string>(nullable: true),
                     LastPosted = table.Column<DateTime>(nullable: true),
                     LastPostedBy = table.Column<string>(nullable: true),
@@ -62,20 +61,21 @@ namespace DevPortal.QueryStack.Migrations
                     Published = table.Column<DateTime>(nullable: true),
                     IsPublished = table.Column<bool>(nullable: true),
                     CommentsCount = table.Column<int>(nullable: true),
-                    NewsItemId = table.Column<Guid>(nullable: true)
+                    RootId = table.Column<Guid>(nullable: true),
+                    NewsItemComment_RootId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ContentBase", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ContentBase_ContentBase_ThreadId",
-                        column: x => x.ThreadId,
+                        name: "FK_ContentBase_ContentBase_RootId",
+                        column: x => x.RootId,
                         principalTable: "ContentBase",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ContentBase_ContentBase_NewsItemId",
-                        column: x => x.NewsItemId,
+                        name: "FK_ContentBase_ContentBase_NewsItemComment_RootId",
+                        column: x => x.NewsItemComment_RootId,
                         principalTable: "ContentBase",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -100,14 +100,14 @@ namespace DevPortal.QueryStack.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ContentBase_ThreadId",
+                name: "IX_ContentBase_RootId",
                 table: "ContentBase",
-                column: "ThreadId");
+                column: "RootId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ContentBase_NewsItemId",
+                name: "IX_ContentBase_NewsItemComment_RootId",
                 table: "ContentBase",
-                column: "NewsItemId");
+                column: "NewsItemComment_RootId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

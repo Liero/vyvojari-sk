@@ -19,10 +19,4 @@ namespace DevPortal.QueryStack.Model
         public virtual string Title { get; set; }
         public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
     }
-
-    public class Tag
-    {
-        public string Name { get; set; }
-        public Guid ContentId { get; set; }
-    }
 }
