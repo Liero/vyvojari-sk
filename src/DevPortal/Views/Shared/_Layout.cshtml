@@ -52,7 +52,7 @@
                             <li class="nav-item @(this.Url.IsCurrentRoute("Blog") ? "active" : "")">
                                 <a class="nav-link" asp-controller="Blog" asp-action="@nameof(BlogController.Index)">Blogy</a>
                             </li>
-                            <environment names="Development">
+                            <environment names="Development,Test">
                                 <li class="nav-item @(this.Url.IsCurrentRoute("SampleData") ? "active" : "")">
                                     <a class="nav-link" asp-controller="SampleData" asp-action="@nameof(SampleDataController.Index)">Sample Data</a>
                                 </li>
