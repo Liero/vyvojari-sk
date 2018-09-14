@@ -7,6 +7,10 @@ jQuery.validator.setDefaults({
     errorClass: 'text-danger'
 });
 
+function submitFormOnEnterPressed() {
+    $(this).closest('form').submit();
+}
+
 var app = {};
 
 (function (app) {
@@ -20,7 +24,7 @@ var app = {};
             tagClass: 'badge badge-secondary'
         });
 
-        $(document.body).on('key-press', '[data-action="submit"]', submitForm)
+        $(document.body).on('key-press', '[data-action="submit"]', submitForm);
 
         //enable markdown formatting on blur and on keypress with delay
         var $markdownInputs = $("[data-provide='markdown']");
@@ -29,13 +33,13 @@ var app = {};
             clearTimeout(markdownTimer);
             markdownTimer = setTimeout(formatMarkdown, 2000, $(this));
         });
-    }
+    };
 
     function formatMarkdown($input) {
         clearTimeout(markdownTimer);
       
         $markdown = $(`[aria-labelledby='${$input.attr('id')}']`);
-        var content = marked($input.val())
+        var content = marked($input.val());
         $markdown.html(content);
     }
 

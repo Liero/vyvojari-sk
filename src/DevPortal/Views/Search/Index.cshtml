@@ -1,0 +1,43 @@
+﻿@using DevPortal.QueryStack.Model;
+@using DevPortal.Web.Models.SearchViewModels;
+@using static DevPortal.Web.AppCode.ControllerNameConverter;
+
+@model IndexPageViewModel
+@{
+    ViewData["Title"] = "Vyhľadávanie";
+
+    string FriendlyContentTypeName(SearchItem item)
+    {
+        switch (item.ContentType.Name)
+        {
+            case nameof(NewsItem): return "Správička";
+            case nameof(NewsItemComment): return "Komentár k správičke";
+            case nameof(ForumThread): return "Fórum";
+            case nameof(ForumPost): return "Odpoveď";
+            default: return item.ContentType.Name;
+        }
+    }
+}
+
+<h1 class="main-head">Vyhľadávanie</h1>
+
+@foreach (var item in Model.Items)
+{
+    <div class="btm-bord-content">
+        <div>
+            <a class="orange-text head-link"
+               asp-action="Detail"
+               asp-route-id="@item.Id"
+               asp-fragment="@item.Fragment"
+               asp-controller="@ControllerNameFromContentType(item.ContentType.Name)">
+                @item.Title
+            </a>
+            <p class="mb-2">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, ea…</p>
+            <p class="gray-text font-s14 mb-0">
+                <span class="badge badge-primary">@FriendlyContentTypeName(item)</span>
+                Posted on @item.Date <span class="blue-text">@item.User</span>
+            </p>
+        </div>
+    </div>
+}
+<pagination asp-for="@Model" />

@@ -1,4 +1,5 @@
-﻿using DevPortal.QueryStack;
+﻿using DevPortal.CommandStack.Infrastructure;
+using DevPortal.QueryStack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -21,14 +22,13 @@ namespace DevPortal.Web.Data
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
-                .AddUserSecrets<ApplicationDbContextDesignTimeFactory>()
+                .AddUserSecrets<DbContextDesignTimeFactory<T>>()
                 .Build();
 
             var connectionString = configuration.GetConnectionString(typeof(T).Name);
 
             var builder = new DbContextOptionsBuilder<T>();
             builder.UseSqlServer(connectionString);
-
             return Factory(builder.Options);
         }
 
@@ -46,6 +46,14 @@ namespace DevPortal.Web.Data
     public class DevPortalDbContextDesignTimeFactory : DbContextDesignTimeFactory<DevPortalDbContext>
     {
         public DevPortalDbContextDesignTimeFactory() : base(options => new DevPortalDbContext(options))
+        {
+
+        }
+    }
+
+    public class EventsDbContextDesignTimeFactory : DbContextDesignTimeFactory<EventsDbContext>
+    {
+        public EventsDbContextDesignTimeFactory() : base(options => new EventsDbContext(options))
         {
 
         }

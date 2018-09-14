@@ -1,7 +1,7 @@
 ﻿@using DevPortal.Web.Models.HomeViewModels
+@using static DevPortal.Web.AppCode.ControllerNameConverter;
 
 @model HomePageViewModel
-
 <div class="row">
     <div class="col-lg-8">
         @if (!User.Identity.IsAuthenticated)
@@ -12,13 +12,11 @@
         {
             <partial name="_UserInfo" />
         }
-
         <ul class="nav tab-content-style" id="tablist" role="tablist">
             <li id="news-tab"><a href="#news" class="active" data-toggle="tab" role="tab">správičky</a></li>
             <li id="forum-tab"><a href="#forum" data-toggle="tab" role="tab">fórum</a></li>
             <li id="activity-tab"><a href="#activity" data-toggle="tab" role="tab">posledná aktivita</a></li>
         </ul>
-
         <div class="tab-content mt-30" id="tablistContent">
             <section id="news" class="tab-pane fade show active" role="tabpanel" aria-labelledby="news-tab">
                 @foreach (var newsItem in Model.LatestNews)
@@ -67,7 +65,7 @@
                                        asp-action="Detail"
                                        asp-route-id="@activity.ContentId"
                                        asp-fragment="@activity.Fragment"
-                                       asp-controller="@ActivityViewModel.GetAssociatedControllerName(activity)">
+                                       asp-controller="@ControllerNameFromContentType(activity.ContentType))">
                                         @activity.ContentTitle.Truncate(50)
                                     </a>
                                 }

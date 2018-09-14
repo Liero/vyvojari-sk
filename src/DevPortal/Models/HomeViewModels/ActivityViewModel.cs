@@ -21,17 +21,5 @@ namespace DevPortal.Web.Models.HomeViewModels
                 default: return activity.Action;
             }
         }
-        
-
-        public static string GetAssociatedControllerName(Activity activity)
-        {
-            switch (activity.ContentType)
-            {
-                case nameof(ForumThread): return "Forum";
-                case nameof(NewsItem): return "News";
-                case nameof(Blog): return "Blog";
-                default: return null;
-            }
-        }
     }
 }

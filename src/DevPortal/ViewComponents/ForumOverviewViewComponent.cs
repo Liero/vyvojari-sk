@@ -20,7 +20,7 @@ namespace DevPortal.Web.ViewComponents
         {
             var items = await _dbContext.ForumThreads
                 .AsNoTracking()
-                .OrderByDescending(b => b.LastPostedBy)
+                .OrderByDescending(b => b.LastPosted)
                 .Take(10)
                 .ToListAsync();
 

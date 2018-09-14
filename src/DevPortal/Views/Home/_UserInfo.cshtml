@@ -1,8 +1,7 @@
 ﻿@using Microsoft.EntityFrameworkCore;
-@using DevPortal.Web.Models.HomeViewModels
+@using static DevPortal.Web.AppCode.ControllerNameConverter;
 
 @inject UserManager<ApplicationUser> userManager
-
 @inject DevPortal.QueryStack.DevPortalDbContext dbContext
 @{
     var applicationUser = await userManager.GetUserAsync(User);
@@ -36,7 +35,7 @@
                         <a asp-action="Detail"
                            asp-route-id="@activity.ContentId"
                            asp-fragment="@activity.Fragment"
-                           asp-controller="@ActivityViewModel.GetAssociatedControllerName(activity)">
+                           asp-controller="@ControllerNameFromContentType(activity.ContentType)">
                             @activity.ContentTitle.Truncate(50)
                         </a>
                     </li>

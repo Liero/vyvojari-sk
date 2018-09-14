@@ -14,6 +14,7 @@ using DevPortal.QueryStack.Model;
 using Microsoft.AspNetCore.Authorization;
 using DevPortal.Web.AppCode.EventSourcing;
 using DevPortal.QueryStack.Denormalizers;
+using Microsoft.Extensions.Logging;
 
 namespace DevPortal.Web.Controllers
 {

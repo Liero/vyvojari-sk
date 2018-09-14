@@ -25,10 +25,12 @@
 <body>
     <header class="header">
         <div class="container top-header">
-            <div class="search-input">
-                <input class="form-control" type="search" placeholder="Search Topics ..." aria-label="Search">
-                <a href="" class="search-ic"><i class="fa fa-search" aria-hidden="true"></i></a>
-            </div>
+            <form asp-controller="Search" asp-action="@nameof(SearchController.Index)" method="get">
+                <div class="search-input">
+                    <input name="query" class="form-control" type="search" placeholder="Search Topics ..." aria-label="Search">
+                    <a href="" class="search-ic"><i class="fa fa-search" aria-hidden="true"></i></a>
+                </div>
+            </form>            
         </div>
         <div class="bottom-header">
             <div class="container">
