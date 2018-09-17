@@ -2,7 +2,6 @@
 @{
     ViewBag.Title = "Blogy";
 }
-
 <h1 class="main-head">
     Blogy
     <a class="btn btn-warning pull-right" asp-action="CreateLink">Pridať odkaz na blog</a>
@@ -20,13 +19,12 @@
             <p><markdown>@blog.Description</markdown></p>
             <a href="@blog.ExternalUrl" class="gray-text">@blog.ExternalUrl</a>
 
-            <div class="mb-0">
-
-
+            <div class="mb-0">              
                 @if (User.Identity.Name == blog.CreatedBy)
                 {
-                    <form asp-action="@nameof(BlogController.Delete)" asp-route-id="@blog.Id" class="d-inline pull-right">
-                        <a href="javascript:void" data-action="delete">Zmazať</a>
+                    <form asp-action="@nameof(BlogController.Delete)" asp-route-id="@blog.Id" method="post" 
+                        class="d-inline pull-right">
+                        <button type="submit" class="btn btn-link">Zmazať</button>
                     </form>
                 }
             </div>

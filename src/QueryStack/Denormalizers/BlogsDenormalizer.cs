@@ -56,7 +56,7 @@ namespace DevPortal.QueryStack.Denormalizers
         {
             using (var db = new DevPortalDbContext(_dbContextOptions))
             {
-                var entity = new Blog { Id = message.Id };
+                var entity = new Blog { Id = message.BlogId };
                 db.Blogs.Attach(entity);
                 db.Blogs.Remove(entity);
                 await db.SaveChangesAsync();

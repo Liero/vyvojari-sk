@@ -3,6 +3,7 @@ using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack;
 using DevPortal.QueryStack.Denormalizers;
 using DevPortal.Web.AppCode;
+using DevPortal.Web.AppCode.Authorization;
 using DevPortal.Web.AppCode.EventSourcing;
 using DevPortal.Web.AppCode.Extensions;
 using DevPortal.Web.Data;
@@ -99,6 +100,7 @@ namespace DevPortal.Web.Controllers
             return RedirectToAction(nameof(Detail), new { id = evt.ForumThreadId });
         }
 
+        [Authorize(Policies.EditPolicy)]
         [HttpGet]
         public IActionResult Edit(Guid id)
         {
@@ -106,10 +108,6 @@ namespace DevPortal.Web.Controllers
             if (entity == null)
             {
                 return NotFound("Specified id does not exist");
-            }
-            if (entity.CreatedBy != User.Identity.Name)
-            {
-                return Unauthorized();
             }
 
             var viewModel = new EditForumThreadViewModel
@@ -123,6 +121,7 @@ namespace DevPortal.Web.Controllers
             return View(viewModel);
         }
 
+        [Authorize(Policies.EditPolicy)]
         [HttpPost]
         public async Task<IActionResult> Edit(Guid id, EditForumThreadViewModel viewModel)
         {
@@ -131,10 +130,6 @@ namespace DevPortal.Web.Controllers
             if (entity == null)
             {
                 return NotFound("Specified id does not exist");
-            }
-            if (entity.CreatedBy != User.Identity.Name)
-            {
-                return Unauthorized();
             }
 
             var evt = new ForumThreadEdited
@@ -150,6 +145,7 @@ namespace DevPortal.Web.Controllers
             return RedirectToAction(nameof(Detail), new { id });
         }
 
+        [Authorize(Policies.DeletePolicy)]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -157,10 +153,6 @@ namespace DevPortal.Web.Controllers
             if (entity == null)
             {
                 return NotFound("Specified id does not exist");
-            }
-            if (entity.CreatedBy != User.Identity.Name)
-            {
-                return Unauthorized();
             }
 
             var evt = new ForumThreadDeleted
@@ -192,6 +184,7 @@ namespace DevPortal.Web.Controllers
             return RedirectToAction(nameof(Detail), ControllerName, new { id }, fragment: evt.ForumItemId.ToString());
         }
 
+        [Authorize(Policies.EditPolicy)]
         [HttpPost]
         public async Task<IActionResult> EditPost(Guid id, EditAnswerViewModel viewModel)
         {
@@ -209,6 +202,7 @@ namespace DevPortal.Web.Controllers
             return RedirectToAction(nameof(Detail), ControllerName, new { id }, fragment: evt.ForumItemId.ToString());
         }
 
+        [Authorize(Policies.DeletePolicy)]
         [HttpDelete("Forum/{id}/Posts/{forumPostId}")]
         public async Task<IActionResult> DeletePost(Guid id, Guid forumPostId)
         {

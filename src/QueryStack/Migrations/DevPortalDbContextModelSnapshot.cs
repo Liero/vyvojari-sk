@@ -47,26 +47,6 @@ namespace DevPortal.QueryStack.Migrations
                     b.ToTable("Activities");
                 });
 
-            modelBuilder.Entity("DevPortal.QueryStack.Model.Blog", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("CreatedBy");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("ExternalUrl");
-
-                    b.Property<string>("Title");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Blogs");
-                });
-
             modelBuilder.Entity("DevPortal.QueryStack.Model.ContentBase", b =>
                 {
                     b.Property<Guid>("Id")
@@ -122,6 +102,19 @@ namespace DevPortal.QueryStack.Migrations
                     b.ToTable("ChildContent");
 
                     b.HasDiscriminator().HasValue("ChildContent");
+                });
+
+            modelBuilder.Entity("DevPortal.QueryStack.Model.Blog", b =>
+                {
+                    b.HasBaseType("DevPortal.QueryStack.Model.GenericContent");
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("ExternalUrl");
+
+                    b.ToTable("Blog");
+
+                    b.HasDiscriminator().HasValue("Blog");
                 });
 
             modelBuilder.Entity("DevPortal.QueryStack.Model.ForumThread", b =>
