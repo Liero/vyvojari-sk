@@ -1,9 +1,10 @@
 ﻿@using DevPortal.Web.Models.ForumViewModels;
 @model ForumDetailViewModel
+@inject IAuthorizationService auth
+
 @{
     ViewBag.Title = "Diskusné fórum";
 }
-
 
 <div class="row">
     <div class="col-md-8">
@@ -25,10 +26,11 @@
                 </p>
                 <markdown>@Model.Thread.Content</markdown>
                 <div class="clearfix">
-
                     <span class="blue-text pull-right">
                         <a href="#" class="link mr-2">Zdieľať</a>
-                        @if (Model.Thread.CreatedBy == User.Identity.Name)
+
+                        @if ((await auth.AuthorizeAsync(
+                            User, Model.Thread, Policies.EditPolicy)).Succeeded)
                         {
                             <a asp-action="@nameof(ForumController.Edit)" asp-route-id="@Model.Thread.Id" class="link">Upraviť</a>
                         }
@@ -48,7 +50,6 @@
                             {
                                 <i>(edited by @post.LastModifiedBy, <time for="@post.LastModified" />)</i>
                             }
-
                         </p>
                         <markdown>@Html.Raw(post.Content)</markdown>
                         <ul class="actions list-inline">
@@ -59,8 +60,6 @@
                 </li>
             }
         </ul>
-
-
 
 
         <form asp-action="@nameof(ForumController.NewPost)"
@@ -83,7 +82,6 @@
             </div>
         </form>
     </div>
-
     <div class="col-md-4 hidden-sm hidden-xs">
         <section>
             <h3 class="main-head">Prehľad diskusie</h3>
@@ -113,4 +111,3 @@
         </section>
     </div>
 </div>
-
