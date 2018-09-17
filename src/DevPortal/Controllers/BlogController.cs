@@ -12,6 +12,7 @@ using DevPortal.CommandStack.Events;
 using Microsoft.EntityFrameworkCore;
 using DevPortal.Web.AppCode.EventSourcing;
 using DevPortal.QueryStack.Denormalizers;
+using DevPortal.Web.AppCode.Authorization;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -86,17 +87,14 @@ namespace DevPortal.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpDelete]
+        [Authorize(Policies.DeletePolicy)]
+        [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
         {
             var entity = _devPortalDb.Blogs.Find(id);
             if (entity == null)
             {
                 return NotFound("Specified id does not exist");
-            }
-            if (entity.CreatedBy != User.Identity.Name)
-            {
-                return Unauthorized();
             }
 
             var evt = new BlogDeleted

@@ -1,13 +1,12 @@
 ﻿@model DevPortal.Web.Models.BlogViewModels.IndexPageViewModel
+@inject IAuthorizationService auth
 @{
     ViewBag.Title = "Blogy";
 }
-
 <h1 class="main-head">
     Blogy
     <a class="btn btn-warning pull-right" asp-action="CreateLink">Pridať odkaz na blog</a>
 </h1>
-
 @foreach (var blog in Model.Blogs)
 {
     <div class="border-bottom mt-3 media">
@@ -19,19 +18,17 @@
             </span>
             <p><markdown>@blog.Description</markdown></p>
             <a href="@blog.ExternalUrl" class="gray-text">@blog.ExternalUrl</a>
-
             <div class="mb-0">
-
-
-                @if (User.Identity.Name == blog.CreatedBy)
+                @if ((await auth.AuthorizeAsync(
+                     User, blog, Policies.DeletePolicy)).Succeeded)
                 {
-                    <form asp-action="@nameof(BlogController.Delete)" asp-route-id="@blog.Id" class="d-inline pull-right">
-                        <a href="javascript:void" data-action="delete">Zmazať</a>
+                    <form asp-action="@nameof(BlogController.Delete)" asp-route-id="@blog.Id" method="post"
+                          class="d-inline pull-right">
+                        <button type="submit" class="btn btn-link">Zmazať</button>
                     </form>
                 }
             </div>
         </div>
     </div>
 }
-
 <pagination asp-for="@Model" />

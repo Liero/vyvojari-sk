@@ -251,6 +251,12 @@ namespace DevPortal.Web.Controllers
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied(string returnUrl = null)
+        {
+            return View();
+        }
 
         private async Task<SignInResult> SignInUsingPasswordAsync(LoginFormViewModel model)
         {

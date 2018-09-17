@@ -7,7 +7,7 @@
     <div class="col-md-8">
         <h1 class="main-head">Upraviť správičku</h1>
 
-        <form action="@nameof(NewsController.Edit)" method="post">
+        <form asp-action="@nameof(NewsController.Edit)" method="post">
             <div class="form-group">
                 <label asp-for="@Model.Title">Názov správičky</label>
                 <input asp-for="@Model.Title" class="form-control">
