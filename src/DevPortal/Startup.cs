@@ -61,16 +61,16 @@ namespace DevPortal.Web
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-
+            var authenticationBuilder = services.AddAuthentication();
             if (!string.IsNullOrEmpty(Configuration["Authentication:Facebook:AppId"]))
             {
-                services.AddAuthentication()
-                    .AddFacebook(options =>
+                authenticationBuilder.AddFacebook(options =>
                     {
                         options.AppId = Configuration["Authentication:Facebook:AppId"];
                         options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
                     });
             }
+            services.ConfigureApplicationCookie(c => c.AccessDeniedPath = null);
 
             services.AddAuthorization(Policies.Configure)
                 .AddAuthorizationHandlers(this.GetType().Assembly, ServiceLifetime.Scoped);
