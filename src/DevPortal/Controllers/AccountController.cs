@@ -42,6 +42,22 @@ namespace DevPortal.Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginFormViewModel model, string returnUrl = null)
+        {
+            if (ModelState.IsValid)
+            {
+                var singIn = await SignInUsingPasswordAsync(model);
+                if (singIn.Succeeded) return Redirect(returnUrl ?? "/");
+            }
+           
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(model);
+            
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginAjax(LoginFormViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
