@@ -21,10 +21,23 @@
         color: white;
         text-align: center;
         vertical-align: middle;
+        font-size: 48px;
     }
 
     .avatar.rounded-circle > * {
         border-radius: 50%;
+    }
+
+.avatar-medium {
+    height: 64px;
+    width: 64px;
+}
+
+    .avatar-medium > * {
+        height: 64px;
+        width: 64px;
+        line-height: 64px;
+        font-size: 32px;
     }
 
 .avatar-small {
@@ -56,7 +69,7 @@
 }
 
 .rounder-circle > .cover {
-    border-radius:
+    border-radius: 50%
 }
 
 .shadow {

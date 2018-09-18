@@ -1,9 +1,7 @@
 ﻿<!DOCTYPE html>
-
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     @if (ViewBag.Title != null)
     {
         <title>@ViewBag.Title - Vývojári.sk</title>
@@ -14,13 +12,11 @@
     }
     <link href="https://fonts.googleapis.com/css?family=Raleway|Roboto:300,400|Yanone+Kaffeesatz" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-
     <link id="favicon" href="~/favicon.ico" rel="shortcut icon">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     @*overriden in site.css due bootstrap4 compat: <link rel="stylesheet" href="~/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.css" />*@
     <link rel="stylesheet" href="~/css/theme.css" />
     <link rel="stylesheet" href="~/css/site.css" />
-
 </head>
 <body>
     <header class="header">
@@ -30,7 +26,7 @@
                     <input name="query" class="form-control" type="search" placeholder="Search Topics ..." aria-label="Search">
                     <a href="" class="search-ic"><i class="fa fa-search" aria-hidden="true"></i></a>
                 </div>
-            </form>            
+            </form>
         </div>
         <div class="bottom-header">
             <div class="container">
@@ -64,9 +60,9 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <vc:inbox-bar />
-                            <vc:notification-bar />                         
+                            <vc:notification-bar />
                             <div class="ml-3 dropdown user-account">
-                                <a href="#" data-toggle="dropdown" aria-expanded="false" style="line-height:42px; display:inline-flex">                                
+                                <a href="#" data-toggle="dropdown" aria-expanded="false" style="line-height:42px; display:inline-flex">
                                     <span avatar-for-user="@User.Identity.Name" class="avatar avatar-xsmall rounded-circle mr-1" />
                                     <span class="align-middle pl2">@User.Identity.Name <i class="fa fa-sort-desc ml-1 mt-0 align-middle" aria-hidden="true"></i></span>
                                 </a>
@@ -85,20 +81,19 @@
                             <a class="btn green-btn text-uppercase" asp-controller="Account" asp-action="@nameof(AccountController.Login)">Prihlásenie</a>
                             <a class="btn orange-btn text-uppercase" asp-controller="Account" asp-action="@nameof(AccountController.Register)">Registrácia</a>
                         }
-
                     </form>
                 </nav>
             </div>
-
         </div>
         @RenderSection("top", required: false)
     </header>
 
-
     <section id="main" class="container">
         @RenderBody()
     </section>
-
+    <section id="MostActiveUsers" class="container mt-5">
+        <vc:most-active-users />
+    </section>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="~/lib/marked/lib/marked.js"></script>
@@ -106,7 +101,6 @@
     <partial name="_ValidationScriptsPartial" />
     <script src="~/scripts/site.js"></script>
     @RenderSection("scripts", required: false)
-
 
 </body>
 </html>

@@ -1,0 +1,15 @@
+﻿@model List<MostActiveUser>
+
+<h2 class="main-head">Najaktívnejší <small>užívatelia</small></h2>
+<div class="d-flex justify-content-between">
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        <div class="@(i > 8 ? "d-none d-lg-block":
+                              i > 6 ? "d-none d-md-block":
+                              i > 4 ? "d-none d-sm-block": "")">
+            <avatar username="@Model[i].UserName" class="avatar avatar-medium" />
+            <div class="text-center"><small>@(i + 1). @Model[i].UserName</small></div>
+        </div>
+    }
+</div>
+<a asp-controller="User" asp-action="Index"><small>Zoznam používateľov</small></a>
