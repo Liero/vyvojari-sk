@@ -1,7 +1,8 @@
-﻿using DevPortal.Web.Data;
+﻿using DevPortal.Web.Controllers;
+using DevPortal.Web.Data;
 using DevPortal.Web.Models;
 using Humanizer;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -85,6 +86,12 @@ namespace DevPortal.Web.TagHelpers
             if (!string.IsNullOrEmpty(avatarUrl)) //must check in order to avoid request to current page (empty url)
             {
                 content.AppendLine($"<span class=\"cover\" style=\"background-image:url('{avatarUrl}')\"></span>");
+            }
+
+            if (output.TagName == "a" && !output.Attributes.ContainsName("href"))
+            {
+                var url = urlHelper.Action(nameof(UserController.Detail), "User", new { username = UserName });
+                output.Attributes.Add("href", url);
             }
 
             output.Content.SetHtmlContent(content.ToString());

@@ -116,6 +116,8 @@ namespace DevPortal.Web
             app.UseAuthentication();
             app.UseMvcWithDefaultRoute();
             app.UseStaticFiles();
+
+            UserRolesConfig.EnsureUserRoles(app.ApplicationServices).Wait();
         }
 
         private void ConfigureIdentity(IdentityOptions options)

@@ -1,0 +1,40 @@
+﻿@model DevPortal.Web.Models.UserViewModels.IndexPageViewModel
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h1 class="main-head">@ViewData["Title"]</h1>
+
+<div class="row mb-2">
+    <form class="input-group col-md-6 col-lg-3">
+        <input name="search" type="text" class="form-control" placeholder="Search" aria-label="Search"
+               data-action="submit">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button">Go</button>
+        </div>
+    </form>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>User Name</th>
+            <th>Short Description</th>
+            <th>About</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Items)
+        {
+            <tr>
+                <td><avatar class="avatar avatar-xsmall" username="@user.UserName" /></td>
+                <td>@user.UserName</td>
+                <td>@user.ShortDescription.Truncate(150)</td>
+                <td>@user.About.Truncate(150)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<pagination asp-for="@Model" />

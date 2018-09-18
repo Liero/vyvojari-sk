@@ -20,6 +20,10 @@ namespace DevPortal.Web.Data
         {
             base.OnModelCreating(builder);
             builder.AddDateTimeUtcConversion();
+
+            builder.Entity<ApplicationUser>()
+                .HasMany(e => e.UserRoles)
+                .WithOne().HasForeignKey(e => e.UserId);
         }
     }
 }

@@ -1,0 +1,47 @@
+﻿@model ApplicationUser
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h1 class="main-head">@ViewData["Title"]</h1>
+<h2>Profil používateľa</h2>
+
+<h3>@Model.UserName</h3>
+<avatar username="@Model.UserName" />
+<p>@Model.ShortDescription</p>
+<h4>Niečo o mne</h4>
+@if (string.IsNullOrWhiteSpace(Model.About))
+{
+    <i>@Model.UserName o sebe nič nenapísal</i>
+}
+else
+{
+    <markdown>@Html.Raw(Model.About)</markdown>
+}
+
+@if (User.IsInRole("Admin"))
+{
+    <h4>Role</h4>
+    <ul>
+        @foreach (var role in Model.UserRoles)
+        {
+            <li>
+                @ViewBag.RoleNames[role.RoleId]
+                <form asp-action="@nameof(UserController.RemoveRole)" method="post">
+                    <button class="btn btn-link">Remove</button>
+                </form>
+            </li>
+        }
+    </ul>
+
+    <form method="post">
+        <button class="btn btn-outline-secondary" type="submit"
+                asp-action="@nameof(UserController.AddRole)"
+                asp-route-role="Admin">
+            Make admin
+        </button>
+    </form>
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+}

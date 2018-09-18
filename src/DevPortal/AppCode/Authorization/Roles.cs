@@ -8,5 +8,10 @@ namespace DevPortal.Web.AppCode.Authorization
     public static class Roles
     {
         public const string Admin = "Admin";
+
+        public static IEnumerable<string> AllRoles => new[] 
+        {
+            Admin,
+        };
     }
 }

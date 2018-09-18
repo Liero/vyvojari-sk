@@ -12,5 +12,8 @@ namespace DevPortal.Web.Models
 
         public string AvatarUrl { get; set; }
         public string ShortDescription { get; set; }
+
+        public ICollection<IdentityUserRole<string>> UserRoles { get; set; }
+
     }
 }
