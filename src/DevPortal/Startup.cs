@@ -105,19 +105,23 @@ namespace DevPortal.Web
         {
             loggerFactory.AddConsole();
 
-            app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
             if (!env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseHttpsRedirection();
 
             app.UseRebus();
-
-            app.UseAuthentication();
+            AddAuthentication(app);
             app.UseMvcWithDefaultRoute();
             app.UseStaticFiles();
 
             UserRolesConfig.EnsureUserRoles(app.ApplicationServices).Wait();
+        }
+
+        protected virtual void AddAuthentication(IApplicationBuilder app)
+        {
+            app.UseAuthentication();
         }
 
         private void ConfigureIdentity(IdentityOptions options)
@@ -134,5 +138,4 @@ namespace DevPortal.Web
             }
         }
     }
-
 }
