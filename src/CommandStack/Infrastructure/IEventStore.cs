@@ -19,6 +19,6 @@ namespace DevPortal.CommandStack.Infrastructure
         /// <typeparam name="T">The type of the events to retrieve</typeparam>
         /// <param name="filter">The condition events must satisfy in order to be retrieved.</param>
         /// <returns>The events which satisfy the specified condition</returns>
-        IEnumerable<T> Find<T>(Func<EventWrapper, bool> filter) where T : DomainEvent;
+        IEnumerable<T> Find<T>(Func<EventWrapper, bool> filter, int limit = 0) where T : DomainEvent;
     }
 }

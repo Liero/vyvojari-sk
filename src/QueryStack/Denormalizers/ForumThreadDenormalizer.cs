@@ -20,16 +20,16 @@ namespace DevPortal.QueryStack.Denormalizers
         IHandleMessages<ForumItemEdited>,
         IHandleMessages<ForumItemDeleted>
     {
-        private readonly DbContextOptions<DevPortalDbContext> _dbContextOptions;
+        private readonly DevPortalDbContext _queryModelDb;
 
-        public ForumThreadDenormalizer(DbContextOptions<DevPortalDbContext> dbContextOptions)
+        public ForumThreadDenormalizer(DevPortalDbContext queryModelDb) : base(queryModelDb)
         {
-            this._dbContextOptions = dbContextOptions;
+            _queryModelDb = queryModelDb;
         }
 
         #region ForumThread
 
-        public async Task Handle(ForumThreadCreated message)
+        public Task Handle(ForumThreadCreated message)
         {
             //generic content mapping
             ForumThread entity = base.MapCreated(message);
@@ -37,61 +37,53 @@ namespace DevPortal.QueryStack.Denormalizers
             //specific for ForumThread
             entity.LastPosted = message.TimeStamp;
             entity.LastPostedBy = message.AuthorUserName;
-         
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                db.ForumThreads.Add(entity);
-                await db.SaveChangesAsync();
-            }
+
+            DenormalizedView.Add(entity);
+
+            return Task.CompletedTask;
         }
 
-        public async Task Handle(ForumThreadEdited message)
+        public Task Handle(ForumThreadEdited message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                ForumThread entity = db.ForumThreads
-                    .Include(f => f.Tags)
-                    .FirstOrDefault(f => f.Id == message.ForumThreadId);
-                MapEdited(message, entity);
-                await db.SaveChangesAsync();
-            }
+            ForumThread entity = DenormalizedView
+                .Include(f => f.Tags)
+                .FirstOrDefault(f => f.Id == message.ForumThreadId);
+            MapEdited(message, entity);
+
+            return Task.CompletedTask;
         }
 
-        public async Task Handle(ForumThreadDeleted message)
+        public Task Handle(ForumThreadDeleted message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                var entity = new ForumThread { Id = message.Id };
-                db.ForumThreads.Attach(entity);
-                db.ForumThreads.Remove(entity);
-                await db.SaveChangesAsync();
-            }
+            var entity = new ForumThread { Id = message.Id };
+            DenormalizedView.Attach(entity);
+            DenormalizedView.Remove(entity);
+
+            return Task.CompletedTask;
         }
 
         #endregion ForumThread
 
         #region ForumItems
 
-        public async Task Handle(ForumItemPosted message)
+        public Task Handle(ForumItemPosted message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
+            ForumThread forumThread = DenormalizedView.Find(message.ForumThreadId);
+            forumThread.LastPosted = message.TimeStamp;
+            forumThread.LastPostedBy = message.AuthorUserName;
+
+            SetParticipantsCsv(message, forumThread);
+
+            forumThread.Posts.Add(new ForumPost
             {
-                ForumThread forumThread = db.ForumThreads.Find(message.ForumThreadId);
-                forumThread.LastPosted = message.TimeStamp;
-                forumThread.LastPostedBy = message.AuthorUserName;
+                Id = message.ForumItemId,
+                Content = message.Content,
+                Created = message.TimeStamp,
+                CreatedBy = message.AuthorUserName,
+            });
+            forumThread.PostsCount++;
 
-                SetParticipantsCsv(message, forumThread);
-
-                forumThread.Posts.Add(new ForumPost
-                {
-                    Id = message.ForumItemId,
-                    Content = message.Content,
-                    Created = message.TimeStamp,
-                    CreatedBy = message.AuthorUserName,
-                });
-                forumThread.PostsCount++;
-                await db.SaveChangesAsync();
-            }
+            return Task.CompletedTask;
         }
 
         private static void SetParticipantsCsv(ForumItemPosted message, ForumThread forumThread)
@@ -104,29 +96,23 @@ namespace DevPortal.QueryStack.Denormalizers
 
         public async Task Handle(ForumItemEdited message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                ForumPost post = db.ForumPosts
-                    .Include(p => p.Thread)
-                    .First(p => p.Id == message.ForumItemId);
+            ForumPost post = await _queryModelDb.ForumPosts
+                .Include(p => p.Thread)
+                .FirstAsync(p => p.Id == message.ForumItemId);
 
-                post.Thread.PostsCount++;
-                post.Content = message.Content;
-                post.LastModified = message.TimeStamp;
-                post.LastModifiedBy = message.EditorUserName;
-                await db.SaveChangesAsync();
-            }
+            post.Thread.PostsCount++;
+            post.Content = message.Content;
+            post.LastModified = message.TimeStamp;
+            post.LastModifiedBy = message.EditorUserName;
         }
 
-        public async Task Handle(ForumItemDeleted message)
+        public Task Handle(ForumItemDeleted message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                var entity = new ForumThread { Id = message.Id };
-                db.ForumThreads.Attach(entity);
-                db.ForumThreads.RemoveRange(entity);
-                await db.SaveChangesAsync();
-            }
+            var entity = new ForumPost { Id = message.ForumItemId };
+            _queryModelDb.ForumPosts.Attach(entity);
+            _queryModelDb.RemoveRange(entity);
+
+            return Task.CompletedTask;
         }
 
         #endregion ForumItems

@@ -44,6 +44,7 @@ namespace DevPortal.Web.Controllers
             Services.AddSingleton<IEventStore>(EventStoreMock.Object);
             Services.AddDbContext<DevPortalDbContext>(options =>
                 options.UseInMemoryDatabase("DevPortalDbContext"), ServiceLifetime.Transient);
+            Services.AddAuthorization();
 
             Services.AddSingleton<IHandlerNotifications, Mocks.HandlerNotificationsStub>();
             EventStoreExtensions.HandlerNotificationAccessor = () => ServiceProvider.GetRequiredService<IHandlerNotifications>();

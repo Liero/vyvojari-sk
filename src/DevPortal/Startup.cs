@@ -25,6 +25,7 @@ using DevPortal.Web.AppCode.EventSourcing;
 using DevPortal.Web.AppCode.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using DevPortal.Web.AppCode.Authorization.Handlers;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace DevPortal.Web
 {
@@ -99,11 +100,18 @@ namespace DevPortal.Web
             {
                 services.AddSqlEventSourcing();
             }
+            services.AddLogging();
+
+          
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            loggerFactory.AddConsole();
+            if (Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey") == string.Empty)
+            {
+                var telemetryConfig = app.ApplicationServices.GetRequiredService<TelemetryConfiguration>();
+                telemetryConfig.DisableTelemetry = true;
+            }
 
             app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
             if (!env.IsProduction())
@@ -111,7 +119,7 @@ namespace DevPortal.Web
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRebus();
+            app.UseRebusEventSourcing();
 
             app.UseAuthentication();
             app.UseMvcWithDefaultRoute();

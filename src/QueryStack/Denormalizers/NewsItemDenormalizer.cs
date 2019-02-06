@@ -16,63 +16,48 @@ namespace DevPortal.QueryStack.Denormalizers
         IHandleMessages<NewsItemPublished>,
         IHandleMessages<NewsItemCommented>
     {
-        private readonly DbContextOptions<DevPortalDbContext> _dbContextOptions;
+        private readonly DevPortalDbContext _queryModelDb;
 
-        public NewsItemDenormalizer(DbContextOptions<DevPortalDbContext> dbContextOptions)
+        public NewsItemDenormalizer(DevPortalDbContext queryModelDb) : base(queryModelDb)
         {
-            this._dbContextOptions = dbContextOptions;
+            this._queryModelDb = queryModelDb;
         }
 
-        public async Task Handle(NewsItemCreated message)
+        public Task Handle(NewsItemCreated message)
         {
             var newsItem = base.MapCreated(message);
-            using(var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                db.NewsItems.Add(newsItem);
-                await db.SaveChangesAsync();
-            }
+            DenormalizedView.Add(newsItem);
+            return Task.FromResult(message);
         }
 
         public async Task Handle(NewsItemEdited message)
         {
-            using(var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                NewsItem newsItem = db.NewsItems
-                    .Include(i => i.Tags)
-                    .First(i => i.Id == message.NewsItemId);
+            NewsItem newsItem = await _queryModelDb.NewsItems
+                .Include(i => i.Tags)
+                .FirstAsync(i => i.Id == message.NewsItemId);
 
-                base.MapEdited(message, newsItem);
-                await db.SaveChangesAsync();
-            }
+            base.MapEdited(message, newsItem);            
         }
 
         public async Task Handle(NewsItemPublished message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                NewsItem newsItem = db.NewsItems.Find(message.NewsItemId);
-                newsItem.Published = message.TimeStamp;
-                newsItem.IsPublished = true;
-                await db.SaveChangesAsync();
-            }
+            NewsItem newsItem = await _queryModelDb.NewsItems.FindAsync(message.NewsItemId);
+            newsItem.Published = message.TimeStamp;
+            newsItem.IsPublished = true;
         }
 
         public async Task Handle(NewsItemCommented message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                NewsItem newsItem = db.NewsItems.Find(message.NewsItemId);
+            NewsItem newsItem = await _queryModelDb.NewsItems.FindAsync(message.NewsItemId);
 
-                newsItem.Comments.Add(new NewsItemComment
-                {
-                    Id = message.CommentId,
-                    Content = message.Content,
-                    Created = message.TimeStamp,
-                    CreatedBy = message.UserName,
-                });
-                newsItem.CommentsCount++;
-                await db.SaveChangesAsync();
-            }
+            newsItem.Comments.Add(new NewsItemComment
+            {
+                Id = message.CommentId,
+                Content = message.Content,
+                Created = message.TimeStamp,
+                CreatedBy = message.UserName,
+            });
+            newsItem.CommentsCount++;
         }
     }
 }

@@ -16,54 +16,84 @@ using Rebus.Pipeline.Receive;
 using Rebus.Activation;
 using DevPortal.Web.AppCode.Extensions;
 using Rebus.Logging;
+using Microsoft.EntityFrameworkCore;
+using DevPortal.CommandStack.Events;
+using Rebus.Config;
+using DevPortal.QueryStack;
+using Microsoft.AspNetCore.Builder;
+using Rebus.Extensions;
 
 namespace DevPortal.Web.AppCode.EventSourcing
 {
+
     public static class EventSourcingConfig
     {
+        private static IBus _bus;
+
         public static void AddInMemoryEventSourcing(this IServiceCollection services)
         {
-            services.AddRebus((configure, sp) => configure
-              .Logging(l => l.Trace())
-              .Transport(t => t.UseInMemoryTransport(new InMemNetwork(), "Messages"))
-              .Routing(r => r.TypeBased().MapAssemblyOf<DomainEvent>("Messages"))
-              .Options(configurer =>
-                {
-                    configurer.Decorate<IPipeline>(c =>
-                    {
-                        var pipeline = c.Get<IPipeline>();
-                        var handlerNotifications = sp.GetRequiredService<IHandlerNotifications>();
-                        var step = new MyDispatchIncomingMessageStep(handlerNotifications, c.Get<IRebusLoggerFactory>());
-                        return new PipelineStepInjector(pipeline).OnReceive(step, PipelineRelativePosition.Before, typeof(DispatchIncomingMessageStep));
-                    });
-                    configurer.Decorate<IPipeline>(c =>
-                    {
-                        var pipeline = c.Get<IPipeline>();
-                        return new PipelineStepRemover(pipeline).RemoveIncomingStep(s => s.GetType() == typeof(DispatchIncomingMessageStep));
-                    });
-                })
-              );
-
-
-
             services.AddSingleton<IEventDispatcher, RebusEventDispatcher>();
-            services.AutoRegisterHandlersFromAssemblyOf<ActivityDenormalizer>();
-            services.AddSingleton<IEventStore, SqlEventStore>();
+            services.AddSingleton<IEventStore, SqlEventStore>(sp => ActivatorUtilities.CreateInstance<SqlEventStore>(sp, new object[] { AllEvents.ToArray() }));
+            //services.AddSingleton<IEventStore, InMemoryEventStore>();
+
             services.AddSingleton<IHandlerNotifications, HandlerNotififications>(sp =>
             {
                 var handlerNotification = ActivatorUtilities.CreateInstance<HandlerNotififications>(sp);
+
+                //make handler notification accessible from extension methods - needs a better solution
                 EventStoreExtensions.HandlerNotificationAccessor = () => handlerNotification;
                 return handlerNotification;
             });
-            //services.AddSingleton<IEventDispatcher>(serviceProvider =>
-            //{
+            services.AddTransient<IBus>(sp => _bus);
+        }
 
-            //    var eventDispatcher = new InMemoryBus(type =>
-            //        ActivatorUtilities.CreateInstance(serviceProvider, type));
-            //    RegisterHandlers(eventDispatcher);
-            //    return eventDispatcher;
-            //});
-            //services.AddSingleton<IEventStore, InMemoryEventStore>();
+        public static void UseRebusEventSourcing(this IApplicationBuilder app)
+        {
+            var rebusServices = new ServiceCollection();
+            rebusServices.AutoRegisterHandlersFromAssemblyOf<ActivityDenormalizer>();
+            rebusServices.AddTransient<DevPortalDbContext>(sp =>
+            {
+                var messageContext = MessageContext.Current
+                  ?? throw new InvalidOperationException("MessageContext.Current is null.");
+
+                return messageContext.TransactionContext.Items
+                    .GetOrThrow<DevPortalDbContext>(nameof(DevPortalDbContext));
+            });
+
+
+            rebusServices.AddRebus((configure, sp) => configure
+              .Logging(l => l.Trace())
+              .Transport(t => t.UseInMemoryTransport(new InMemNetwork(), "Messages"))
+              .Routing(r => r.TypeBased().MapAssemblyOf<DomainEvent>("Messages"))
+              .Options(o =>
+              {
+                  o.EnableUnitOfWork<DevPortalDbContext>(
+                      unitOfWorkFactoryMethod: messageContext =>
+                      {
+                          var dbContext = ActivatorUtilities.CreateInstance<DevPortalDbContext>(app.ApplicationServices);
+                          messageContext.TransactionContext.Items[nameof(DevPortalDbContext)] = dbContext;
+                          return dbContext;
+                      },
+                      commitAction: (messageContext, dbContext) => dbContext.SaveChanges(),
+                      cleanupAction: (messageContext, dbContext) => dbContext.Dispose());
+
+                  o.Decorate<IPipeline>(c =>
+                  {
+                      var pipeline = c.Get<IPipeline>();
+                      var handlerNotifications = app.ApplicationServices.GetRequiredService<IHandlerNotifications>();
+                      var step = new MyDispatchIncomingMessageStep(handlerNotifications, c.Get<IRebusLoggerFactory>());
+                      return new PipelineStepInjector(pipeline).OnReceive(step, PipelineRelativePosition.Before, typeof(DispatchIncomingMessageStep));
+                  });
+                  o.Decorate<IPipeline>(c =>
+                  {
+                      var pipeline = c.Get<IPipeline>();
+                      return new PipelineStepRemover(pipeline).RemoveIncomingStep(s => s.GetType() == typeof(DispatchIncomingMessageStep));
+                  });
+              }));
+
+            var rebusServiceProvider = rebusServices.BuildServiceProvider();
+            rebusServiceProvider.UseRebus();
+            _bus = rebusServiceProvider.GetRequiredService<IBus>();
         }
 
         public static void AddSqlEventSourcing(this IServiceCollection services)
@@ -71,19 +101,12 @@ namespace DevPortal.Web.AppCode.EventSourcing
             AddInMemoryEventSourcing(services);
         }
 
-
-
-        public static void RegisterHandlers(this IEventDispatcher eventDispatcher)
-        {
-            foreach (var denormalizer in AllDenormalizers)
-            {
-                eventDispatcher.RegisterHandler(denormalizer);
-            }
-        }
-
         public static IEnumerable<Type> AllDenormalizers => Assembly.GetAssembly(typeof(NewsItemDenormalizer))
-                .GetExportedTypes()
-                .Where(t => t.Name.EndsWith("Denormalizer"));
+            .GetExportedTypes()
+            .Where(t => t.Name.EndsWith("Denormalizer"));
 
+        public static IEnumerable<Type> AllEvents => Assembly.GetAssembly(typeof(NewsItemCreated))
+            .GetExportedTypes()
+            .Where(e => typeof(DomainEvent).IsAssignableFrom(e));
     }
 }

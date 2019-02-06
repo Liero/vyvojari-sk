@@ -19,73 +19,56 @@ namespace DevPortal.QueryStack.Denormalizers
         IHandleMessages<BlogLinkCreated>
     {
         private readonly DbContextOptions<DevPortalDbContext> _dbContextOptions;
+        private readonly DevPortalDbContext _db;
 
-        public ActivityDenormalizer(DbContextOptions<DevPortalDbContext> dbContextOptions)
+        public ActivityDenormalizer(DevPortalDbContext queryDb)
         {
-            this._dbContextOptions = dbContextOptions;
+            _db = queryDb;
         }
 
         public async Task Handle(NewsItemPublished message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                //this introduces dependency on another view. Consider Refactoring using events
-                var newsItem = db.NewsItems.AsNoTracking().First(i => i.Id == message.NewsItemId);                   
-                await SaveActivity<NewsItem>(message.NewsItemId, newsItem.Title, newsItem.CreatedBy, message, db);
-            }
-          
+                var newsItem = await _db.NewsItems.AsNoTracking().FirstAsync(i => i.Id == message.NewsItemId);                   
+                AddActivity<NewsItem>(message.NewsItemId, newsItem.Title, newsItem.CreatedBy, message);
         }
-
 
         public async Task Handle(NewsItemCommented message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
                 //this introduces dependency on another view. Consider Refactoring using events
-                var newsItem = db.NewsItems.AsNoTracking().First(i => i.Id == message.NewsItemId);
-                await SaveActivity<NewsItem>(message.NewsItemId, newsItem.Title, message.UserName, message, db,
+            var newsItem = await _db.NewsItems.AsNoTracking().FirstAsync(i => i.Id == message.NewsItemId);
+
+            AddActivity<NewsItem>(message.NewsItemId, newsItem.Title, message.UserName, message,
                     fragment: message.CommentId);
-            }
         }
 
-        public async Task Handle(ForumThreadCreated message)
+        public Task Handle(ForumThreadCreated message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                await SaveActivity<ForumThread>(message.ForumThreadId, message.Title, message.AuthorUserName, message, db);
-            }
+            AddActivity<ForumThread>(message.ForumThreadId, message.Title, message.AuthorUserName, message);
+            return Task.CompletedTask;
         }
 
         public async Task Handle(ForumItemPosted message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                //this introduces dependency on another view. Consider Refactoring using events
-                var thread = db.ForumThreads.AsNoTracking().First(i => i.Id == message.ForumThreadId);
-                await SaveActivity<ForumThread>(message.ForumThreadId, thread.Title, message.AuthorUserName, message, db,
-                    fragment: message.ForumItemId);
-            }
+            var thread = await _db.ForumThreads.AsNoTracking().FirstAsync(i => i.Id == message.ForumThreadId);
+            AddActivity<ForumThread>(message.ForumThreadId, thread.Title, message.AuthorUserName, message, 
+                fragment: message.ForumItemId);
         }
 
-        public async Task Handle(BlogLinkCreated message)
+        public Task Handle(BlogLinkCreated message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                await SaveActivity<Blog>(message.BlogId, message.Title, message.UserName, message, db, message.Url);
-            }
+            AddActivity<Blog>(message.BlogId, message.Title, message.UserName, message, message.Url);
+            return Task.CompletedTask;
         }
 
-
-        private Task SaveActivity<TContentType>(
+        private void AddActivity<TContentType>(
             Guid contentId, 
             string title, 
             string userName, 
             DomainEvent message, 
-            DevPortalDbContext db,
             string externalUrl = null,
             Guid? fragment = null)
         {
-            db.Activities.Add(new Activity
+            _db.Activities.Add(new Activity
             {
                 ActivityId = message.Id,
                 ContentId = contentId,
@@ -97,7 +80,6 @@ namespace DevPortal.QueryStack.Denormalizers
                 UserName = userName,
                 ExternalUrl = externalUrl,
             });
-            return db.SaveChangesAsync();
         }
     }
 }

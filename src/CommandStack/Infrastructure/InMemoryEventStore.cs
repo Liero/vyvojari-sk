@@ -32,13 +32,19 @@ namespace DevPortal.CommandStack.Infrastructure
         /// <typeparam name="T">The type of the events to retrieve</typeparam>
         /// <param name="filter">The condition events must satisfy in order to be retrieved.</param>
         /// <returns>The events which satisfy the specified condition</returns>
-        public IEnumerable<T> Find<T>(Func<EventWrapper, bool> filter) where T : DomainEvent
+        public IEnumerable<T> Find<T>(Func<EventWrapper, bool> filter, int limit) where T : DomainEvent
         {
             lock (_events)
             {
+                var query = _events.Where(e => e.Event is T)
+                    .Where(filter);
+
+                if (limit > 0)
+                {
+                    query = query.Take(limit);
+                }
+
                 return _events
-                    .Where(e => e.EventType == typeof(T).FullName)
-                    .Where(filter)
                     .Select(e => (T)e.Event)
                     .ToArray();
             }

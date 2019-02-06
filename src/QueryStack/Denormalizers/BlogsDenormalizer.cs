@@ -13,14 +13,14 @@ namespace DevPortal.QueryStack.Denormalizers
         IHandleMessages<BlogLinkCreated>,
         IHandleMessages<BlogDeleted>
     {
-        private readonly DbContextOptions<DevPortalDbContext> _dbContextOptions;
+        private readonly DbSet<Blog> _denormalizedView;
 
-        public BlogDenormalizer(DbContextOptions<DevPortalDbContext> dbContextOptions)
+        public BlogDenormalizer(DevPortalDbContext queryModelDb)
         {
-            this._dbContextOptions = dbContextOptions;
+            this._denormalizedView = queryModelDb.Blogs;
         }
 
-        public async Task Handle(BlogLinkCreated message)
+        public Task Handle(BlogLinkCreated message)
         {
             var entity = new Blog
             {
@@ -31,37 +31,31 @@ namespace DevPortal.QueryStack.Denormalizers
                 Created = message.TimeStamp,
                 CreatedBy = message.UserName,
             };
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                db.Blogs.Add(entity);
-                await db.SaveChangesAsync();
-            }
+            _denormalizedView.Add(entity);
+
+            return Task.CompletedTask;
         }
 
         //public async Task Handle(BlogEdited message)
         //{
         //    using (var db = new DevPortalDbContext(_dbContextOptions))
         //    {
-        //        Blog entity = db.Blogs.Find(message.BlogId);
+        //        Blog entity = _db.Blogs.Find(message.BlogId);
         //        entity.Title = message.Title;
         //        entity.Content = message.Content;
         //        entity.Tags = string.Join(",", message.Tags);
         //        entity.LastModified = message.TimeStamp;
         //        entity.LastModifiedBy = message.EditorUserName;
-        //        await db.SaveChangesAsync();
+        //        await _db.SaveChangesAsync();
         //    }
         //}
 
-        public async Task Handle(BlogDeleted message)
+        public Task Handle(BlogDeleted message)
         {
-            using (var db = new DevPortalDbContext(_dbContextOptions))
-            {
-                var entity = new Blog { Id = message.BlogId };
-                db.Blogs.Attach(entity);
-                db.Blogs.Remove(entity);
-                await db.SaveChangesAsync();
-            }
+            var entity = new Blog { Id = message.BlogId };
+            _denormalizedView.Attach(entity);
+            _denormalizedView.Remove(entity);
+            return Task.CompletedTask;
         }
-
     }
 }

@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,48 +16,15 @@ namespace DevPortal.CommandStack.Infrastructure
     /// </summary>
     public class EventWrapper
     {     
-        public Guid Id { get; set; }
-        public DateTime TimeStamp { get; set; }
-        public Guid? ForumThreadId { get; set; }
-        public Guid? BlogId { get; set; }
-        public Guid? NewsItemId { get; set; }
-        public string EventType { get; set; }
-        internal string SerializedEvent { get; set; }
-
-        private DomainEvent _event;
-        public DomainEvent Event
-        {
-            get
-            {
-                if (_event == null && SerializedEvent != null)
-                {
-                    Type eventType = Type.GetType(SerializedEvent);
-                    _event = (DomainEvent)JsonConvert.DeserializeObject(SerializedEvent, Type.GetType(EventType));
-                }
-                return _event;
-            }
-            set
-            {
-                _event = value;
-                SerializedEvent = JsonConvert.SerializeObject(value);
-                EventType = value.GetType().FullName;
-                Id = Event.Id;
-                TimeStamp = Event.TimeStamp;
-
-                var wrapperProps = this.GetType().GetProperties().ToDictionary(p => p.Name);
-
-                foreach (var prop in value.GetType().GetProperties())
-                {
-                    if (wrapperProps.TryGetValue(prop.Name, out PropertyInfo wrapperProp)
-                        && wrapperProp.PropertyType.IsAssignableFrom(prop.PropertyType))
-                    {
-                        wrapperProp.SetValue(this, prop.GetValue(value));
-                    }
-                }
-                this.Id = value.Id;
-                this.TimeStamp = value.TimeStamp;
-            }
-        }
+        public Guid Id { get; internal set; }
+        public long EventNumber { get; private set; }
+        public DateTime TimeStamp { get; internal set; }
+        public Guid? ForumThreadId { get; internal set; }
+        public Guid? BlogId { get; internal set; }
+        public Guid? NewsItemId { get; internal set; }
+        public string EventType { get; internal set; }
+        public string SerializedEvent { get; internal set; }
+        public DomainEvent Event { get; internal set; }
     }
 
     /// <summary>
@@ -81,6 +49,9 @@ namespace DevPortal.CommandStack.Infrastructure
             {
                 entity.HasKey(e => e.Id);
 
+                entity.Property(e => e.EventNumber).ValueGeneratedOnAdd();
+                entity.HasAlternateKey(e => e.EventNumber).ForSqlServerIsClustered();
+
                 entity.Property(e => e.EventType).IsRequired();
                 entity.HasIndex(e => e.EventType);
 
@@ -104,36 +75,92 @@ namespace DevPortal.CommandStack.Infrastructure
     public class SqlEventStore : IEventStore, IDisposable
     {
         private readonly IEventDispatcher _eventDispatcher;
+        private readonly Type[] _registeredEvents;
         private readonly EventsDbContext _dbContext;
 
-        public SqlEventStore(IEventDispatcher eventDispatcher, DbContextOptions<EventsDbContext> dbContextOptions)
+        public SqlEventStore(
+            IEventDispatcher eventDispatcher,
+            DbContextOptions<EventsDbContext> dbContextOptions,
+            Type[] registeredEvents)
         {
             _eventDispatcher = eventDispatcher;
             _dbContext = new EventsDbContext(dbContextOptions);
+            _registeredEvents = registeredEvents;
         }
 
-        public IEnumerable<T> Find<T>(Func<EventWrapper, bool> filter) where T : DomainEvent
+        public event EventHandler<DomainEvent> EventSaved;
+
+        public IEnumerable<T> Find<T>(Func<EventWrapper, bool> filter, int limit) where T : DomainEvent
         {
-            var eventTypeName = typeof(T).FullName;
-            return _dbContext.Events.AsNoTracking()
-                .Where(wrapper => wrapper.EventType == eventTypeName)
-                .AsEnumerable()
-                .Select(t => (T)t.Event);
+            var possibleEventTypes = _registeredEvents.Where(e => typeof(T).IsAssignableFrom(e))
+                .Select(e => e.Name)
+                .ToArray();
+
+            IQueryable<EventWrapper> query = _dbContext.Events.AsNoTracking()
+                .Where(wrapper => possibleEventTypes.Contains(wrapper.EventType))
+                .OrderBy(wrapper => wrapper.TimeStamp);
+
+            if (limit > 0) query = query.Take(limit);
+            foreach (var eventWrapper in query)
+            {
+                var eventType = _registeredEvents.FirstOrDefault(e => e.Name == eventWrapper.EventType);
+                var eventInstance = JsonConvert.DeserializeObject(eventWrapper.SerializedEvent, eventType);
+                yield return (T)eventInstance;
+            };
         }
 
         public void Save(DomainEvent @event)
         {
-            var wrapper = new EventWrapper();
+            var wrapper = new EventWrapper
+            {
+                Id = @event.Id,
+                EventType = @event.GetType().Name,
+                TimeStamp = @event.TimeStamp
+            };
+
+            wrapper.SerializedEvent = JsonConvert.SerializeObject(@event);
             wrapper.Event = @event;
+
+            MapEventPropertiesToWrapperProperties(@event, wrapper);
+
             _dbContext.Events.Add(wrapper);
             _dbContext.SaveChanges();
+            EventSaved?.Invoke(this, @event);
             _eventDispatcher.Dispatch(@event).Wait(); //todo: deal better with eventual inconsistency
         }
-
 
         public void Dispose()
         {
             _dbContext.Dispose();
         }
+
+        /// <summary>
+        /// EventWrapper can contain additional properties, that are used for filtering.
+        /// </summary>
+        protected virtual void MapEventPropertiesToWrapperProperties(DomainEvent @event, EventWrapper wrapper)
+        {
+            var mappedProperties = from wrapperProp in wrapper.GetType().GetProperties()
+                                   join eventProp in @event.GetType().GetProperties() on wrapperProp.Name equals eventProp.Name
+                                   where wrapperProp.PropertyType.IsAssignableFrom(eventProp.PropertyType)
+                                   select new { wrapperProp, eventProp };
+
+            foreach (var propPair in mappedProperties)
+            {
+                var value = propPair.eventProp.GetValue(@event);
+                propPair.wrapperProp.SetValue(wrapper, value);
+            }
+        }
+
+        static IEnumerable<Type> SelfAndBaseTypes(Type type)
+        {
+            do
+            {
+                yield return type;
+                type = type.BaseType;
+            }
+            while (type != null);
+        }
+
+  
     }
 }

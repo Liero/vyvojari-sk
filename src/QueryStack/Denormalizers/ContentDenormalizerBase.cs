@@ -1,5 +1,6 @@
 ﻿using DevPortal.CommandStack.Events;
 using DevPortal.QueryStack.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,13 @@ namespace DevPortal.QueryStack.Denormalizers
 {
     public abstract class ContentDenormalizerBase<TReadModel> where TReadModel : GenericContent, new()
     {
+        protected DbSet<TReadModel> DenormalizedView { get; }
+        public ContentDenormalizerBase(DevPortalDbContext queryModelDb)
+        {
+            DenormalizedView = queryModelDb.Set<TReadModel>();
+        }
+
+
         public TReadModel MapCreated(IContentCreated message)
         {
             TReadModel entity = new TReadModel

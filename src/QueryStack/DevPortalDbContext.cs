@@ -16,6 +16,7 @@ namespace DevPortal.QueryStack
         {
         }
 
+        public DbSet<DenormalizerState> Denormalizers { get; set; }
         public DbSet<NewsItem> NewsItems { get; set; }
         public DbSet<ForumThread> ForumThreads { get; set; }
         public DbSet<ForumPost> ForumPosts { get; set; }
@@ -31,6 +32,12 @@ namespace DevPortal.QueryStack
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.AddDateTimeUtcConversion();
+
+            modelBuilder.Entity<DenormalizerState>(entity =>
+            {
+                entity.HasKey(e => e.TypeName);
+                entity.Property(e => e.TypeName).HasMaxLength(255).IsRequired();
+            });
 
             modelBuilder.Entity<ContentBase>(entity => {
                 entity.ToTable("ContentBase");

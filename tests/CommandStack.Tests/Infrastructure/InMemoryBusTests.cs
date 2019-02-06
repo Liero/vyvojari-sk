@@ -36,7 +36,7 @@ namespace DevPortal.CommandStack.Infrastructure
             };
 
             InMemoryBus eventDispatcher = new InMemoryBus(t => handler);
-            eventDispatcher.RegisterHandler<EventHandlerStub>();
+            eventDispatcher.RegisterHandler(typeof(EventHandlerStub));
             
 
             //action

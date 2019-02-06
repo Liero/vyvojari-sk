@@ -8,6 +8,7 @@ using DevPortal.Web.AppCode.EventSourcing;
 using DevPortal.QueryStack.Denormalizers;
 using Rebus.Handlers;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,11 +18,13 @@ namespace DevPortal.Web.Controllers
     {
         private readonly IEventStore _eventStore;
         private readonly IHandlerNotifications _handlerNotifications;
-
-        public SampleDataController(IEventStore eventStore, IHandlerNotifications notifications)
+        private readonly ILogger _logger;
+        int counter;
+        public SampleDataController(IEventStore eventStore, IHandlerNotifications notifications, ILoggerFactory logger)
         {
             _eventStore = eventStore;
             _handlerNotifications = notifications;
+            _logger = logger.CreateLogger("SampleDataController");
         }
 
         [HttpGet]
@@ -34,9 +37,10 @@ namespace DevPortal.Web.Controllers
         public async Task<IActionResult> All()
         {
             var sampleData = new DesignTimeData.SampleEventsGenerator();
-            int counter = 0;
+            counter = 0;
             foreach (var evt in sampleData.News(10))
             {
+
                 await SaveAndWait(evt);
                 counter++;
             }
@@ -65,10 +69,14 @@ namespace DevPortal.Web.Controllers
             {
                 Stopwatch sw = Stopwatch.StartNew();
 
+                _logger.LogInformation($"Counter: {counter}\tSaving {evt.GetType().Name} ID {evt.Id}");
                 _eventStore.Save(evt);
+                _logger.LogInformation($"Counter: {counter}\tSaved {evt.GetType().Name} ID {evt.Id}");
 
                 foreach (var listener in listeners)
                 {
+                    _logger.LogInformation($"Counter: {counter}\tWaiting for {evt.GetType().Name} ID {evt.Id}");
+
                     await listener.Wait();
                 }
 

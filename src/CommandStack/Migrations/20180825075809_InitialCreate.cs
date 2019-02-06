@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DevPortal.CommandStack.Migrations
 {
@@ -13,16 +13,20 @@ namespace DevPortal.CommandStack.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    BlogId = table.Column<Guid>(nullable: true),
-                    EventType = table.Column<string>(nullable: false),
+                    EventNumber = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    TimeStamp = table.Column<DateTime>(nullable: false),
                     ForumThreadId = table.Column<Guid>(nullable: true),
+                    BlogId = table.Column<Guid>(nullable: true),
                     NewsItemId = table.Column<Guid>(nullable: true),
-                    SerializedEvent = table.Column<string>(nullable: false),
-                    TimeStamp = table.Column<DateTime>(nullable: false)
+                    EventType = table.Column<string>(nullable: false),
+                    SerializedEvent = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Events", x => x.Id);
+                    table.UniqueConstraint("AK_Events_EventNumber", x => x.EventNumber)
+                        .Annotation("SqlServer:Clustered", true);
                 });
 
             migrationBuilder.CreateIndex(

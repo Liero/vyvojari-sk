@@ -15,7 +15,7 @@ namespace DevPortal.QueryStack.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.2-rtm-30932")
+                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -72,6 +72,21 @@ namespace DevPortal.QueryStack.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("ContentBase");
                 });
 
+            modelBuilder.Entity("DevPortal.QueryStack.Model.DenormalizerState", b =>
+                {
+                    b.Property<string>("TypeName")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(255);
+
+                    b.Property<Guid>("EventId");
+
+                    b.Property<DateTime>("Timestamp");
+
+                    b.HasKey("TypeName");
+
+                    b.ToTable("Denormalizers");
+                });
+
             modelBuilder.Entity("DevPortal.QueryStack.Model.Tag", b =>
                 {
                     b.Property<Guid>("ContentId");
@@ -83,25 +98,43 @@ namespace DevPortal.QueryStack.Migrations
                     b.ToTable("Tags");
                 });
 
+            modelBuilder.Entity("DevPortal.QueryStack.Model.ChildContent", b =>
+                {
+                    b.HasBaseType("DevPortal.QueryStack.Model.ContentBase");
+
+                    b.HasDiscriminator().HasValue("ChildContent");
+                });
+
             modelBuilder.Entity("DevPortal.QueryStack.Model.GenericContent", b =>
                 {
                     b.HasBaseType("DevPortal.QueryStack.Model.ContentBase");
 
                     b.Property<string>("Title");
 
-                    b.ToTable("GenericContent");
-
                     b.HasDiscriminator().HasValue("GenericContent");
                 });
 
-            modelBuilder.Entity("DevPortal.QueryStack.Model.ChildContent", b =>
+            modelBuilder.Entity("DevPortal.QueryStack.Model.ForumPost", b =>
                 {
-                    b.HasBaseType("DevPortal.QueryStack.Model.ContentBase");
+                    b.HasBaseType("DevPortal.QueryStack.Model.ChildContent");
 
+                    b.Property<Guid?>("RootId");
 
-                    b.ToTable("ChildContent");
+                    b.HasIndex("RootId");
 
-                    b.HasDiscriminator().HasValue("ChildContent");
+                    b.HasDiscriminator().HasValue("ForumPost");
+                });
+
+            modelBuilder.Entity("DevPortal.QueryStack.Model.NewsItemComment", b =>
+                {
+                    b.HasBaseType("DevPortal.QueryStack.Model.ChildContent");
+
+                    b.Property<Guid?>("RootId")
+                        .HasColumnName("NewsItemComment_RootId");
+
+                    b.HasIndex("RootId");
+
+                    b.HasDiscriminator().HasValue("NewsItemComment");
                 });
 
             modelBuilder.Entity("DevPortal.QueryStack.Model.Blog", b =>
@@ -111,8 +144,6 @@ namespace DevPortal.QueryStack.Migrations
                     b.Property<string>("Description");
 
                     b.Property<string>("ExternalUrl");
-
-                    b.ToTable("Blog");
 
                     b.HasDiscriminator().HasValue("Blog");
                 });
@@ -129,8 +160,6 @@ namespace DevPortal.QueryStack.Migrations
 
                     b.Property<int>("PostsCount");
 
-                    b.ToTable("ForumThread");
-
                     b.HasDiscriminator().HasValue("ForumThread");
                 });
 
@@ -144,36 +173,7 @@ namespace DevPortal.QueryStack.Migrations
 
                     b.Property<DateTime>("Published");
 
-                    b.ToTable("NewsItem");
-
                     b.HasDiscriminator().HasValue("NewsItem");
-                });
-
-            modelBuilder.Entity("DevPortal.QueryStack.Model.ForumPost", b =>
-                {
-                    b.HasBaseType("DevPortal.QueryStack.Model.ChildContent");
-
-                    b.Property<Guid?>("RootId");
-
-                    b.HasIndex("RootId");
-
-                    b.ToTable("ForumPost");
-
-                    b.HasDiscriminator().HasValue("ForumPost");
-                });
-
-            modelBuilder.Entity("DevPortal.QueryStack.Model.NewsItemComment", b =>
-                {
-                    b.HasBaseType("DevPortal.QueryStack.Model.ChildContent");
-
-                    b.Property<Guid?>("RootId")
-                        .HasColumnName("NewsItemComment_RootId");
-
-                    b.HasIndex("RootId");
-
-                    b.ToTable("NewsItemComment");
-
-                    b.HasDiscriminator().HasValue("NewsItemComment");
                 });
 
             modelBuilder.Entity("DevPortal.QueryStack.Model.Tag", b =>

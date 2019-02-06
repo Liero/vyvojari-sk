@@ -67,12 +67,23 @@ If no invokers were found, a RebusApplicationException is thrown.")]
             int index = 0;
             foreach (var invoker in invokers)
             {
-                await invoker.Invoke().ConfigureAwait(false);
-                handlersInvoked++;
-                if (message.Body is DomainEvent evt)
+                try
                 {
-                    _eventListener.SetHandled(invoker.Handler.GetType(), evt.Id);
+                    await invoker.Invoke().ConfigureAwait(false);
+                    handlersInvoked++;
                 }
+                catch(Exception ex)
+                {
+                    throw;
+                }
+                finally
+                {
+                    if (message.Body is DomainEvent evt)
+                    {
+                        _eventListener.SetHandled(invoker.Handler.GetType(), evt.Id);
+                    }
+                }
+               
                 // if dispatch was aborted at this point, bail out
                 if (context.Load<bool>(AbortDispatchContextKey))
                 {
