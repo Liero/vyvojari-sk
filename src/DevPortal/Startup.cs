@@ -119,7 +119,7 @@ namespace DevPortal.Web
             }
             app.UseHttpsRedirection();
 
-            app.UseRebus();
+            app.UseRebusEventSourcing();
 
             AddAuthentication(app);
             app.UseMvcWithDefaultRoute();
