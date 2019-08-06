@@ -46,10 +46,13 @@ namespace DevPortal.Web.AppCode.Startup
                     }, "admin");
                     if (!userResult.Succeeded)
                     {
-                        logger.LogError("Cannot create default admin user");
+                        logger.LogError("Cannot create default admin user. Errors: \n{0}", string.Join('\n', userResult.Errors.Select(e => $"\t{e.Code}: {e.Description}")));
                     }
-                    var user = await UserManager.FindByNameAsync(rootUserName);
-                    await UserManager.AddToRoleAsync(user, Roles.Admin);
+                    else
+                    {
+                        var user = await UserManager.FindByNameAsync(rootUserName);
+                        await UserManager.AddToRoleAsync(user, Roles.Admin);
+                    }
                 }
             }
         }
