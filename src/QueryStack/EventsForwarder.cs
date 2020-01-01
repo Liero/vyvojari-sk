@@ -1,7 +1,10 @@
 ﻿using DevPortal.CommandStack.Infrastructure;
 using DevPortal.QueryStack.Model;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,21 +18,22 @@ namespace DevPortal.QueryStack
     {
         private static object locker = new object();
         private static bool _isRunning = false;
-        public Type DenormalizerType { get; }
+
+        public string ForwarderKey { get; }
+        public Type[] DenormalizerTypes { get; }
         DateTime _lastStarted;
-        private readonly Func<DevPortalDbContext> _dbContextFactory;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventStore _eventStore;
         private DenormalizerState _denormalizerState;
 
         public EventsForwarder(
-             Func<DevPortalDbContext> dbContextFactory,
-             Type denormalizerType,
+             string denormalizerKey,
+             Type[] denormalizerTypes,
              IServiceProvider serviceProvider,
              IEventStore eventStore)
         {
-            _dbContextFactory = dbContextFactory;
-            DenormalizerType = denormalizerType;
+            ForwarderKey = denormalizerKey;
+            DenormalizerTypes = denormalizerTypes;
             _serviceProvider = serviceProvider;
             _eventStore = eventStore;
         }
@@ -38,7 +42,7 @@ namespace DevPortal.QueryStack
         /// Start forwarding new events stored in database until all events are forwarded and then stops. 
         /// After that, Start method has to be called again in order to forward newer events
         /// </summary>
-        public async void Start()
+        public async Task Start()
         {
             lock (locker)
             {
@@ -51,80 +55,85 @@ namespace DevPortal.QueryStack
 
         protected async Task ForwardEvents()
         {
-            while (true)
+            var sw = new Stopwatch();
+            while (_isRunning)
             {
-                var newEvents = await GetNewEvents();
+                sw.Restart();
+                var newEvents = (await GetNewEvents()).ToArray();
+
+                foreach (var newEvent in newEvents)
+                {
+                    await ForwardEvent(newEvent);
+                }
 
                 lock (locker)
                 {
-                    if (!newEvents.Any() && _lastStarted < DateTime.UtcNow)
+                    if (newEvents.Length > 0)
+                    {
+                        Console.WriteLine($"Processed {newEvents.Length} events in {sw.ElapsedMilliseconds / 1000d}: {newEvents.Length * 1000d / sw.ElapsedMilliseconds} events/sec");
+                    }
+                    else if (_lastStarted < DateTime.UtcNow)
                     {
                         _isRunning = false;
                         break;
                     }
                 }
-
-                foreach (var newEvent in newEvents)
-                {
-                    await InvokeDenormaizer(newEvent);         
-                }
             }
         }
 
-        protected async Task InvokeDenormaizer(DomainEvent evt)
+        protected async Task ForwardEvent(EventWrapper wrapper)
         {
-            //invoke denormalizer and update denormalizer state in the same UoW
-            using (var dbContext = _dbContextFactory())
+            using (var scope = _serviceProvider.CreateScope())
             {
-                DenormalizerInvoker invoker = new DenormalizerInvoker(
-                    DenormalizerType,
-                    _serviceProvider,
-                    dbContext);
-                var handlerInvoked = await invoker.Invoke(evt);
-                if (handlerInvoked)
+                using (var dbContext = scope.ServiceProvider.GetRequiredService<DevPortalDbContext>())
                 {
-                    UpdateState(evt, dbContext);
+                    //invoke all denormalizers and update denormalizer state in the same UoW
+                    foreach (var denormalizerType in DenormalizerTypes)
+                    {
+                        //todo: performanceImproovements: cache handlerInvoked for each event type to avoid too many DenormalizerInvoker instaces being created
+                        var invoker = new DenormalizerInvoker(denormalizerType, scope.ServiceProvider);
+                        bool handlerInvoked = await invoker.Invoke(wrapper.Event);
+                    }
+                    UpdateState(wrapper, dbContext);
+                    await dbContext.SaveChangesAsync();
                 }
-                await dbContext.SaveChangesAsync();
             }
         }
 
 
-        public async Task<IEnumerable<DomainEvent>> GetNewEvents()
+
+        public async Task<IEnumerable<EventWrapper>> GetNewEvents()
         {
-            var state = await GetState();
-            var events = _eventStore.Find<DomainEvent>(e => e.TimeStamp >= state.Timestamp, 10)
-                .SkipWhile(e => e.TimeStamp <= state.Timestamp && e.Id != state.EventId)
-                .Where(e => e.Id != state.EventId);
+            await InitializeState();
+            var events = _eventStore.Find<DomainEvent>(e => e.EventNumber > _denormalizerState.EventNumber, 100);
             return events;
         }
 
 
-        public async Task<DenormalizerState> GetState()
+        public async Task InitializeState()
         {
-            if (_denormalizerState != null) return _denormalizerState;
-            using (var dbContext = _dbContextFactory())
+            using (var dbContext = ActivatorUtilities.CreateInstance<DevPortalDbContext>(_serviceProvider))
             {
-                _denormalizerState = await dbContext.Denormalizers.FindAsync(DenormalizerType.Name);
+                _denormalizerState = await dbContext.Denormalizers.FindAsync(ForwarderKey);
                 if (_denormalizerState == null)
                 {
                     _denormalizerState = new DenormalizerState
                     {
-                        TypeName = DenormalizerType.Name,
+                        Key = ForwarderKey,
                     };
                     dbContext.Add(_denormalizerState);
                     await dbContext.SaveChangesAsync();
-                };
+                }
             }
-            return _denormalizerState;
         }
 
 
-        private void UpdateState(DomainEvent evt, DevPortalDbContext dbContext)
+        private void UpdateState(EventWrapper evtWrapper, DevPortalDbContext dbContext)
         {
-            dbContext.Attach(_denormalizerState);
-            _denormalizerState.EventId = evt.Id;
-            _denormalizerState.Timestamp = evt.TimeStamp;
+            var state = this._denormalizerState;
+            dbContext.Attach(state);
+            state.EventNumber = evtWrapper.EventNumber;
+            state.Timestamp = evtWrapper.TimeStamp;
         }
 
     }

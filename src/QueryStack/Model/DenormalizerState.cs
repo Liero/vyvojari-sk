@@ -6,8 +6,8 @@ namespace DevPortal.QueryStack.Model
 {
     public class DenormalizerState
     {
-        public string TypeName { get; set; }
-        public Guid EventId { get; set; }
+        public string Key { get; set; }
+        public long EventNumber { get; set; }
         public DateTime Timestamp { get; set; }
     }
 }

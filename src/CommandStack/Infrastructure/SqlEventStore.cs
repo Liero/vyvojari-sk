@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
@@ -90,22 +91,23 @@ namespace DevPortal.CommandStack.Infrastructure
 
         public event EventHandler<DomainEvent> EventSaved;
 
-        public IEnumerable<T> Find<T>(Func<EventWrapper, bool> filter, int limit) where T : DomainEvent
+        public IEnumerable<EventWrapper> Find<T>(Expression<Func<EventWrapper, bool>> filter, int limit) where T : DomainEvent
         {
             var possibleEventTypes = _registeredEvents.Where(e => typeof(T).IsAssignableFrom(e))
                 .Select(e => e.Name)
                 .ToArray();
 
             IQueryable<EventWrapper> query = _dbContext.Events.AsNoTracking()
+                .Where(filter)
                 .Where(wrapper => possibleEventTypes.Contains(wrapper.EventType))
-                .OrderBy(wrapper => wrapper.TimeStamp);
+                .OrderBy(wrapper => wrapper.EventNumber);
 
             if (limit > 0) query = query.Take(limit);
             foreach (var eventWrapper in query)
             {
                 var eventType = _registeredEvents.FirstOrDefault(e => e.Name == eventWrapper.EventType);
-                var eventInstance = JsonConvert.DeserializeObject(eventWrapper.SerializedEvent, eventType);
-                yield return (T)eventInstance;
+                eventWrapper.Event = (T)JsonConvert.DeserializeObject(eventWrapper.SerializedEvent, eventType);
+                yield return eventWrapper;
             };
         }
 
@@ -125,6 +127,7 @@ namespace DevPortal.CommandStack.Infrastructure
 
             _dbContext.Events.Add(wrapper);
             _dbContext.SaveChanges();
+            _dbContext.Entry(wrapper).State = EntityState.Detached;
             EventSaved?.Invoke(this, @event);
             _eventDispatcher.Dispatch(@event).Wait(); //todo: deal better with eventual inconsistency
         }

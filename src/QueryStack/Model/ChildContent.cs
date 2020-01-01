@@ -7,6 +7,7 @@ namespace DevPortal.QueryStack.Model
 {
     public abstract class ChildContent : ContentBase
     {
+        public Guid RootId { get; set; }
         public GenericContent Root { get; set; }
     }
 

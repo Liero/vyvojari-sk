@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevPortal.QueryStack.Migrations
 {
     [DbContext(typeof(DevPortalDbContext))]
-    [Migration("20180913111048_DevPortalInitialCreate")]
+    [Migration("20200101080722_DevPortalInitialCreate")]
     partial class DevPortalInitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
+                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -76,15 +76,15 @@ namespace DevPortal.QueryStack.Migrations
 
             modelBuilder.Entity("DevPortal.QueryStack.Model.DenormalizerState", b =>
                 {
-                    b.Property<string>("TypeName")
+                    b.Property<string>("Key")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(255);
 
-                    b.Property<Guid>("EventId");
+                    b.Property<long>("EventNumber");
 
                     b.Property<DateTime>("Timestamp");
 
-                    b.HasKey("TypeName");
+                    b.HasKey("Key");
 
                     b.ToTable("Denormalizers");
                 });
@@ -104,6 +104,8 @@ namespace DevPortal.QueryStack.Migrations
                 {
                     b.HasBaseType("DevPortal.QueryStack.Model.ContentBase");
 
+                    b.Property<Guid>("RootId");
+
                     b.HasDiscriminator().HasValue("ChildContent");
                 });
 
@@ -120,8 +122,6 @@ namespace DevPortal.QueryStack.Migrations
                 {
                     b.HasBaseType("DevPortal.QueryStack.Model.ChildContent");
 
-                    b.Property<Guid?>("RootId");
-
                     b.HasIndex("RootId");
 
                     b.HasDiscriminator().HasValue("ForumPost");
@@ -130,9 +130,6 @@ namespace DevPortal.QueryStack.Migrations
             modelBuilder.Entity("DevPortal.QueryStack.Model.NewsItemComment", b =>
                 {
                     b.HasBaseType("DevPortal.QueryStack.Model.ChildContent");
-
-                    b.Property<Guid?>("RootId")
-                        .HasColumnName("NewsItemComment_RootId");
 
                     b.HasIndex("RootId");
 
@@ -160,7 +157,8 @@ namespace DevPortal.QueryStack.Migrations
 
                     b.Property<string>("ParticipantsCsv");
 
-                    b.Property<int>("PostsCount");
+                    b.Property<int>("PostsCount")
+                        .HasColumnName("ChildrenCount");
 
                     b.HasDiscriminator().HasValue("ForumThread");
                 });
@@ -169,7 +167,8 @@ namespace DevPortal.QueryStack.Migrations
                 {
                     b.HasBaseType("DevPortal.QueryStack.Model.GenericContent");
 
-                    b.Property<int>("CommentsCount");
+                    b.Property<int>("CommentsCount")
+                        .HasColumnName("ChildrenCount");
 
                     b.Property<bool>("IsPublished");
 
@@ -190,14 +189,16 @@ namespace DevPortal.QueryStack.Migrations
                 {
                     b.HasOne("DevPortal.QueryStack.Model.ForumThread", "Root")
                         .WithMany("Posts")
-                        .HasForeignKey("RootId");
+                        .HasForeignKey("RootId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("DevPortal.QueryStack.Model.NewsItemComment", b =>
                 {
                     b.HasOne("DevPortal.QueryStack.Model.NewsItem", "Root")
                         .WithMany("Comments")
-                        .HasForeignKey("RootId");
+                        .HasForeignKey("RootId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

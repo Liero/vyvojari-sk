@@ -38,17 +38,15 @@ namespace DevPortal.QueryStack.Migrations
                     LastModifiedBy = table.Column<string>(nullable: true),
                     Discriminator = table.Column<string>(nullable: false),
                     RootId = table.Column<Guid>(nullable: true),
-                    NewsItemComment_RootId = table.Column<Guid>(nullable: true),
                     Title = table.Column<string>(nullable: true),
                     ExternalUrl = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     LastPosted = table.Column<DateTime>(nullable: true),
                     LastPostedBy = table.Column<string>(nullable: true),
-                    PostsCount = table.Column<int>(nullable: true),
+                    ChildrenCount = table.Column<int>(nullable: true),
                     ParticipantsCsv = table.Column<string>(nullable: true),
                     Published = table.Column<DateTime>(nullable: true),
-                    IsPublished = table.Column<bool>(nullable: true),
-                    CommentsCount = table.Column<int>(nullable: true)
+                    IsPublished = table.Column<bool>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -59,25 +57,19 @@ namespace DevPortal.QueryStack.Migrations
                         principalTable: "ContentBase",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ContentBase_ContentBase_NewsItemComment_RootId",
-                        column: x => x.NewsItemComment_RootId,
-                        principalTable: "ContentBase",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Denormalizers",
                 columns: table => new
                 {
-                    TypeName = table.Column<string>(maxLength: 255, nullable: false),
-                    EventId = table.Column<Guid>(nullable: false),
+                    Key = table.Column<string>(maxLength: 255, nullable: false),
+                    EventNumber = table.Column<long>(nullable: false),
                     Timestamp = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Denormalizers", x => x.TypeName);
+                    table.PrimaryKey("PK_Denormalizers", x => x.Key);
                 });
 
             migrationBuilder.CreateTable(
@@ -102,11 +94,6 @@ namespace DevPortal.QueryStack.Migrations
                 name: "IX_ContentBase_RootId",
                 table: "ContentBase",
                 column: "RootId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ContentBase_NewsItemComment_RootId",
-                table: "ContentBase",
-                column: "NewsItemComment_RootId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

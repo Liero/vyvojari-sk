@@ -12,18 +12,15 @@ namespace DevPortal.QueryStack
 {
     public class DenormalizerInvoker
     {
-        private readonly DevPortalDbContext _dbContext;
         private readonly Type _denormalizerType;
         private readonly IServiceProvider _serviceProvider;
 
         public DenormalizerInvoker( 
             Type denormalizerType, 
-            IServiceProvider serviceProvider,
-            DevPortalDbContext dbContext)
+            IServiceProvider serviceProvider)
         {
             _denormalizerType = denormalizerType;
             _serviceProvider = serviceProvider;
-            _dbContext = dbContext;
         }
 
         public async Task<bool> Invoke(DomainEvent evt)

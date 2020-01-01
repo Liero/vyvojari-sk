@@ -18,6 +18,8 @@ namespace DevPortal.CommandStack.Infrastructure
         /// </summary>
         public Guid Id { get; set; }
 
+        public int EventNumber { get; set; }
+
         /// <summary>
         /// Get or set the time at which the event occurred
         /// </summary>

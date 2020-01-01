@@ -35,8 +35,8 @@ namespace DevPortal.QueryStack
 
             modelBuilder.Entity<DenormalizerState>(entity =>
             {
-                entity.HasKey(e => e.TypeName);
-                entity.Property(e => e.TypeName).HasMaxLength(255).IsRequired();
+                entity.HasKey(e => e.Key);
+                entity.Property(e => e.Key).HasMaxLength(255).IsRequired();
             });
 
             modelBuilder.Entity<ContentBase>(entity => {
@@ -52,19 +52,27 @@ namespace DevPortal.QueryStack
 
             modelBuilder.Entity<ChildContent>(entity =>
             {
-                entity.HasOne(e => e.Root);
+                entity.HasOne(e => e.Root)
+                .WithMany()
+                .HasForeignKey(e => e.RootId);
             });
 
             modelBuilder.Entity<NewsItem>(entity =>
             {
                 entity.HasMany(e => e.Comments)
-                    .WithOne(e => e.Root);
+                    .WithOne(e => e.Root)
+                    .HasForeignKey(e => e.RootId)
+                    .OnDelete(DeleteBehavior.Restrict);
+                entity.Property(e => e.CommentsCount).HasColumnName("ChildrenCount");
             });
 
             modelBuilder.Entity<ForumThread>(entity =>
             {
                 entity.HasMany(e => e.Posts)
-                    .WithOne(e => e.Root);
+                    .WithOne(e => e.Root)
+                    .HasForeignKey(e => e.RootId)
+                    .OnDelete(DeleteBehavior.Restrict);
+                entity.Property(e => e.PostsCount).HasColumnName("ChildrenCount");
             });
 
             modelBuilder.Entity<Tag>(entity =>
