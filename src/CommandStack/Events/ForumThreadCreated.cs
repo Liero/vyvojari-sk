@@ -12,6 +12,7 @@ namespace DevPortal.CommandStack.Events
         public string Title { get; set; }
         public string Content { get; set; }
         public string[] Tags { get; set; }
+        public int OriginalId { get; set; }
 
         Guid IContentEvt.ContentId => ForumThreadId;
     }

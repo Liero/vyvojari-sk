@@ -1,5 +1,12 @@
-﻿using HtmlAgilityPack;
+﻿using DevPortal.CommandStack.Events;
+using DevPortal.CommandStack.Infrastructure;
+using DevPortal.QueryStack;
+using DevPortal.QueryStack.Denormalizers;
+using HtmlAgilityPack;
 using HtmlAgilityPack.CssSelectors.NetCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Rebus.Handlers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,6 +14,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Migration.Crawler
@@ -65,14 +73,17 @@ namespace Migration.Crawler
 
             //}
 
-            using (var db = new OldPortalDbContext())
-            {
-                foreach (var blog in CrawlBlogs())
-                {
-                    db.Blogs.Add(blog);
-                    db.SaveChanges();
-                }
-            }
+            //using (var db = new OldPortalDbContext())
+            //{
+            //    foreach (var blog in CrawlBlogs())
+            //    {
+            //        db.Blogs.Add(blog);
+            //        db.SaveChanges();
+            //    }
+            //}
+
+            MigrateToEvents();
+
         }
 
         static IEnumerable<Blog> CrawlBlogs()
@@ -235,7 +246,40 @@ namespace Migration.Crawler
             }
         }
 
+        static void MigrateToEvents()
+        {
+            var allEvents = Assembly.GetAssembly(typeof(NewsItemCreated)).GetExportedTypes()
+              .Where(e => typeof(DomainEvent).IsAssignableFrom(e));
 
+            var allDenormalizers = Assembly.GetAssembly(typeof(NewsItemDenormalizer)).GetExportedTypes()
+                .Where(e => typeof(IHandleMessages).IsAssignableFrom(e))
+                .ToArray();
+
+            ServiceCollection services = new ServiceCollection();
+            services.AddSingleton<IEventStore, SqlEventStore>(sp => ActivatorUtilities.CreateInstance<SqlEventStore>(sp, new object[] { allEvents.ToArray() }));
+            services.AddSingleton<IEventDispatcher, FakeEventDispatcher>();
+            services.AddDbContextPool<EventsDbContext>(option =>
+            {
+                option.UseSqlServer("Server=localhost;Database=DevPortal_EventStore;Trusted_Connection=True");
+            });
+            services.AddDbContextPool<DevPortalDbContext>(option =>
+            {
+                option.UseSqlServer("Server=localhost;Database=DevPortal;Trusted_Connection=True");
+            });
+            var provider = services.BuildServiceProvider();
+
+            var eventsForwarder = new EventsForwarder(
+                denormalizerKey: "AllEvents",
+                denormalizerTypes: allDenormalizers,
+                serviceProvider: provider,
+                eventStore: provider.GetRequiredService<IEventStore>()
+                );
+
+            new OldDbToEventsMigration().MigrateForumThreads();
+            new OldDbToEventsMigration().MigrateNewsItems();
+            new OldDbToEventsMigration().MigrateBlogs();
+            eventsForwarder.Start().Wait();
+        }
 
         //static async Task Main()
         //{
