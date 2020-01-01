@@ -26,6 +26,7 @@ using DevPortal.Web.AppCode.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using DevPortal.Web.AppCode.Authorization.Handlers;
 using Microsoft.ApplicationInsights.Extensibility;
+using DevPortal.Web.AppCode.Cache;
 
 namespace DevPortal.Web
 {
@@ -66,10 +67,10 @@ namespace DevPortal.Web
             if (!string.IsNullOrEmpty(Configuration["Authentication:Facebook:AppId"]))
             {
                 authenticationBuilder.AddFacebook(options =>
-                    {
-                        options.AppId = Configuration["Authentication:Facebook:AppId"];
-                        options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-                    });
+                {
+                    options.AppId = Configuration["Authentication:Facebook:AppId"];
+                    options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                });
             }
             services.ConfigureApplicationCookie(c => c.AccessDeniedPath = null);
 
@@ -102,7 +103,7 @@ namespace DevPortal.Web
             }
             services.AddLogging();
 
-          
+            services.AddSingleton<AvatarsCache>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

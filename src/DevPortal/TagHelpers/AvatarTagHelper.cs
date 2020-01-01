@@ -1,17 +1,12 @@
-﻿using DevPortal.Web.Controllers;
+﻿using DevPortal.Web.AppCode.Cache;
+using DevPortal.Web.Controllers;
 using DevPortal.Web.Data;
-using DevPortal.Web.Models;
-using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DevPortal.Web.TagHelpers
 {
@@ -21,7 +16,7 @@ namespace DevPortal.Web.TagHelpers
     [HtmlTargetElement("avatar", Attributes = "username")]
     public class AvatarTagHelper : TagHelper
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly AvatarsCache _avatarsCache;
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IActionContextAccessor _actionContextAccesor;
         private static readonly string[] Colors = new[]{
@@ -29,11 +24,11 @@ namespace DevPortal.Web.TagHelpers
         };
 
         public AvatarTagHelper(
-            ApplicationDbContext dbContext,
+            AvatarsCache avatarsCache,
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccesor)
         {
-            _dbContext = dbContext;
+            _avatarsCache = avatarsCache;
             _urlHelperFactory = urlHelperFactory;
             _actionContextAccesor = actionContextAccesor;
         }
@@ -44,15 +39,11 @@ namespace DevPortal.Web.TagHelpers
         [HtmlAttributeName("username")]
         public string UserName { get => AvatarForUser ?? "?"; set => AvatarForUser = value; }
 
-        static Dictionary<string, string> _avatars { get; set; }
-        private readonly static object _loadingLock = new object();
-
-
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             base.Process(context, output);
 
-            var avatarUrl = GetAvatarUrl(UserName);
+            var avatarUrl = _avatarsCache.GetAvatarUrl(UserName) ?? "/media/noface.jpg";
             var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccesor.ActionContext);
 
             output.TagMode = TagMode.StartTagAndEndTag;
@@ -77,11 +68,6 @@ namespace DevPortal.Web.TagHelpers
             {
                 content.AppendLine($"<span>{UserName.Substring(0, 1).ToUpper()}</span>");
             }
-            else if (avatarUrl == null)
-            {
-                //in case there is no username and avatar url - can happed if you are logged out
-                avatarUrl =  "/media/noface.jpg";
-            }
 
             if (!string.IsNullOrEmpty(avatarUrl)) //must check in order to avoid request to current page (empty url)
             {
@@ -97,36 +83,6 @@ namespace DevPortal.Web.TagHelpers
             output.Content.SetHtmlContent(content.ToString());
             output.Attributes.Add("style", $"background:{background}");
 
-        }
-
-
-        private string GetAvatarUrl(string userName)
-        {
-            lock (_loadingLock)
-            {
-                if (_avatars == null)
-                {
-                    _avatars = _dbContext.Users.ToDictionary(u => u.UserName, u => u.AvatarUrl);
-                    
-                    if (!_avatars.TryGetValue(UserName, out string avatarUrl))
-                    {
-                        _avatars[UserName] = null;
-                    }
-                    return avatarUrl;
-                }
-                else
-                {
-                    if (!_avatars.TryGetValue(UserName, out string avatarUrl))
-                    {
-                        avatarUrl = _dbContext.Users.Where(u => u.UserName == UserName)
-                            .Select(u => u.AvatarUrl)
-                            .FirstOrDefault();
-
-                        _avatars[userName] = avatarUrl;
-                    }
-                    return avatarUrl;
-                }
-            }
         }
 
         private string GetBackgroundColor(string userName)

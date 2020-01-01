@@ -89,25 +89,27 @@
             }
 
             tbxAvatar.onchange = setAvatar;
+
+            fileInputAvatar.onchange = function () {
+                $uploadProgress.show();
+                $.ajax({
+                    type: 'POST',
+                    url: avatarForm.action,
+                    contentType: false,
+                    data: new FormData(avatarForm),
+                    processData: false,
+                    success: function (response) {
+                        tbxAvatar.value = response;
+                        setAvatar();
+                    },
+                    complete: function (error) {
+                        $uploadProgress.hide();
+                    }
+                });
+            }
+
             $('#btnUploadAvatar').click(function (e) {
                 fileInputAvatar.click();
-                fileInputAvatar.onchange = function () {
-                    $uploadProgress.show();
-                    $.ajax({
-                        type: 'POST',
-                        url: avatarForm.action,
-                        contentType: false,
-                        data: new FormData(avatarForm),
-                        processData: false,
-                        success: function (response) {
-                            tbxAvatar.value = response;
-                            setAvatar();
-                        },
-                        complete: function (error) {
-                            $uploadProgress.hide();
-                        }
-                    });
-                }
             });
 
 

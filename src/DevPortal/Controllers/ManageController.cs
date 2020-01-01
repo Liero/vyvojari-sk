@@ -16,6 +16,7 @@ using DevPortal.Web.Services;
 using DevPortal.Web.AppCode.Extensions;
 using DevPortal.CommandStack.Infrastructure;
 using DevPortal.CommandStack.Events;
+using DevPortal.Web.AppCode.Cache;
 
 namespace DevPortal.Web.Controllers
 {
@@ -25,7 +26,8 @@ namespace DevPortal.Web.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEventStore eventStore;
+        private readonly IEventStore _eventStore;
+        private readonly AvatarsCache _avatarsCache;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly UrlEncoder _urlEncoder;
@@ -34,6 +36,7 @@ namespace DevPortal.Web.Controllers
 
         public ManageController(
           IEventStore eventStore,
+          AvatarsCache avatarsCache,
           UserManager<ApplicationUser> userManager,
           SignInManager<ApplicationUser> signInManager,
           IEmailSender emailSender,
@@ -42,7 +45,8 @@ namespace DevPortal.Web.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            this.eventStore = eventStore;
+            _eventStore = eventStore;
+            _avatarsCache = avatarsCache;
             _emailSender = emailSender;
             _logger = logger;
             _urlEncoder = urlEncoder;
@@ -115,11 +119,12 @@ namespace DevPortal.Web.Controllers
             if (model.AvatarUrl != user.AvatarUrl)
             {
                 user.AvatarUrl = model.AvatarUrl;
-                eventStore.Save(new AvatarChanged
+                _eventStore.Save(new AvatarChanged
                 {
                     Url = model.AvatarUrl,
                     UserName = User.Identity.Name
                 });
+                _avatarsCache.Reset();
                 profileChanged = true;
             }
 
