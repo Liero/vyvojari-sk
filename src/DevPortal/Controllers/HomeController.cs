@@ -31,7 +31,7 @@ namespace DevPortal.Web.Controllers
             {
                 LatestNews = await _dbContext.NewsItems
                     .AsNoTracking()
-                    .OrderByDescending(i => i.CreatedBy)
+                    .OrderByDescending(i => i.Created)
                     .Take(10).ToListAsync(),
 
                 LatestForumThreads = await _dbContext.ForumThreads
