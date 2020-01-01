@@ -42,7 +42,7 @@ namespace DevPortal.Web
             Configuration = configuration;
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
             bool useInMemoryDatabase = Configuration.GetValue<bool>("UseInMemoryDatabase");
 
@@ -110,8 +110,11 @@ namespace DevPortal.Web
         {
             if (Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey") == string.Empty)
             {
-                var telemetryConfig = app.ApplicationServices.GetRequiredService<TelemetryConfiguration>();
-                telemetryConfig.DisableTelemetry = true;
+                var telemetryConfig = app.ApplicationServices.GetService<TelemetryConfiguration>();
+                if (telemetryConfig != null)
+                {
+                    telemetryConfig.DisableTelemetry = true;
+                }
             }
 
             if (!env.IsProduction())

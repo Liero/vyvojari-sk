@@ -18,6 +18,11 @@ namespace DevPortal.IntegrationTests.Helpers
             ClientOptions.AllowAutoRedirect = false;
         }
 
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        {
+            base.ConfigureWebHost(builder);
+        }
+
         protected override IWebHostBuilder CreateWebHostBuilder()
         {
             return WebHost.CreateDefaultBuilder<TestableStartup>(new string[0]);

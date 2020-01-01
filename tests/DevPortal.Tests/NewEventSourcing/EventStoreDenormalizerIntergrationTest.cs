@@ -60,12 +60,13 @@ namespace DevPortal.Web.NewEventSourcing
 
 
             var eventsForwarder = new EventsForwarder(
-                 () => ActivatorUtilities.CreateInstance<DevPortalDbContext>(_provider),
-                 typeof(Denormalizer1),
-                 _provider,
-                 sqlEventsStore);
+                "AllDenormalizers",
+                new[] { typeof(Denormalizer1) },
+                _provider,
+                sqlEventsStore);
 
-            sqlEventsStore.EventSaved += (o, evt) => eventsForwarder.Start();
+            sqlEventsStore.EventSaved += (o, evt) => eventsForwarder.Start().GetAwaiter();
+            sqlEventsStore2.EventSaved += (o, evt) => eventsForwarder.Start().GetAwaiter();
 
             sqlEventsStore2.Save(new Evt1("Event Sourcing"));
             sqlEventsStore.Save(new Evt1("!"));
@@ -73,7 +74,7 @@ namespace DevPortal.Web.NewEventSourcing
             var evts = await Denormalizer1.HandledEventObservable
                 .OfType<Evt1>()
                 .Take(4)
-                .Timeout(TimeSpan.FromSeconds(1))
+                .TakeUntil(DateTimeOffset.Now.AddSeconds(1))
                 .ToArray();
 
             CollectionAssert.AreEqual(new[] { "Hello", "World", "Event Sourcing", "!" }, evts.Select(e => e.Title).ToArray());

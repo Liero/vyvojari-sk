@@ -27,8 +27,7 @@ namespace DevPortal.Web.NewEventSourcing
         {
             DenormalizerInvoker denormalizerInvoker = new DenormalizerInvoker(
                 typeof(Denormalizer1),
-                _provider,
-                _provider.GetRequiredService<DevPortalDbContext>());
+                _provider);
 
             var evt = new Evt1();
             await denormalizerInvoker.Invoke(evt);

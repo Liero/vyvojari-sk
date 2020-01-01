@@ -43,21 +43,16 @@ namespace DevPortal.Web.NewEventSourcing
             sqlEventsStore.Save(new Evt1("Hello"));
             sqlEventsStore.Save(new Evt1("World"));
 
-            //var mockSqlEventStore = new Mock<SqlEventStore>();
-
-            //mockSqlEventStore.Setup(e => e.Find<DomainEvent>(It.IsAny<Func<EventWrapper, bool>>(), It.IsAny<int>()))
-            //    .Returns();
-
             var eventsForwarder = new EventsForwarder(
-                () => ActivatorUtilities.CreateInstance<DevPortalDbContext>(_provider),
-                typeof(Denormalizer1),
+                "AllDenormalizers",
+                new[] { typeof(Denormalizer1) },
                 _provider,
                 sqlEventsStore);
 
-            eventsForwarder.Start();
+            eventsForwarder.Start().GetAwaiter();
 
             sqlEventsStore.Save(new Evt1("!"));
-            eventsForwarder.Start();
+            eventsForwarder.Start().GetAwaiter();
 
             Task.Run(() =>
             {
