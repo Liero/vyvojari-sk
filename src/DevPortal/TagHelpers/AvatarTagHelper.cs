@@ -43,7 +43,7 @@ namespace DevPortal.Web.TagHelpers
         {
             base.Process(context, output);
 
-            var avatarUrl = _avatarsCache.GetAvatarUrl(UserName) ?? "/media/noface.jpg";
+            var avatarUrl = _avatarsCache.GetAvatarUrl(UserName);
             var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccesor.ActionContext);
 
             output.TagMode = TagMode.StartTagAndEndTag;
@@ -67,6 +67,10 @@ namespace DevPortal.Web.TagHelpers
             if (UserName.Length > 0)
             {
                 content.AppendLine($"<span>{UserName.Substring(0, 1).ToUpper()}</span>");
+            }
+            else
+            {
+                avatarUrl = "/media/noface.jpg";
             }
 
             if (!string.IsNullOrEmpty(avatarUrl)) //must check in order to avoid request to current page (empty url)
