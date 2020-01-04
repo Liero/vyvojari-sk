@@ -27,14 +27,17 @@ namespace DevPortal.Web.Controllers
 
         public IActionResult Index(string query, int pageNumber = 1)
         {
+            ViewData["SearchQuery"] = query; // in order to display in searchbox in master view
+
             var viewModel = new IndexPageViewModel
             {
-                PageNumber = pageNumber
+                PageNumber = pageNumber,
+                Query = query,
             };
 
-
             var dbquery = _dbContext.Contents
-                .Where(c => EF.Functions.FreeText(c.Content, query));
+                .Where(c => EF.Functions.FreeText(c.Content, query) 
+                            || EF.Functions.FreeText(((GenericContent)c).Title, query));
 
             if (!_config.GetValue<bool>("UseFulltextSearch"))
             {
@@ -47,6 +50,7 @@ namespace DevPortal.Web.Controllers
 
             var result = dbquery
                 .Include(i => ((ChildContent)i).Root)
+                .OrderByDescending(i => i.LastModified)
                 .Skip(viewModel.PageNumber - 1)
                 .Take(viewModel.PageSize)
                 .ToList();
@@ -61,6 +65,7 @@ namespace DevPortal.Web.Controllers
                     User = content.CreatedBy,
                     Title = root.Title,
                     ContentType = content.GetType(),
+                    ContentSample = FindContentSample(content.Content, query),
                 };
                 if (root != content)
                 {
@@ -71,6 +76,31 @@ namespace DevPortal.Web.Controllers
             }
         
             return View(viewModel);
+        }
+
+        private string FindContentSample(string content, string query)
+        {
+            const int SAMPLE_LENGTH = 250;
+            if (content == null) return "";
+            int index = content.IndexOf(query, StringComparison.OrdinalIgnoreCase);
+            index = Math.Max(0, index - 50);
+            string result = content.Substring(index);
+
+            //append ...
+            if (result.Length > SAMPLE_LENGTH)
+            {
+                result = result.Substring(0, SAMPLE_LENGTH - 3) + "...";
+            }
+            //prepend ...
+            if (index > 0)
+            {
+                if (result.Length > SAMPLE_LENGTH - 3)
+                {
+                    result.Substring(3, SAMPLE_LENGTH - 3);
+                };
+                result = "..." + result;
+            }
+            return result;
         }
     }
 }

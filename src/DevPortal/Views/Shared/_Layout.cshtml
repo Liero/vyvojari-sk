@@ -23,8 +23,8 @@
         <div class="container top-header">
             <form asp-controller="Search" asp-action="@nameof(SearchController.Index)" method="get">
                 <div class="search-input">
-                    <input name="query" class="form-control" type="search" placeholder="Search Topics ..." aria-label="Search">
-                    <a href="" class="search-ic"><i class="fa fa-search" aria-hidden="true"></i></a>
+                    <input name="query" class="form-control" value="@ViewData["SearchQuery"]" type="search" placeholder="Vyhľadávanie" aria-label="Search">
+                    <button type="submit" class="search-ic"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </div>
             </form>
         </div>

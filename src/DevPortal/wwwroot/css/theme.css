@@ -28,6 +28,8 @@ body {
     position: absolute;
     top: 8px;
     right: 15px;
+    background: none;
+    border: none;
 }
 
     .search-ic, .search-ic:hover {

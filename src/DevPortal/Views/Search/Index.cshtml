@@ -20,6 +20,7 @@
 }
 
 <h1 class="main-head">Vyhľadávanie</h1>
+<p>Hľadaný výraz: @Model.Query</p>
 
 @foreach (var item in Model.Items)
 {
@@ -32,7 +33,7 @@
                asp-controller="@ControllerNameFromContentType(item.ContentType.Name)">
                 @item.Title
             </a>
-            <p class="mb-2">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, ea…</p>
+            <p class="mb-2">@item.ContentSample</p>
             <p class="gray-text font-s14 mb-0">
                 <span class="badge badge-primary">@FriendlyContentTypeName(item)</span>
                 Posted on @item.Date <span class="blue-text">@item.User</span>

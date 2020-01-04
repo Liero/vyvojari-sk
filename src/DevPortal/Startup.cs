@@ -59,7 +59,7 @@ namespace DevPortal.Web
             AddDbContext<DevPortalDbContext>(ServiceLifetime.Scoped);
             AddDbContext<EventsDbContext>(ServiceLifetime.Scoped);
 
-            services.AddIdentity<ApplicationUser, IdentityRole>(ConfigureIdentity)
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => Configuration.GetSection("IdentityOptions").Bind(options))
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -86,6 +86,7 @@ namespace DevPortal.Web
                 options.Filters.Add(new RequireHttpsAttribute());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            services.Configure<AppCode.Config.SendGrid>(Configuration.GetSection("SendGrid"));
             services.AddTransient<IEmailSender, EmailSender>();
 
             services.Configure<Imgur>(Configuration.GetSection("Imgur"));
@@ -106,13 +107,15 @@ namespace DevPortal.Web
             services.AddSingleton<AvatarsCache>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILogger<Startup> logger)
         {
-            if (Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey") == string.Empty)
+            if (Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey") == string.Empty
+                && Configuration.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY") == string.Empty)
             {
                 var telemetryConfig = app.ApplicationServices.GetService<TelemetryConfiguration>();
                 if (telemetryConfig != null)
                 {
+                    logger.LogInformation("Disabling Application Insights Telemetry");
                     telemetryConfig.DisableTelemetry = true;
                 }
             }
@@ -132,23 +135,10 @@ namespace DevPortal.Web
             UserRolesConfig.EnsureUserRoles(app.ApplicationServices).Wait();
         }
 
+        /// <summary>Overridable in interations tests</summary>
         protected virtual void AddAuthentication(IApplicationBuilder app)
         {
             app.UseAuthentication();
-        }
-
-        private void ConfigureIdentity(IdentityOptions options)
-        {
-            options.Password.RequireUppercase = false;
-            options.SignIn.RequireConfirmedPhoneNumber = false;
-            options.SignIn.RequireConfirmedEmail = false; //todo
-
-            if (_env.IsDevelopment())
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequiredLength = 1;
-            }
         }
     }
 }

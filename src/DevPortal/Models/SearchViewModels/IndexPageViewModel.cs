@@ -10,6 +10,7 @@ namespace DevPortal.Web.Models.SearchViewModels
 {
     public class IndexPageViewModel : PaginationViewModelBase
     {
+        public string Query { get; set; }
         public List<SearchItem> Items { get; set; } = new List<SearchItem>();
     }
 
@@ -18,6 +19,7 @@ namespace DevPortal.Web.Models.SearchViewModels
         public Guid Id { get; set; }
         public Guid Fragment { get; set; }
         public string Title { get; set; }
+        public string ContentSample { get; set; }
         public Type ContentType { get; set; }
         public string[] Tags { get; set; }
         public string User { get; set; }
