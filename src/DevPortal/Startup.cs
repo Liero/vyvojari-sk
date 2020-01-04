@@ -52,7 +52,7 @@ namespace DevPortal.Web
                 {
                     if (useInMemoryDatabase) options.UseInMemoryDatabase(typeof(T).Name);
                     else options.UseSqlServer(Configuration.GetConnectionString(typeof(T).Name));
-                }, lifetime, ServiceLifetime.Singleton);
+                }, lifetime, ServiceLifetime.Transient);
             }
 
             AddDbContext<ApplicationDbContext>(ServiceLifetime.Scoped);
