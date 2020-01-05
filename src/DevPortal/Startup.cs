@@ -120,7 +120,7 @@ namespace DevPortal.Web
                 }
             }
 
-            if (!env.IsProduction())
+            if (Configuration.GetValue<bool>("UseDeveloperExceptionPage"))
             {
                 app.UseDeveloperExceptionPage();
             }

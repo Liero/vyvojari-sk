@@ -26,6 +26,8 @@
                 <span asp-validation-for="@Model.Tags"></span>
             </div>
 
+            <partial name="_ReCaptcha" />
+
             <div class="pt-3">
                 <a asp-action="index" class="btn btn-secondary">Zrušiť</a>
                 <div class="pull-right">

@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using DevPortal.Web.AppCode.EventSourcing;
 using DevPortal.QueryStack.Denormalizers;
 using DevPortal.Web.AppCode.Authorization;
+using DevPortal.Web.AppCode.Extensions;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -57,6 +58,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidateReCaptchaAttribute))]
         public IActionResult Create(CreateViewModel model)
         {
 
@@ -70,6 +72,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidateReCaptchaAttribute))]
         public async Task<IActionResult> CreateLink(CreateLinkViewModel viewModel)
         {
             if (!ModelState.IsValid) return View(viewModel);

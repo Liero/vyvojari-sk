@@ -16,6 +16,7 @@ using DevPortal.Web.AppCode.EventSourcing;
 using DevPortal.QueryStack.Denormalizers;
 using Microsoft.Extensions.Logging;
 using DevPortal.Web.AppCode.Authorization;
+using DevPortal.Web.AppCode.Extensions;
 
 namespace DevPortal.Web.Controllers
 {
@@ -98,6 +99,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidateReCaptchaAttribute))]
         public async Task<IActionResult> Create(CreateNewsItemViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -159,6 +161,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidateReCaptchaAttribute))]
         public async Task<IActionResult> AddComment(
             Guid id,
             [Bind(Prefix = nameof(DetailPageViewModel.AddComment))] AddCommentViewModel comment)

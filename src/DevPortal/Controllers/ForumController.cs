@@ -83,6 +83,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidateReCaptchaAttribute))]
         public async Task<IActionResult> Create(CreateForumThreadViewModel viewModel)
         {
             if (!ModelState.IsValid) return View(viewModel);
@@ -166,6 +167,7 @@ namespace DevPortal.Web.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidateReCaptchaAttribute))]
         public async Task<IActionResult> NewPost(
             Guid id,
             [Bind(Prefix = nameof(ForumDetailViewModel.NewAnswer))] NewAnswerViewModel viewModel)

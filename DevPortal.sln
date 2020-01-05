@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesignTimeData", "src\Sampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevPortal.IntegrationTests", "tests\DevPortal.IntegrationTests\DevPortal.IntegrationTests.csproj", "{51819B1A-B507-42B8-BC41-3A91A943AFE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migration.Crawler", "src\Migration.Crawler\Migration.Crawler.csproj", "{2E81A19A-B522-4E28-B076-D20B66B18B49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Migration.Crawler", "src\Migration.Crawler\Migration.Crawler.csproj", "{2E81A19A-B522-4E28-B076-D20B66B18B49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

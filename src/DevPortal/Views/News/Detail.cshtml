@@ -66,6 +66,7 @@
                         <span asp-validation-for="@Model.AddComment.Message"></span>
                     </div>
                     <div class="form-group">
+                        <partial name="_ReCaptcha" />
                         <button class="btn btn-primary pull-right">Pridať komentár</button>
                     </div>
                 </form>
