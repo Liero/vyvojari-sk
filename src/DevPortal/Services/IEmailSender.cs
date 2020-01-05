@@ -14,6 +14,14 @@ namespace DevPortal.Web.Services
         Task SendEmailAsync(IEnumerable<string> email, string subject, string message);
     }
 
+    public class FakeEmailSender : IEmailSender
+    {
+        public Task SendEmailAsync(IEnumerable<string> email, string subject, string message)
+        {
+            return Task.Delay(10);
+        }
+    }
+
     public class EmailSender : IEmailSender
     {
         private AppCode.Config.SendGrid _config;
@@ -56,8 +64,8 @@ namespace DevPortal.Web.Services
     {
         public static Task SendEmailConfirmationAsync(this IEmailSender emailSender, string email, string link)
         {
-            return emailSender.SendEmailAsync(new[] { email }, "Confirm your email",
-                $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(link)}'>link</a>");
+            return emailSender.SendEmailAsync(new[] { email }, "Potvrdte svoj email",
+                $"Prosím, potvrďte svoj email kliknutím na tento : <a href='{HtmlEncoder.Default.Encode(link)}'>odkaz</a>");
         }
     }
 }

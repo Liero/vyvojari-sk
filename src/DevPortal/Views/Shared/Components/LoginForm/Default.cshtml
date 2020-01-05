@@ -17,6 +17,16 @@
                     <input asp-for="@Model.UsernameOrEmail" class="form-control user" type="text" placeholder="Prezývka / Email">
                     <input asp-for="@Model.Password" class="form-control password" type="password" placeholder="Heslo">
                     <div asp-validation-summary="All" class="text-danger"></div>
+                    @if(Model.EmailConfirmationNeeded)
+                    {
+                        <div>
+                            <a asp-action="@nameof(AccountController.SendVerificationEmail)"
+                               asp-controller="Account"
+                               asp-route-username="@Model.UsernameOrEmail">
+                                Preposlať potvrdzovací email
+                            </a>
+                        </div>
+                    }
 
                     <button class="btn green-btn text-uppercase font-s14" type="submit">Prihásiť sa</button>
                     <a asp-action="@nameof(AccountController.ForgotPassword)"

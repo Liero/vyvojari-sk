@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Registrácia úspešná";
+}
+
+<h2>@ViewData["Title"].</h2>
+<div class="mt-2">
+    <p>
+        Aby ste sa mohli prihlásiť, musíte ešte potvrdiť email.
+    </p>
+    <small>Ak ste žiaden email nedostali, skontrolujte si prosím spamový priečinok, alebo kliknite na 
+    <a asp-controller="Account" asp-action="@nameof(AccountController.SendVerificationEmail)" asp-route-username="@ViewData["UserName"]">preposlať email</a></small>
+</div>

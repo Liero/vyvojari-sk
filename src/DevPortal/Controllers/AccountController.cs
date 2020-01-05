@@ -54,7 +54,7 @@ namespace DevPortal.Web.Controllers
                 var singIn = await SignInUsingPasswordAsync(model);
                 if (singIn.Succeeded) return Redirect(returnUrl ?? "/");
             }
-           
+            
             ViewData["ReturnUrl"] = returnUrl;
             return View(model);
             
@@ -97,10 +97,22 @@ namespace DevPortal.Web.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    //todo: Add email confirmation
-                    await _signInManager.SignInAsync(user, isPersistent: true);
+                    _logger.LogInformation("User created a new account with password.");
 
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+
+                    await _emailSender.SendEmailConfirmationAsync(user.Email, callbackUrl);
+
+                    if (_signInManager.Options.SignIn.RequireConfirmedEmail)
+                    {
+                        return RedirectToAction(nameof(AccountController.RegisterSuccess), "Account", new { user.UserName });
+                    }
+                    else
+                    {
+                        await _signInManager.SignInAsync(user, isPersistent: true);
+                    }
+
                     return RedirectToLocal(returnUrl);
                 }
                 AddErrors(result);
@@ -108,6 +120,14 @@ namespace DevPortal.Web.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RegisterSuccess(string userName = null)
+        {
+            ViewData["UserName"] = userName;
+            return View();
         }
 
         [HttpGet]
@@ -191,6 +211,7 @@ namespace DevPortal.Web.Controllers
             return View();
         }
 
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPasswordConfirmation()
@@ -206,6 +227,28 @@ namespace DevPortal.Web.Controllers
             await _signInManager.SignOutAsync();
             _logger.LogInformation(4, "User logged out.");
             return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult SendVerificationEmail(string username = null)
+        {
+            ViewData.Add("UserName", username);
+            return View();
+        }
+
+        [HttpPost()]
+        [ActionName(nameof(AccountController.SendVerificationEmail))]
+        [AllowAnonymous]
+        public async Task<IActionResult> SendVerificationEmailPost(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
+
+            await _emailSender.SendEmailConfirmationAsync(user.Email, callbackUrl);
+            ViewData.Add("Potvrdzovací email bol odoslaný na vašu adresu", username);
+            return View();
         }
 
         //
@@ -336,16 +379,17 @@ namespace DevPortal.Web.Controllers
             }
             else if (result.IsLockedOut)
             {
-                ModelState.AddModelError("", "User account locked out.");
+                ModelState.AddModelError("", "Učet bol zablokovaný");
                 _logger.LogWarning(2, "User account locked out. '{Name}'", userName);
             }
             else if (result.IsNotAllowed)
             {
-                ModelState.AddModelError("", "Sign in to this account is not allowed");
+                ModelState.AddModelError("", "Prihlásenie do tohto účtu nieje povolené. Potvrdili ste email?");
+                model.EmailConfirmationNeeded = true;
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                ModelState.AddModelError("", "Nesprávne meno alebo heslo");
             }
             return result;
         }

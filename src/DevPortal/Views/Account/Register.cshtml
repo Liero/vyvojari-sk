@@ -1,5 +1,4 @@
-﻿@inject Microsoft.Extensions.Options.IOptions<DevPortal.Web.AppCode.Config.ReCaptcha> recaptchaOptios
-@model RegisterViewModel
+﻿@model RegisterViewModel
 @{
     ViewData["Title"] = "Register";
 }
@@ -38,7 +37,7 @@
             <span asp-validation-for="@Model.Email" class="text-danger"></span>
         </div>
     </div>
-    <div class="g-recaptcha" data-sitekey="@(recaptchaOptios.Value.SiteKey)"></div>
+    <partial name="_ReCaptcha" />
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">

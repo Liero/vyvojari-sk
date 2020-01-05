@@ -1,9 +1,9 @@
 ﻿@{ 
-    ViewBag.Title = "Login";
+    ViewBag.Title = "Prihlásenie";
 }
 
 <div class="row">
     <div class="col-md-8">
-        @await Component.InvokeAsync(typeof(LoginFormViewComponent))
+        <vc:login-form model="@Model" />
     </div>
 </div>
