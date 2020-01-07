@@ -51,7 +51,17 @@ namespace DevPortal.Web
                 services.AddDbContext<T>(options =>
                 {
                     if (useInMemoryDatabase) options.UseInMemoryDatabase(typeof(T).Name);
-                    else options.UseSqlServer(Configuration.GetConnectionString(typeof(T).Name));
+                    else
+                    {
+                        options.UseSqlServer(Configuration.GetConnectionString(typeof(T).Name),
+                            sqlOptions =>
+                            {
+                                sqlOptions.EnableRetryOnFailure(
+                                maxRetryCount: 3,
+                                maxRetryDelay: TimeSpan.FromSeconds(15),
+                                errorNumbersToAdd: null);
+                            });
+                    }
                 }, lifetime);
             }
 
