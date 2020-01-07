@@ -23,6 +23,8 @@ namespace DevPortal.CommandStack.Infrastructure
         public Guid? ForumThreadId { get; internal set; }
         public Guid? BlogId { get; internal set; }
         public Guid? NewsItemId { get; internal set; }
+        public Guid? MessageId { get; internal set; }
+        
         public string EventType { get; internal set; }
         public string SerializedEvent { get; internal set; }
         public DomainEvent Event { get; internal set; }
@@ -64,6 +66,7 @@ namespace DevPortal.CommandStack.Infrastructure
                 entity.HasIndex(e => e.ForumThreadId);
                 entity.HasIndex(e => e.BlogId);
                 entity.HasIndex(e => e.NewsItemId);
+                entity.HasIndex(e => e.MessageId);
 
 
                 entity.Property(e => e.ForumThreadId).IsRequired(false);

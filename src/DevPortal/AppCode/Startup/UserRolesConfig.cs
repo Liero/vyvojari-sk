@@ -42,7 +42,8 @@ namespace DevPortal.Web.AppCode.Startup
                     var userResult = await UserManager.CreateAsync(new ApplicationUser
                     {
                         UserName = rootUserName,
-                        Email = "vyvojari@vyvojari.sk"
+                        Email = "vyvojari@vyvojari.sk",
+                        EmailConfirmed = true,
                     }, "admin");
                     if (!userResult.Succeeded)
                     {

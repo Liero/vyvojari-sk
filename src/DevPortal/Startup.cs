@@ -52,7 +52,7 @@ namespace DevPortal.Web
                 {
                     if (useInMemoryDatabase) options.UseInMemoryDatabase(typeof(T).Name);
                     else options.UseSqlServer(Configuration.GetConnectionString(typeof(T).Name));
-                }, lifetime, ServiceLifetime.Transient);
+                }, lifetime);
             }
 
             AddDbContext<ApplicationDbContext>(ServiceLifetime.Scoped);
@@ -94,14 +94,8 @@ namespace DevPortal.Web
 
             services.Configure<ReCaptcha>(Configuration.GetSection("ReCaptcha"));
             services.AddSingleton<ValidateReCaptchaAttribute>();
-            if (useInMemoryDatabase)
-            {
-                services.AddInMemoryEventSourcing();
-            }
-            else
-            {
-                services.AddSqlEventSourcing();
-            }
+            services.AddSqlEventSourcing();
+
             services.AddLogging();
 
             services.AddSingleton<AvatarsCache>();

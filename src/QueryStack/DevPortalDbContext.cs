@@ -22,6 +22,8 @@ namespace DevPortal.QueryStack
         public DbSet<ForumPost> ForumPosts { get; set; }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Activity> Activities { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<Message> Messages { get; set; }
         public DbSet<Tag> Tags { get; set; }
 
         public DbSet<ContentBase> Contents { get; set; }
@@ -89,6 +91,19 @@ namespace DevPortal.QueryStack
                 entity.Property(e => e.ContentType).IsRequired();
                 entity.Property(e => e.Action).IsRequired();
             });
-        }
+
+            modelBuilder.Entity<Message>(entity =>
+            {
+                entity.Property(e => e.RecipientUserName).IsRequired();
+                entity.Property(e => e.SenderUserName).IsRequired();
+                // entity.HasIndex(e => new { e.RecipientUserName, e.SenderUserName })
+            });
+
+            modelBuilder.Entity<Conversation>(entity =>
+            {
+                entity.HasKey(e => new { e.UserName1, e.UserName2 });
+                entity.Property(e => e.LastPostedBy).IsRequired();
+            });
+        }   
     }
 }

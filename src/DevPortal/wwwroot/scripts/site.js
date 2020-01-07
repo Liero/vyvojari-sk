@@ -1,7 +1,7 @@
-﻿/// <reference path="../lib/jquery/dist/jquery.js" />
-/// <reference path="../lib/bootstrap/dist/js/bootstrap.js" />
-/// <reference path="../lib/marked/lib/marked.js" />
-/// <reference path="../lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.js" />
+﻿/// <reference path="../lib/jquery/jquery.js" />
+/// <reference path="../lib/bootstrap/js/bootstrap.js" />
+/// <reference path="../lib/marked/marked.js" />
+/// <reference path="../lib/bootstrap-tagsinput/bootstrap-tagsinput.js" />
 
 jQuery.validator.setDefaults({
     errorClass: 'text-danger'

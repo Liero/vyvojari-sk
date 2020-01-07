@@ -22,6 +22,7 @@ using Rebus.Config;
 using DevPortal.QueryStack;
 using Microsoft.AspNetCore.Builder;
 using Rebus.Extensions;
+using Microsoft.Extensions.Configuration;
 
 namespace DevPortal.Web.AppCode.EventSourcing
 {
@@ -30,27 +31,12 @@ namespace DevPortal.Web.AppCode.EventSourcing
     {
         private static IBus _bus;
 
-        public static void AddInMemoryEventSourcing(this IServiceCollection services)
-        {
-            services.AddSingleton<IEventDispatcher, RebusEventDispatcher>();
-            services.AddSingleton<IEventStore, SqlEventStore>(sp => ActivatorUtilities.CreateInstance<SqlEventStore>(sp, new object[] { AllEvents.ToArray() }));
-            //services.AddSingleton<IEventStore, InMemoryEventStore>();
-
-            services.AddSingleton<IHandlerNotifications, HandlerNotififications>(sp =>
-            {
-                var handlerNotification = ActivatorUtilities.CreateInstance<HandlerNotififications>(sp);
-
-                //make handler notification accessible from extension methods - needs a better solution
-                EventStoreExtensions.HandlerNotificationAccessor = () => handlerNotification;
-                return handlerNotification;
-            });
-            services.AddTransient<IBus>(sp => _bus);
-        }
-
         public static void UseRebusEventSourcing(this IApplicationBuilder app)
         {
             var rebusServices = new ServiceCollection();
             rebusServices.AutoRegisterHandlersFromAssemblyOf<ActivityDenormalizer>();
+            rebusServices.AddLogging();
+            rebusServices.AddSingleton<IEventStore>(sp => app.ApplicationServices.GetRequiredService<IEventStore>());
             rebusServices.AddTransient<DevPortalDbContext>(sp =>
             {
                 var messageContext = MessageContext.Current
@@ -70,12 +56,19 @@ namespace DevPortal.Web.AppCode.EventSourcing
                   o.EnableUnitOfWork<DevPortalDbContext>(
                       unitOfWorkFactoryMethod: messageContext =>
                       {
-                          var dbContext = ActivatorUtilities.CreateInstance<DevPortalDbContext>(app.ApplicationServices);
+                          var scope = app.ApplicationServices.CreateScope();
+                          messageContext.TransactionContext.Items["ServiceScope"] = scope;
+                          var dbContext = ActivatorUtilities.CreateInstance<DevPortalDbContext>(scope.ServiceProvider);
                           messageContext.TransactionContext.Items[nameof(DevPortalDbContext)] = dbContext;
                           return dbContext;
                       },
                       commitAction: (messageContext, dbContext) => dbContext.SaveChanges(),
-                      cleanupAction: (messageContext, dbContext) => dbContext.Dispose());
+                      cleanupAction: (messageContext, dbContext) => {
+
+                          dbContext.Dispose();
+                          var scope = (IServiceScope)messageContext.TransactionContext.Items["ServiceScope"];
+                          scope.Dispose();
+                      });
 
                   o.Decorate<IPipeline>(c =>
                   {
@@ -98,7 +91,19 @@ namespace DevPortal.Web.AppCode.EventSourcing
 
         public static void AddSqlEventSourcing(this IServiceCollection services)
         {
-            AddInMemoryEventSourcing(services);
+            services.AddSingleton<IEventDispatcher, RebusEventDispatcher>();
+            services.AddSingleton<IEventStore, SqlEventStore>(sp => ActivatorUtilities.CreateInstance<SqlEventStore>(sp.CreateScope().ServiceProvider, new object[] { AllEvents.ToArray() }));
+            //services.AddSingleton<IEventStore, InMemoryEventStore>();
+
+            services.AddSingleton<IHandlerNotifications, HandlerNotififications>(sp =>
+            {
+                var handlerNotification = ActivatorUtilities.CreateInstance<HandlerNotififications>(sp);
+
+                //make handler notification accessible from extension methods - needs a better solution
+                EventStoreExtensions.HandlerNotificationAccessor = () => handlerNotification;
+                return handlerNotification;
+            });
+            services.AddTransient<IBus>(sp => _bus);
         }
 
         public static IEnumerable<Type> AllDenormalizers => Assembly.GetAssembly(typeof(NewsItemDenormalizer))

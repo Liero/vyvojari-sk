@@ -33,6 +33,7 @@
       "files": [
         "js/bootstrap.min.js.map",
         "js/bootstrap.min.js",
+        "js/bootstrap.js",
         "css/bootstrap.css",
         "css/bootstrap.min.css",
         "css/bootstrap.min.css.map"

@@ -29,9 +29,12 @@ namespace DevPortal.Web.AppCode.Cache
             {
                 if (_avatars == null)
                 {
-                    using (var dbContext = ActivatorUtilities.CreateInstance<ApplicationDbContext>(this.provider))
+                    using (var scope = provider.CreateScope())
                     {
-                        _avatars = dbContext.Users.ToDictionary(u => u.UserName, u => u.AvatarUrl, StringComparer.InvariantCultureIgnoreCase);
+                        using (var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
+                        {
+                            _avatars = dbContext.Users.ToDictionary(u => u.UserName, u => u.AvatarUrl, StringComparer.InvariantCultureIgnoreCase);
+                        }
                     }
                     if (!_avatars.TryGetValue(userName, out string avatarUrl))
                     {
@@ -43,13 +46,15 @@ namespace DevPortal.Web.AppCode.Cache
                 {
                     if (!_avatars.TryGetValue(userName, out string avatarUrl))
                     {
-                        using (var dbContext = ActivatorUtilities.CreateInstance<ApplicationDbContext>(this.provider))
+                        using (var scope = provider.CreateScope())
                         {
-                            avatarUrl = dbContext.Users.Where(u => u.UserName == userName)
-                            .Select(u => u.AvatarUrl)
-                            .FirstOrDefault();
+                            using (var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
+                            {
+                                avatarUrl = dbContext.Users.Where(u => u.UserName == userName)
+                                    .Select(u => u.AvatarUrl)
+                                    .FirstOrDefault();
+                            }
                         }
-
                         _avatars[userName] = avatarUrl;
                     }
                     return avatarUrl;

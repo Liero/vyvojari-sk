@@ -1,6 +1,16 @@
 ﻿<div class="dropdown ml-3 btn-group">
-    <a href="#" class="first" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+    <a asp-controller="Message"
+       asp-action="@nameof(MessageController.Conversations)"
+       class="first">
+        @*data-toggle="dropdown"
+        role="button"
+        aria-haspopup="true"
+        aria-expanded="false"*@
         <img src="~/media/top-chat-image.png" class="">
+        @if (ViewBag.UnreadMessages > 0)
+        {
+            <span class="remainter-bubble">@ViewBag.UnreadMessages</span>
+        }
     </a>
     <ul class="dropdown-menu">
         <li>Private message are not implemented yet</li>

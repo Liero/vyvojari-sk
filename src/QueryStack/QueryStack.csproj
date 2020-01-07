@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200105172925_Messages.cs" />
+    <Compile Remove="Migrations\20200105172925_Messages.Designer.cs" />
+    <Compile Remove="Migrations\20200106094649_Messages.cs" />
+    <Compile Remove="Migrations\20200106094649_Messages.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.1" />
     <PackageReference Include="Rebus" Version="5.2.1" />
   </ItemGroup>

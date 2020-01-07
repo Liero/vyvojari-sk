@@ -60,7 +60,7 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <vc:inbox-bar />
-                            <vc:notification-bar />
+                            @*<vc:notification-bar />*@
                             <div class="ml-3 dropdown user-account">
                                 <a href="#" data-toggle="dropdown" aria-expanded="false" style="line-height:42px; display:inline-flex">
                                     <span avatar-for-user="@User.Identity.Name" class="avatar avatar-xsmall rounded-circle mr-1" />
@@ -68,10 +68,10 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a asp-controller="Manage" asp-action="@nameof(ManageController.Index)">My Account</a>
+                                        <a asp-controller="Manage" asp-action="@nameof(ManageController.Index)">Môj účet</a>
                                     </li>
                                     <li>
-                                        <button class="btn btn-link navbar-link">Log off</button>
+                                        <a onclick="$(this).closest('form').submit()">Odhlásiť</a>
                                     </li>
                                 </ul>
                             </div>
